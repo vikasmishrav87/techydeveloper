@@ -101,9 +101,7 @@ export async function sendEmailOTP(email) {
   return {
     success: true,
     email: cleanEmail,
-    provider: supabaseSent ? 'supabase' : 'direct',
-    // Fallback code provided for dev / zero-wait verification
-    hintCode: fallbackCode
+    provider: supabaseSent ? 'supabase' : 'direct'
   };
 }
 

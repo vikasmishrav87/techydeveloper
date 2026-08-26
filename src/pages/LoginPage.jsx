@@ -59,15 +59,10 @@ export default function LoginPage() {
     setSuccessNotice('');
 
     try {
-      const res = await sendEmailOTP(cleanEmail);
+      await sendEmailOTP(cleanEmail);
       setAuthStep('otp_verify');
       setResendCooldown(45);
-      
-      if (res.hintCode) {
-        setSuccessNotice(`Verification code dispatched to ${cleanEmail}. (Code: ${res.hintCode})`);
-      } else {
-        setSuccessNotice(`Verification code sent to ${cleanEmail}. Please check your inbox!`);
-      }
+      setSuccessNotice(`Verification code dispatched to ${cleanEmail}. Please check your email inbox!`);
 
       // Auto-focus first OTP input after render
       setTimeout(() => {
@@ -142,13 +137,9 @@ export default function LoginPage() {
     setErrorMsg('');
 
     try {
-      const res = await sendEmailOTP(email);
+      await sendEmailOTP(email);
       setResendCooldown(45);
-      if (res.hintCode) {
-        setSuccessNotice(`New code sent to ${email}. (Code: ${res.hintCode})`);
-      } else {
-        setSuccessNotice(`New verification code sent to ${email}.`);
-      }
+      setSuccessNotice(`New verification code dispatched to ${email}. Please check your email inbox!`);
     } catch (err) {
       setErrorMsg(err.message || 'Could not resend code.');
     } finally {
