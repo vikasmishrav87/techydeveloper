@@ -1,0 +1,34 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#030712" />
+      <stop offset="100%" stopColor="#0F172A" />
+    </linearGradient>
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#38BDF8" />
+      <stop offset="50%" stopColor="#818CF8" />
+      <stop offset="100%" stopColor="#C084FC" />
+    </linearGradient>
+    <linearGradient id="bolt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="40%" stopColor="#38BDF8" />
+      <stop offset="100%" stopColor="#6366F1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="100" height="100" rx="28" fill="url(#bg-grad)" />
+  <rect width="96" height="96" x="2" y="2" rx="26" stroke="url(#border-grad)" stroke-width="3" />
+
+  <!-- Outer Quantum Hexagon -->
+  <polygon points="50,14 82,30 82,70 50,86 18,70 18,30" stroke="url(#border-grad)" stroke-width="3.5" stroke-linejoin="round" />
+
+  <!-- Orbit Ring -->
+  <ellipse cx="50" cy="50" rx="24" ry="12" transform="rotate(-25 50 50)" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.8" />
+
+  <!-- Kinetic Bolt -->
+  <path d="M54 22L32 52H48L44 78L68 44H52L58 22H54Z" fill="url(#bolt-grad)" />
+  
+  <!-- Glowing Center Nucleus -->
+  <circle cx="50" cy="48" r="3" fill="#FFFFFF" />
+  <circle cx="50" cy="48" r="1.5" fill="#38BDF8" />
+</svg>
