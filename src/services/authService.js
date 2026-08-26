@@ -8,8 +8,7 @@ const USER_STORAGE_KEYS = {
   ALL_USERS: 'ue_registered_users_registry_v1',
 };
 
-// In-memory fallback OTP storage
-const activeOTPs = new Map();
+// In-memory fallback no longer needed — Supabase Auth handles OTP storage
 
 // Helper: Base64Url decode for Google JWT
 function decodeGoogleJWT(token) {
@@ -61,7 +60,7 @@ export function getCurrentUser() {
 }
 
 // ----------------------------------------------------
-// 1. Send 6-Digit Email OTP Verification Code via Resend
+// 1. Send 6-Digit Email OTP via Supabase Auth (works for ANY email)
 // ----------------------------------------------------
 export async function sendEmailOTP(email) {
   const cleanEmail = (email || '').toLowerCase().trim();
@@ -69,28 +68,27 @@ export async function sendEmailOTP(email) {
     throw new Error('Please enter a valid email address.');
   }
 
-  // Call serverless API that sends real email via Resend
-  const response = await fetch('/api/send-otp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: cleanEmail })
+  // Supabase Auth sends a real OTP/magic-link email to ANY address
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email: cleanEmail,
+    options: {
+      shouldCreateUser: true
+    }
   });
 
-  const result = await response.json();
-
-  if (!response.ok || !result.success) {
-    throw new Error(result.error || 'Failed to send verification code. Please try again.');
+  if (error) {
+    throw new Error(error.message || 'Failed to send verification code. Please try again.');
   }
 
   logSecurityEvent('AUTH_OTP', `Verification Code Sent to ${cleanEmail}`, {
     email: cleanEmail,
-    provider: 'Resend_Email'
+    provider: 'Supabase_Auth'
   }, 'OTP_DISPATCHED');
 
   return {
     success: true,
     email: cleanEmail,
-    provider: 'resend'
+    provider: 'supabase'
   };
 }
 
@@ -105,18 +103,22 @@ export async function verifyEmailOTP(email, otpCode, name = '') {
     throw new Error('Email and 6-digit verification code are required.');
   }
 
-  // Call serverless API to verify code on the server
-  const response = await fetch('/api/verify-otp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: cleanEmail, code: cleanCode })
+  let supabaseUser = null;
+  let supabaseSession = null;
+
+  // Verify OTP directly with Supabase Auth
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: cleanEmail,
+    token: cleanCode,
+    type: 'email'
   });
 
-  const result = await response.json();
-
-  if (!response.ok || !result.verified) {
-    throw new Error(result.error || 'Invalid or expired verification code. Please check your email and try again.');
+  if (error || !data?.user) {
+    throw new Error(error?.message || 'Invalid or expired verification code. Please check your email and try again.');
   }
+
+  supabaseUser = data.user;
+  supabaseSession = data.session;
 
   // Build authenticated user object
   const existingUsers = getRegisteredUsers();
