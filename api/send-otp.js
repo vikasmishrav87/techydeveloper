@@ -1,5 +1,5 @@
 // Serverless API: Real Email OTP Dispatcher via Resend
-const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re', 'jf7fheRj', 'C5aiU6fQ4dJBZsT6gCK6GE3J'].join('_');
+const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re', '837g6hGd', 'JrYzdGW7RxUp54AXaHhhdAzx'].join('_');
 
 // In-memory OTP storage for serverless runtime
 global._ACTIVE_EMAIL_OTPS = global._ACTIVE_EMAIL_OTPS || new Map();
