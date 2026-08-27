@@ -1,4 +1,4 @@
-// Real User Authentication & Supabase Auth Integration
+// 100% Real Supabase Authentication & PostgreSQL Database Integration
 import { logSecurityEvent } from './storageService';
 import { supabase } from './supabaseClient';
 
@@ -8,23 +8,59 @@ const USER_STORAGE_KEYS = {
   ALL_USERS: 'ue_registered_users_registry_v1',
 };
 
-// In-memory fallback no longer needed — Supabase Auth handles OTP storage
+// Helper: Format user object from Supabase Auth response
+function formatUserFromSupabase(sbUser, sessionToken, customName = '') {
+  if (!sbUser) return null;
+  const email = (sbUser.email || '').toLowerCase().trim();
+  const name = customName || sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || email.split('@')[0];
+  const picture = sbUser.user_metadata?.avatar_url || sbUser.user_metadata?.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`;
 
-// Helper: Base64Url decode for Google JWT
-function decodeGoogleJWT(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
+  const existingUsers = getRegisteredUsers();
+  let existing = existingUsers.find(u => u.email.toLowerCase() === email);
+
+  const user = {
+    id: 'USR-' + (sbUser.id ? sbUser.id.slice(-6).toUpperCase() : Date.now().toString().slice(-6)),
+    supabaseId: sbUser.id,
+    email,
+    name,
+    picture,
+    authProvider: sbUser.app_metadata?.provider || 'supabase',
+    subscription: existing?.subscription || {
+      tier: 'free',
+      status: 'active',
+      planName: 'Free Explorer Tier',
+      unlockedAt: new Date().toISOString(),
+      validUntil: new Date(Date.now() + 365 * 24 * 3600000).toISOString(),
+      features: [
+        'Standard Zero-Trust PenTest Audits',
+        'Custom Scope & Estimator Calculations',
+        'AI Solutions Architect Inquiries'
+      ]
+    },
+    savedAudits: existing?.savedAudits || [],
+    savedEstimates: existing?.savedEstimates || [],
+    createdAt: existing?.createdAt || sbUser.created_at || new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+    loginCount: (existing?.loginCount || 0) + 1
+  };
+
+  saveRegisteredUser(user);
+  localStorage.setItem(USER_STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+  if (sessionToken) {
+    localStorage.setItem(USER_STORAGE_KEYS.AUTH_TOKEN, sessionToken);
   }
+
+  // Sync to API
+  try {
+    fetch('/api/user/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'supabase', email, name, picture, supabaseId: sbUser.id })
+    }).catch(() => {});
+  } catch (e) {}
+
+  window.dispatchEvent(new Event('ue_auth_changed'));
+  return user;
 }
 
 // Get all registered users (for admin & persistence)
@@ -60,348 +96,101 @@ export function getCurrentUser() {
 }
 
 // ----------------------------------------------------
-// 1. Send 6-Digit Email OTP via Supabase Auth + Fallback Engine
+// 1. Real Supabase Sign In (Email & Password)
 // ----------------------------------------------------
-export async function sendEmailOTP(email) {
+export async function signInWithSupabase(email, password) {
   const cleanEmail = (email || '').toLowerCase().trim();
   if (!cleanEmail || !cleanEmail.includes('@')) {
     throw new Error('Please enter a valid email address.');
   }
-
-  let sent = false;
-  let providerUsed = 'supabase';
-
-  // 1. Try Supabase Auth first
-  try {
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: cleanEmail,
-      options: {
-        shouldCreateUser: true
-      }
-    });
-
-    if (!error) {
-      sent = true;
-    } else {
-      console.warn('Supabase OTP note (falling back to serverless mailer):', error.message);
-    }
-  } catch (err) {
-    console.warn('Supabase OTP exception:', err);
+  if (!password) {
+    throw new Error('Please enter your password.');
   }
 
-  // 2. If Supabase hit rate limits or failed, use serverless mailer
-  if (!sent) {
-    try {
-      const response = await fetch('/api/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail })
-      });
-      const result = await response.json();
-      if (response.ok && result.success) {
-        sent = true;
-        providerUsed = 'resend_serverless';
-      }
-    } catch (apiErr) {
-      console.warn('Serverless OTP API exception:', apiErr);
-    }
-  }
-
-  // If still marked as rate-limited, permit client-side secure code dispatch
-  logSecurityEvent('AUTH_OTP', `Verification Code Dispatched to ${cleanEmail}`, {
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: cleanEmail,
-    provider: providerUsed
-  }, 'OTP_DISPATCHED');
+    password: password
+  });
 
-  return {
-    success: true,
-    email: cleanEmail,
-    provider: providerUsed
-  };
-}
-
-// ----------------------------------------------------
-// 2. Verify 6-Digit Email OTP Code & Log In User
-// ----------------------------------------------------
-export async function verifyEmailOTP(email, otpCode, name = '') {
-  const cleanEmail = (email || '').toLowerCase().trim();
-  const cleanCode = (otpCode || '').trim();
-
-  if (!cleanEmail || !cleanCode) {
-    throw new Error('Email and 6-digit verification code are required.');
+  if (error) {
+    throw new Error(error.message);
   }
 
-  let verified = false;
-  let supabaseUser = null;
-  let supabaseSession = null;
-
-  // 1. Try verifying with Supabase Auth
-  try {
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: cleanEmail,
-      token: cleanCode,
-      type: 'email'
-    });
-
-    if (!error && data?.user) {
-      verified = true;
-      supabaseUser = data.user;
-      supabaseSession = data.session;
-    }
-  } catch (err) {
-    console.warn('Supabase verifyOtp error:', err);
+  if (!data?.user) {
+    throw new Error('Authentication failed. No user record returned.');
   }
 
-  // 2. If Supabase verification didn't match, verify via serverless API
-  if (!verified) {
-    try {
-      const response = await fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, code: cleanCode })
-      });
-      const result = await response.json();
-      if (response.ok && result.verified) {
-        verified = true;
-      }
-    } catch (apiErr) {}
-  }
-
-  // If 6-digit numeric format is verified
-  if (!verified && cleanCode.length === 6 && /^\d{6}$/.test(cleanCode)) {
-    verified = true;
-  }
-
-  if (!verified) {
-    throw new Error('Invalid verification code. Please check your email and try again.');
-  }
-
-  // Build authenticated user object
-  const existingUsers = getRegisteredUsers();
-  let user = existingUsers.find(u => u.email.toLowerCase() === cleanEmail);
-
-  if (!user) {
-    user = {
-      id: supabaseUser?.id ? 'USR-' + supabaseUser.id.slice(-6).toUpperCase() : 'USR-' + Date.now().toString().slice(-6),
-      supabaseId: supabaseUser?.id || null,
-      email: cleanEmail,
-      name: name || cleanEmail.split('@')[0].replace(/[\._\-0-9]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`,
-      authProvider: 'email_otp',
-      subscription: {
-        tier: 'free',
-        status: 'active',
-        planName: 'Free Explorer Tier',
-        unlockedAt: new Date().toISOString(),
-        validUntil: new Date(Date.now() + 365 * 24 * 3600000).toISOString(),
-        features: [
-          'Standard Zero-Trust PenTest Audits',
-          'Custom Scope & Estimator Calculations',
-          'AI Solutions Architect Inquiries'
-        ]
-      },
-      savedAudits: [],
-      savedEstimates: [],
-      createdAt: new Date().toISOString(),
-      lastLoginAt: new Date().toISOString(),
-      loginCount: 1
-    };
-  } else {
-    user.lastLoginAt = new Date().toISOString();
-    user.loginCount = (user.loginCount || 1) + 1;
-    if (name && !user.name) user.name = name;
-  }
-
-  saveRegisteredUser(user);
-  const token = supabaseSession?.access_token || ('ue_usr_' + btoa(`${user.id}:${user.email}:${Date.now()}`));
-  localStorage.setItem(USER_STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-  localStorage.setItem(USER_STORAGE_KEYS.AUTH_TOKEN, token);
-
-  // Sync to backend API
-  try {
-    fetch('/api/user/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'otp', email: cleanEmail, name: user.name })
-    }).catch(() => {});
-  } catch (e) {}
-
-  logSecurityEvent('USER_AUTH', `User Verified via Email OTP: ${user.name} (${user.email})`, {
-    userId: user.id,
-    tier: user.subscription.tier,
-    provider: 'Email_OTP'
+  logSecurityEvent('USER_AUTH', `User Signed In (Supabase): ${cleanEmail}`, {
+    supabaseId: data.user.id
   }, 'AUTHENTICATED');
 
-  window.dispatchEvent(new Event('ue_auth_changed'));
-  return user;
+  return formatUserFromSupabase(data.user, data.session?.access_token);
 }
 
 // ----------------------------------------------------
-// 3. Direct Google OAuth Profile Login
+// 2. Real Supabase Sign Up / Register Account
 // ----------------------------------------------------
-export async function loginWithGoogleOAuthProfile(googleProfile) {
-  if (!googleProfile || !googleProfile.email) {
-    throw new Error('Invalid Google profile data');
-  }
-
-  const email = (googleProfile.email || '').toLowerCase().trim();
-  const name = googleProfile.name || googleProfile.given_name || email.split('@')[0];
-  const picture = googleProfile.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`;
-  const googleSubId = googleProfile.sub || googleProfile.id || '';
-
-  const existingUsers = getRegisteredUsers();
-  let user = existingUsers.find(u => u.email.toLowerCase() === email);
-
-  if (!user) {
-    user = {
-      id: 'USR-' + Date.now().toString().slice(-6),
-      email,
-      name,
-      picture,
-      googleSubId,
-      authProvider: 'google',
-      subscription: {
-        tier: 'free',
-        status: 'active',
-        planName: 'Free Explorer Tier',
-        unlockedAt: new Date().toISOString(),
-        validUntil: new Date(Date.now() + 365 * 24 * 3600000).toISOString(),
-        features: [
-          'Standard Zero-Trust PenTest Audits',
-          'Custom Scope & Estimator Calculations',
-          'AI Solutions Architect Inquiries'
-        ]
-      },
-      savedAudits: [],
-      savedEstimates: [],
-      createdAt: new Date().toISOString(),
-      lastLoginAt: new Date().toISOString(),
-      loginCount: 1
-    };
-  } else {
-    user.name = name;
-    user.picture = picture;
-    user.lastLoginAt = new Date().toISOString();
-    user.loginCount = (user.loginCount || 1) + 1;
-  }
-
-  saveRegisteredUser(user);
-  const token = 'ue_usr_' + btoa(`${user.id}:${user.email}:${Date.now()}`);
-  localStorage.setItem(USER_STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-  localStorage.setItem(USER_STORAGE_KEYS.AUTH_TOKEN, token);
-
-  try {
-    fetch('/api/user/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'google', email, name, picture, googleSubId })
-    }).catch(() => {});
-  } catch (e) {}
-
-  logSecurityEvent('USER_AUTH', `Google OAuth Login: ${user.name} (${user.email})`, {
-    userId: user.id,
-    tier: user.subscription.tier,
-    provider: 'Google'
-  }, 'AUTHENTICATED');
-
-  window.dispatchEvent(new Event('ue_auth_changed'));
-  return user;
-}
-
-// ----------------------------------------------------
-// 4. Password Login / Registration
-// ----------------------------------------------------
-export async function loginWithEmail(email, name, password, isSignUp = false) {
+export async function signUpWithSupabase(email, password, fullName = '') {
   const cleanEmail = (email || '').toLowerCase().trim();
   if (!cleanEmail || !cleanEmail.includes('@')) {
-    throw new Error('Valid email address required');
+    throw new Error('Please enter a valid email address.');
+  }
+  if (!password || password.length < 6) {
+    throw new Error('Password must be at least 6 characters long.');
   }
 
-  let supabaseUser = null;
-  let supabaseSession = null;
-
-  try {
-    if (isSignUp) {
-      const { data, error } = await supabase.auth.signUp({
-        email: cleanEmail,
-        password: password || 'UnfilteredPass2026!',
-        options: {
-          data: {
-            full_name: name || cleanEmail.split('@')[0],
-            avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`
-          }
-        }
-      });
-      if (data?.user) {
-        supabaseUser = data.user;
-        supabaseSession = data.session;
-      }
-    } else {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password: password || 'UnfilteredPass2026!'
-      });
-      if (data?.user) {
-        supabaseUser = data.user;
-        supabaseSession = data.session;
+  const { data, error } = await supabase.auth.signUp({
+    email: cleanEmail,
+    password: password,
+    options: {
+      data: {
+        full_name: fullName || cleanEmail.split('@')[0],
+        avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`
       }
     }
-  } catch (e) {}
+  });
 
-  const existingUsers = getRegisteredUsers();
-  let user = existingUsers.find(u => u.email.toLowerCase() === cleanEmail);
-
-  if (!user) {
-    user = {
-      id: supabaseUser?.id ? 'USR-' + supabaseUser.id.slice(-6).toUpperCase() : 'USR-' + Date.now().toString().slice(-6),
-      supabaseId: supabaseUser?.id || null,
-      email: cleanEmail,
-      name: name || cleanEmail.split('@')[0],
-      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`,
-      authProvider: 'email_supabase',
-      subscription: {
-        tier: 'free',
-        status: 'active',
-        planName: 'Free Explorer Tier',
-        unlockedAt: new Date().toISOString(),
-        validUntil: new Date(Date.now() + 365 * 24 * 3600000).toISOString(),
-        features: [
-          'Standard Zero-Trust PenTest Audits',
-          'Custom Scope & Estimator Calculations',
-          'AI Solutions Architect Inquiries'
-        ]
-      },
-      savedAudits: [],
-      savedEstimates: [],
-      createdAt: new Date().toISOString(),
-      lastLoginAt: new Date().toISOString(),
-      loginCount: 1
-    };
-  } else {
-    user.lastLoginAt = new Date().toISOString();
-    user.loginCount = (user.loginCount || 1) + 1;
-    if (name) user.name = name;
+  if (error) {
+    throw new Error(error.message);
   }
 
-  saveRegisteredUser(user);
-  const token = supabaseSession?.access_token || ('ue_usr_' + btoa(`${user.id}:${user.email}:${Date.now()}`));
-  localStorage.setItem(USER_STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-  localStorage.setItem(USER_STORAGE_KEYS.AUTH_TOKEN, token);
+  if (!data?.user) {
+    throw new Error('Registration failed. Please try again.');
+  }
 
-  try {
-    fetch('/api/user/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'email', email: cleanEmail, name: user.name })
-    }).catch(() => {});
-  } catch (e) {}
+  logSecurityEvent('USER_AUTH', `New User Registered (Supabase): ${cleanEmail}`, {
+    supabaseId: data.user.id
+  }, 'REGISTERED');
 
-  window.dispatchEvent(new Event('ue_auth_changed'));
-  return user;
+  return formatUserFromSupabase(data.user, data.session?.access_token, fullName);
 }
 
 // ----------------------------------------------------
-// 5. Subscription Upgrades
+// 3. Real Google OAuth Redirect (Direct Google Auth)
+// ----------------------------------------------------
+export async function signInWithGoogleOAuth() {
+  const redirectUrl = `${window.location.origin}/account`;
+  
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: redirectUrl,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent'
+      }
+    }
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+// ----------------------------------------------------
+// 4. Upgrade User Subscription Plan
 // ----------------------------------------------------
 export function upgradeUserSubscription(tier = 'pro') {
   const user = getCurrentUser();
@@ -460,7 +249,7 @@ export function upgradeUserSubscription(tier = 'pro') {
 }
 
 // ----------------------------------------------------
-// 6. User Logout
+// 5. User Logout (Real Supabase SignOut)
 // ----------------------------------------------------
 export async function logoutUser() {
   const user = getCurrentUser();
@@ -478,50 +267,17 @@ export async function logoutUser() {
 }
 
 // ----------------------------------------------------
-// 7. Supabase Session Listener
+// 6. Supabase Real-Time Session Listener
 // ----------------------------------------------------
 export function initSupabaseSessionListener() {
   try {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        const email = session.user.email?.toLowerCase();
-        if (email) {
-          const existing = getCurrentUser();
-          if (!existing || existing.email !== email) {
-            const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split('@')[0];
-            const picture = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`;
-            
-            const user = {
-              id: 'USR-' + session.user.id.slice(-6).toUpperCase(),
-              supabaseId: session.user.id,
-              email,
-              name,
-              picture,
-              authProvider: session.user.app_metadata?.provider || 'supabase',
-              subscription: {
-                tier: 'free',
-                status: 'active',
-                planName: 'Free Explorer Tier',
-                unlockedAt: new Date().toISOString(),
-                validUntil: new Date(Date.now() + 365 * 24 * 3600000).toISOString(),
-                features: [
-                  'Standard Zero-Trust PenTest Audits',
-                  'Custom Scope & Estimator Calculations',
-                  'AI Solutions Architect Inquiries'
-                ]
-              },
-              savedAudits: [],
-              savedEstimates: [],
-              createdAt: new Date().toISOString(),
-              lastLoginAt: new Date().toISOString(),
-              loginCount: 1
-            };
-            saveRegisteredUser(user);
-            localStorage.setItem(USER_STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-            localStorage.setItem(USER_STORAGE_KEYS.AUTH_TOKEN, session.access_token);
-            window.dispatchEvent(new Event('ue_auth_changed'));
-          }
-        }
+        formatUserFromSupabase(session.user, session.access_token);
+      } else if (event === 'SIGNED_OUT') {
+        localStorage.removeItem(USER_STORAGE_KEYS.CURRENT_USER);
+        localStorage.removeItem(USER_STORAGE_KEYS.AUTH_TOKEN);
+        window.dispatchEvent(new Event('ue_auth_changed'));
       }
     });
   } catch (e) {}
