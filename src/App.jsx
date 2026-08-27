@@ -21,7 +21,6 @@ import CaseStudyDetailPage from './pages/CaseStudyDetailPage';
 import EstimatorPage from './pages/EstimatorPage';
 import PricingPage from './pages/PricingPage';
 import ContactPage from './pages/ContactPage';
-import OTPLoginPage from './pages/OTPLoginPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
@@ -103,8 +102,6 @@ export default function App() {
           <Route path="/estimator" element={<EstimatorPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<OTPLoginPage />} />
-          <Route path="/verify" element={<OTPLoginPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
         </Routes>
