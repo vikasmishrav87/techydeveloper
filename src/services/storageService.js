@@ -8,7 +8,29 @@ const STORAGE_KEYS = {
   TELEMETRY_LOGS: 'ue_real_telemetry_logs_v1',
   ADMIN_AUTH: 'ue_admin_auth_session_v1',
   ADMIN_TOKEN: 'ue_admin_token_jwt_v1',
+  USER_REGISTRY: 'ue_registered_users_registry_v1',
 };
+
+export function getRegisteredUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_REGISTRY) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveRegisteredUser(user) {
+  try {
+    const users = getRegisteredUsers();
+    const index = users.findIndex(u => u.email?.toLowerCase() === user.email?.toLowerCase());
+    if (index >= 0) {
+      users[index] = { ...users[index], ...user, lastActive: new Date().toISOString() };
+    } else {
+      users.unshift({ ...user, lastActive: new Date().toISOString() });
+    }
+    localStorage.setItem(STORAGE_KEYS.USER_REGISTRY, JSON.stringify(users));
+  } catch (e) {}
+}
 
 // 1. Inquiries & Leads Management
 export async function saveInquiry(inquiryData) {

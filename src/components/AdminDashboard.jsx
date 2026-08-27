@@ -9,9 +9,10 @@ import {
   deleteLead, 
   verifyAdminCredentials, 
   isAdminAuthenticated, 
-  adminLogout 
+  adminLogout,
+  getRegisteredUsers,
+  saveRegisteredUser
 } from '../services/storageService';
-import { getRegisteredUsers, saveRegisteredUser } from '../services/authService';
 import { 
   Shield, Lock, Users, Activity, LogOut, X, RefreshCw, MessageCircle, Mail, Clock, 
   CheckCircle2, Download, Search, Globe, Calculator, Layers, Trash2, Eye, ShieldCheck, 

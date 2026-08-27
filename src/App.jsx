@@ -8,7 +8,6 @@ import AdminDashboard from './components/AdminDashboard';
 import AIChatBot from './components/AIChatBot';
 import { useScrollReveal } from './hooks/useScrollReveal';
 import { initLocalStorage, logSecurityEvent } from './services/storageService';
-import { initSupabaseSessionListener } from './services/authService';
 
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
@@ -22,8 +21,6 @@ import CaseStudyDetailPage from './pages/CaseStudyDetailPage';
 import EstimatorPage from './pages/EstimatorPage';
 import PricingPage from './pages/PricingPage';
 import ContactPage from './pages/ContactPage';
-import LoginPage from './pages/LoginPage';
-import AccountDashboardPage from './pages/AccountDashboardPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
@@ -50,7 +47,6 @@ export default function App() {
 
   useEffect(() => {
     initLocalStorage();
-    initSupabaseSessionListener();
 
     // Keyboard shortcut: ` (backtick) or Ctrl+K for Terminal, Ctrl+/ for AI Assistant
     const handleKeyDown = (e) => {
@@ -106,8 +102,6 @@ export default function App() {
           <Route path="/estimator" element={<EstimatorPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/account" element={<AccountDashboardPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
         </Routes>
@@ -140,10 +134,10 @@ export default function App() {
       <InteractiveTerminal
         isOpen={terminalOpen}
         onClose={() => setTerminalOpen(false)}
-        onNavigateTo={handleScrollTo}
+        onOpenAdmin={() => setAdminOpen(true)}
       />
 
-      {/* Admin Executive & Security Portal Modal */}
+      {/* Executive Admin Oversight Dashboard */}
       <AdminDashboard
         isOpen={adminOpen}
         onClose={() => setAdminOpen(false)}
