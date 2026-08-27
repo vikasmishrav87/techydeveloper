@@ -1,4 +1,4 @@
-// 100% Real Supabase Authentication & PostgreSQL Database Integration
+// Real Supabase Authentication & PostgreSQL Database Integration
 import { logSecurityEvent } from './storageService';
 import { supabase } from './supabaseClient';
 
@@ -50,7 +50,7 @@ function formatUserFromSupabase(sbUser, sessionToken, customName = '') {
     localStorage.setItem(USER_STORAGE_KEYS.AUTH_TOKEN, sessionToken);
   }
 
-  // Sync to API
+  // Sync to backend API
   try {
     fetch('/api/user/auth', {
       method: 'POST',
@@ -120,7 +120,7 @@ export async function signInWithSupabase(email, password) {
     throw new Error('Authentication failed. No user record returned.');
   }
 
-  logSecurityEvent('USER_AUTH', `User Signed In (Supabase): ${cleanEmail}`, {
+  logSecurityEvent('USER_AUTH', `User Signed In: ${cleanEmail}`, {
     supabaseId: data.user.id
   }, 'AUTHENTICATED');
 
@@ -158,7 +158,7 @@ export async function signUpWithSupabase(email, password, fullName = '') {
     throw new Error('Registration failed. Please try again.');
   }
 
-  logSecurityEvent('USER_AUTH', `New User Registered (Supabase): ${cleanEmail}`, {
+  logSecurityEvent('USER_AUTH', `New User Registered: ${cleanEmail}`, {
     supabaseId: data.user.id
   }, 'REGISTERED');
 
@@ -166,7 +166,62 @@ export async function signUpWithSupabase(email, password, fullName = '') {
 }
 
 // ----------------------------------------------------
-// 3. Real Google OAuth Redirect (Direct Google Auth)
+// 3. Real Supabase Email OTP Send
+// ----------------------------------------------------
+export async function sendEmailOTP(email) {
+  const cleanEmail = (email || '').toLowerCase().trim();
+  if (!cleanEmail || !cleanEmail.includes('@')) {
+    throw new Error('Please enter a valid email address.');
+  }
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email: cleanEmail,
+    options: {
+      shouldCreateUser: true
+    }
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  logSecurityEvent('AUTH_OTP', `OTP Code Dispatched: ${cleanEmail}`, {
+    email: cleanEmail
+  }, 'OTP_DISPATCHED');
+
+  return { success: true, email: cleanEmail };
+}
+
+// ----------------------------------------------------
+// 4. Real Supabase Email OTP Verification
+// ----------------------------------------------------
+export async function verifyEmailOTP(email, otpToken, name = '') {
+  const cleanEmail = (email || '').toLowerCase().trim();
+  const cleanToken = (otpToken || '').trim();
+
+  if (!cleanEmail || !cleanToken) {
+    throw new Error('Email and 6-digit verification code are required.');
+  }
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: cleanEmail,
+    token: cleanToken,
+    type: 'email'
+  });
+
+  if (error || !data?.user) {
+    throw new Error(error?.message || 'Invalid or expired verification code. Please check your email and try again.');
+  }
+
+  logSecurityEvent('USER_AUTH', `User Verified via OTP: ${cleanEmail}`, {
+    supabaseId: data.user.id
+  }, 'AUTHENTICATED');
+
+  return formatUserFromSupabase(data.user, data.session?.access_token, name);
+}
+
+// ----------------------------------------------------
+// 5. Real Google OAuth Redirect (Direct Google Auth)
 // ----------------------------------------------------
 export async function signInWithGoogleOAuth() {
   const redirectUrl = `${window.location.origin}/account`;
@@ -190,7 +245,7 @@ export async function signInWithGoogleOAuth() {
 }
 
 // ----------------------------------------------------
-// 4. Upgrade User Subscription Plan
+// 6. Upgrade User Subscription Plan
 // ----------------------------------------------------
 export function upgradeUserSubscription(tier = 'pro') {
   const user = getCurrentUser();
@@ -249,7 +304,7 @@ export function upgradeUserSubscription(tier = 'pro') {
 }
 
 // ----------------------------------------------------
-// 5. User Logout (Real Supabase SignOut)
+// 7. User Logout (Real Supabase SignOut & Wipe Storage)
 // ----------------------------------------------------
 export async function logoutUser() {
   const user = getCurrentUser();
@@ -267,7 +322,7 @@ export async function logoutUser() {
 }
 
 // ----------------------------------------------------
-// 6. Supabase Real-Time Session Listener
+// 8. Supabase Real-Time Session Listener
 // ----------------------------------------------------
 export function initSupabaseSessionListener() {
   try {
