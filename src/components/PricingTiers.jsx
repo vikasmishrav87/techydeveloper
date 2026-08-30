@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PRICING_TIERS, CONTACT_INFO } from '../data/agencyData';
-import { Check, MessageCircle, Send, Zap, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import PaymentModal from './PaymentModal';
+import { Check, MessageCircle, Send, Zap, ArrowRight, ShieldCheck, Sparkles, CreditCard } from 'lucide-react';
 
 export default function PricingTiers() {
+  const [selectedTierForPayment, setSelectedTierForPayment] = useState(null);
+
   const getWhatsAppForTier = (tier) => {
     const text = encodeURIComponent(`Hi Vikas, I would like to know in details about The Unfiltered Engineer's "${tier.name}" (${tier.scopeType}) engagement for my company. Please share scope details and quote.`);
     return `https://wa.me/919137507092?text=${text}`;
+  };
+
+  const getTierEstimatedAmount = (tierId) => {
+    if (tierId === 'scale') return 7500;
+    if (tierId === 'enterprise') return 15000;
+    return 3500;
   };
 
   return (
@@ -26,7 +35,7 @@ export default function PricingTiers() {
             Tailored Scope. <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 font-normal">Dedicated Squads</span>.
           </h2>
           <p className="text-slate-700 text-base sm:text-lg font-normal leading-relaxed">
-            Zero legacy IT overhead or bureaucracy. Dedicated senior engineering squads and tech architects working directly with your team. Connect directly on WhatsApp for full scope specifications and custom proposals.
+            Zero legacy IT overhead or bureaucracy. Dedicated senior engineering squads and tech architects working directly with your team. Pay retainers securely via Razorpay (UPI/Cards), Stripe, or Web3 USDT.
           </p>
         </div>
 
@@ -62,14 +71,14 @@ export default function PricingTiers() {
                     </p>
                   </div>
 
-                  {/* Know Details Banner (replaces hardcoded price) */}
+                  {/* Know Details Banner */}
                   <div className="py-4 border-t border-b border-slate-100 mb-6 bg-slate-50/60 rounded-2xl p-4 my-4">
                     <div className="text-xs font-mono uppercase text-slate-500 font-semibold mb-1">Pricing & Scope</div>
                     <div className="text-sm font-semibold text-slate-950 flex items-center gap-1.5">
                       <Sparkles className="w-4 h-4 text-sky-600" />
-                      <span>Custom Proposal on Request</span>
+                      <span>Starting at ${(getTierEstimatedAmount(tier.id)).toLocaleString()}/mo</span>
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-1">Based on architecture, headcount & velocity</div>
+                    <div className="text-[11px] text-slate-500 mt-1">Dedicated Squad • Zero Vendor Overhead</div>
                   </div>
 
                   {/* Feature Checklist */}
@@ -84,25 +93,26 @@ export default function PricingTiers() {
                   </div>
                 </div>
 
-                {/* Actions: Primary WhatsApp Button */}
-                <div className="space-y-3 pt-4 border-t border-slate-100">
+                {/* Actions: Direct Payment + WhatsApp Buttons */}
+                <div className="space-y-2.5 pt-4 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTierForPayment(tier)}
+                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-sky-600/20 hover:scale-[1.02] cursor-pointer"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span>Deploy Squad & Pay Retainer</span>
+                  </button>
+
                   <a
                     href={getWhatsAppForTier(tier)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-all shadow-md shadow-emerald-600/20 hover:scale-[1.02]"
+                    className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-medium text-xs transition-all"
                   >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Know in Details on WhatsApp</span>
+                    <MessageCircle className="w-4 h-4 text-emerald-600" />
+                    <span>Discuss Custom Scope on WhatsApp</span>
                   </a>
-
-                  <Link
-                    to="/contact"
-                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-medium transition-all"
-                  >
-                    <span>Request Custom Proposal & SLA</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
                 </div>
 
               </div>
@@ -112,6 +122,17 @@ export default function PricingTiers() {
         </div>
 
       </div>
+
+      {/* Universal Payment Gateway Modal */}
+      {selectedTierForPayment && (
+        <PaymentModal
+          isOpen={!!selectedTierForPayment}
+          onClose={() => setSelectedTierForPayment(null)}
+          initialAmount={getTierEstimatedAmount(selectedTierForPayment.id)}
+          initialCurrency="USD"
+          serviceName={`${selectedTierForPayment.name} (${selectedTierForPayment.scopeType})`}
+        />
+      )}
     </section>
   );
 }

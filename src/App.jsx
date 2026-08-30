@@ -21,6 +21,7 @@ import CaseStudyDetailPage from './pages/CaseStudyDetailPage';
 import EstimatorPage from './pages/EstimatorPage';
 import PricingPage from './pages/PricingPage';
 import ContactPage from './pages/ContactPage';
+import CheckoutPage from './pages/CheckoutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
@@ -101,6 +102,7 @@ export default function App() {
           <Route path="/case-studies/:studyId" element={<CaseStudyDetailPage />} />
           <Route path="/estimator" element={<EstimatorPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />

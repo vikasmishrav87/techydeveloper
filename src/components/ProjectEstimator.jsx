@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
-import { Calculator, Shield, Cpu, Brain, Layers, Globe2, ArrowRight, MessageCircle, Send, Check, Sparkles, Clock, Users } from 'lucide-react';
+import PaymentModal from './PaymentModal';
+import { Calculator, Shield, Cpu, Brain, Layers, Globe2, ArrowRight, MessageCircle, Send, Check, Sparkles, Clock, Users, CreditCard } from 'lucide-react';
 import { saveEstimateRecord } from '../services/storageService';
 
 export default function ProjectEstimator() {
   const [selectedServices, setSelectedServices] = useState(['cyber-security', 'blockchain-web3']);
   const [squadScale, setSquadScale] = useState('dedicated'); // sprint, dedicated, enterprise
   const [timelineSpeed, setTimelineSpeed] = useState('standard'); // standard, fast, war-room
+  const [isDepositPaymentOpen, setIsDepositPaymentOpen] = useState(false);
 
   const serviceOptions = [
     { id: 'cyber-security', name: 'Cyber Security & Exploit Audit', icon: Shield },
@@ -203,7 +205,16 @@ export default function ProjectEstimator() {
                 </div>
               </div>
 
-              <div className="space-y-3 pt-4 border-t border-slate-100">
+              <div className="space-y-2.5 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsDepositPaymentOpen(true)}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-teal-600 hover:from-sky-500 hover:to-teal-500 text-white font-semibold text-xs transition-all shadow-md shadow-sky-600/20 hover:scale-[1.02] cursor-pointer"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Lock In Squad & Settle Initial Deposit ($1,500)</span>
+                </button>
+
                 <a
                   href={getWhatsAppEstimateLink()}
                   target="_blank"
@@ -219,18 +230,18 @@ export default function ProjectEstimator() {
                       estimatedCost: 'Dedicated Squad Retainer'
                     });
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm transition-all shadow-md shadow-emerald-600/20 hover:scale-[1.02]"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-medium text-xs transition-all"
                 >
-                  <MessageCircle className="w-5 h-5" />
+                  <MessageCircle className="w-4 h-4 text-emerald-600" />
                   <span>Know in Details on WhatsApp</span>
                 </a>
 
                 <Link
                   to="/contact"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm transition-all shadow-xs"
+                  className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-medium transition-all"
                 >
-                  <span>Book Architecture Call</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Book Architecture Consultation</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 
@@ -240,6 +251,17 @@ export default function ProjectEstimator() {
         </div>
 
       </div>
+
+      {/* Estimator Deposit Payment Modal */}
+      {isDepositPaymentOpen && (
+        <PaymentModal
+          isOpen={isDepositPaymentOpen}
+          onClose={() => setIsDepositPaymentOpen(false)}
+          initialAmount={1500}
+          initialCurrency="USD"
+          serviceName={`Milestone 1 Initial Deposit — ${squadScale.toUpperCase()} Squad (${selectedServices.length} Practices)`}
+        />
+      )}
     </section>
   );
 }
