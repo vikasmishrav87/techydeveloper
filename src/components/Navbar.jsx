@@ -20,11 +20,12 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
   // Primary spacious desktop navigation links
   const primaryNavLinks = [
+    { name: 'Home', to: '/' },
     { name: 'Services', to: '/services' },
     { name: '360° Growth', to: '/marketing' },
     { name: 'Security Audit', to: '/security-audit' },
-    { name: 'Case Studies', to: '/case-studies' },
     { name: 'Estimator', to: '/estimator' },
+    { name: 'Case Studies', to: '/case-studies' },
     { name: 'Pricing', to: '/pricing' },
     { name: 'Contact', to: '/contact' },
   ];
@@ -41,10 +42,10 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled
           ? 'bg-white/95 backdrop-blur-xl border-b border-indigo-100/90 shadow-sm shadow-indigo-100/40 py-2.5'
-          : 'bg-[#EEF2FF]/85 backdrop-blur-md border-b border-indigo-100/60 py-3.5'
+          : 'bg-[#EEF2FF]/90 backdrop-blur-md border-b border-indigo-100/60 py-3.5'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 xl:gap-8">
         
         {/* Left: Brand Logo */}
         <div className="flex-shrink-0">
