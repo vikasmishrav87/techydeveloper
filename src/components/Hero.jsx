@@ -149,20 +149,17 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenGlobe, onOpe
             Global enterprise technology & IT solutions backed by <strong className="font-semibold text-slate-950">1,000+ senior expert engineers</strong> across 9 specialized practices: <strong className="font-semibold text-slate-950">Autonomous AI Agents & Workflows</strong>, <strong className="font-semibold text-slate-950">SaaS Products</strong>, <strong className="font-semibold text-slate-950">Cyber Security</strong>, <strong className="font-semibold text-slate-950">Full-Stack Web & Cloud</strong>, <strong className="font-semibold text-slate-950">Big Data Models</strong>, <strong className="font-semibold text-slate-950">Blockchain Protocols</strong>, <strong className="font-semibold text-slate-950">Enterprise AI/ML</strong>, and <strong className="font-semibold text-slate-950">Tech Growth Solutions</strong>.
           </p>
 
-          {/* Action CTAs: Direct WhatsApp, AI Assistant, Telegram, Scanner */}
+          {/* Action CTAs: AI Assistant, Live Security Scanner, Scope Estimator */}
           <div className="flex flex-wrap items-center justify-center gap-3.5 mb-14">
             
-            {/* Primary Direct WhatsApp CTA */}
-            <a
-              href={CONTACT_INFO.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* Primary Explore Practices CTA */}
+            <Link
+              to="/services"
               className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-indigo-700 hover:from-sky-500 hover:to-indigo-600 text-white font-medium text-sm sm:text-base transition-all shadow-lg shadow-sky-600/25 hover:scale-[1.02] active:scale-[0.98] group"
             >
-              <MessageCircle className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
-              <span>Direct WhatsApp ({CONTACT_INFO.phoneDisplay})</span>
+              <span>Explore 9 Engineering Practices</span>
               <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-            </a>
+            </Link>
 
             {/* Ask AI Assistant (GPT-4o) CTA */}
             <button
@@ -173,24 +170,22 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenGlobe, onOpe
               <span>Ask AI Principal (GPT-4o)</span>
             </button>
 
-            {/* Telegram Direct CTA */}
-            <a
-              href={CONTACT_INFO.telegramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/90 hover:bg-white text-slate-900 border border-slate-200/90 text-sm font-medium transition-all shadow-xs"
-            >
-              <Send className="w-4 h-4 text-sky-600" />
-              <span>Telegram: {CONTACT_INFO.telegramUser}</span>
-            </a>
-
             {/* Live Security Scanner Link */}
             <Link
               to="/security-audit"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-sky-100/80 hover:bg-sky-200/80 text-sky-900 border border-sky-300/80 text-sm font-medium transition-all shadow-xs"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-sky-100/80 hover:bg-sky-200/80 text-sky-900 border border-sky-300/80 text-sm font-medium transition-all shadow-xs hover:scale-[1.02]"
             >
               <Shield className="w-4 h-4 text-sky-700" />
               <span>Live Security Scanner</span>
+            </Link>
+
+            {/* Interactive Estimator Link */}
+            <Link
+              to="/estimator"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/90 hover:bg-white text-slate-900 border border-slate-200/90 text-sm font-medium transition-all shadow-xs hover:scale-[1.02]"
+            >
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <span>Project Estimator</span>
             </Link>
 
           </div>
