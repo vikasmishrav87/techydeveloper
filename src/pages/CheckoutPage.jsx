@@ -139,23 +139,23 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Supported Gateways Pills */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-1">
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
-              <div className="text-xs font-bold text-slate-900">Razorpay</div>
-              <div className="text-[10px] text-slate-500">UPI, NetBanking, Cards</div>
+          {/* Supported Gateways Pills (Fully Responsive) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 py-1">
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
+              <div className="text-xs font-bold text-slate-900 leading-tight">UPI QR Scanner</div>
+              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">GPay, PhonePe, Paytm</div>
             </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
-              <div className="text-xs font-bold text-slate-900">Stripe</div>
-              <div className="text-[10px] text-slate-500">Global Credit/Debit</div>
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
+              <div className="text-xs font-bold text-slate-900 leading-tight">SBI Bank Transfer</div>
+              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">RTGS, NEFT, IMPS</div>
             </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
-              <div className="text-xs font-bold text-slate-900">Web3 USDT</div>
-              <div className="text-[10px] text-slate-500">Polygon, TRC20, ETH</div>
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
+              <div className="text-xs font-bold text-slate-900 leading-tight">Cards & Stripe</div>
+              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Global Credit/Debit</div>
             </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
-              <div className="text-xs font-bold text-slate-900">Bank Wire</div>
-              <div className="text-[10px] text-slate-500">RTGS, NEFT, SWIFT</div>
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
+              <div className="text-xs font-bold text-slate-900 leading-tight">Web3 USDT</div>
+              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Polygon, TRC20, ETH</div>
             </div>
           </div>
 

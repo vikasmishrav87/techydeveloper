@@ -323,75 +323,75 @@ export default function PaymentModal({
                 </div>
               </div>
 
-              {/* Payment Gateway Method Tabs */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+              {/* Payment Gateway Method Tabs (Fully Responsive) */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mb-6">
                 
-                {/* Razorpay / UPI */}
+                {/* UPI QR Scanner */}
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('razorpay')}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[70px] ${
                     paymentMethod === 'razorpay'
-                      ? 'border-sky-500 bg-sky-50/60 ring-2 ring-sky-500/20 shadow-xs'
+                      ? 'border-sky-500 bg-sky-50/70 ring-2 ring-sky-500/20 shadow-xs'
                       : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-slate-900">Razorpay</span>
-                    <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold">UPI</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-900 leading-tight">UPI QR Code</span>
+                    <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold">Fast</span>
                   </div>
-                  <div className="text-[11px] text-slate-500">GPay, PhonePe, Cards</div>
+                  <div className="text-[10px] text-slate-500 leading-tight">GPay, PhonePe, Paytm</div>
+                </button>
+
+                {/* Direct Bank Wire */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('bank')}
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[70px] ${
+                    paymentMethod === 'bank'
+                      ? 'border-slate-800 bg-slate-100 ring-2 ring-slate-800/20 shadow-xs'
+                      : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-900 leading-tight">SBI Bank</span>
+                    <Building2 className="w-3.5 h-3.5 text-slate-700" />
+                  </div>
+                  <div className="text-[10px] text-slate-500 leading-tight">RTGS, NEFT, IMPS</div>
                 </button>
 
                 {/* Stripe Global */}
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('stripe')}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[70px] ${
                     paymentMethod === 'stripe'
-                      ? 'border-indigo-500 bg-indigo-50/60 ring-2 ring-indigo-500/20 shadow-xs'
+                      ? 'border-indigo-500 bg-indigo-50/70 ring-2 ring-indigo-500/20 shadow-xs'
                       : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-slate-900">Stripe</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-900 leading-tight">Cards / Stripe</span>
                     <Globe className="w-3.5 h-3.5 text-indigo-600" />
                   </div>
-                  <div className="text-[11px] text-slate-500">Global Visa, Master, Amex</div>
+                  <div className="text-[10px] text-slate-500 leading-tight">Global Visa / Master</div>
                 </button>
 
                 {/* Crypto / Web3 */}
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('crypto')}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[70px] ${
                     paymentMethod === 'crypto'
-                      ? 'border-purple-500 bg-purple-50/60 ring-2 ring-purple-500/20 shadow-xs'
+                      ? 'border-purple-500 bg-purple-50/70 ring-2 ring-purple-500/20 shadow-xs'
                       : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-slate-900">Web3 USDT</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-900 leading-tight">Web3 USDT</span>
                     <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 text-[10px] font-bold">Crypto</span>
                   </div>
-                  <div className="text-[11px] text-slate-500">Polygon, TRC20, ETH</div>
-                </button>
-
-                {/* Direct Wire */}
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('bank')}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                    paymentMethod === 'bank'
-                      ? 'border-slate-800 bg-slate-100 ring-2 ring-slate-800/20 shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-slate-900">Bank Wire</span>
-                    <Building2 className="w-3.5 h-3.5 text-slate-700" />
-                  </div>
-                  <div className="text-[11px] text-slate-500">RTGS, NEFT, SWIFT</div>
+                  <div className="text-[10px] text-slate-500 leading-tight">Polygon, TRC20, ETH</div>
                 </button>
 
               </div>
