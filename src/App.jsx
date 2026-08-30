@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingDock from './components/FloatingDock';
@@ -103,9 +103,16 @@ export default function App() {
           <Route path="/estimator" element={<EstimatorPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment" element={<CheckoutPage />} />
+          <Route path="/pay" element={<CheckoutPage />} />
+          <Route path="/invoice" element={<CheckoutPage />} />
+          <Route path="/bank" element={<CheckoutPage />} />
+          <Route path="/upi" element={<CheckoutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          {/* Catch-all fallback so no URL ever shows a blank page */}
+          <Route path="*" element={<Navigate to="/checkout" replace />} />
         </Routes>
       </main>
 
