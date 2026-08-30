@@ -16,6 +16,8 @@ export default function CheckoutPage() {
   const serviceName = searchParams.get('service') || 'Custom Engineering Scope / Milestone Retainer';
   const clientParam = searchParams.get('client') || '';
 
+  const [selectedMethod, setSelectedMethod] = useState('razorpay');
+
   const parsedVal = parseFloat(manualAmount) || 0;
   const amountUSD = currencyMode === 'USD' ? parsedVal : Math.round((parsedVal / USD_TO_INR_RATE) * 100) / 100;
   const amountINR = currencyMode === 'INR' ? parsedVal : Math.round(parsedVal * USD_TO_INR_RATE);
@@ -139,23 +141,47 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Supported Gateways Pills (Fully Responsive) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 py-1">
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
-              <div className="text-xs font-bold text-slate-900 leading-tight">UPI QR Scanner</div>
-              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">GPay, PhonePe, Paytm</div>
+          {/* Supported Gateways Pills (Directly Clickable) */}
+          <div>
+            <div className="text-[11px] font-mono text-slate-500 uppercase font-semibold mb-2">
+              Select Preferred Payment Method to Open:
             </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
-              <div className="text-xs font-bold text-slate-900 leading-tight">SBI Bank Transfer</div>
-              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">RTGS, NEFT, IMPS</div>
-            </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
-              <div className="text-xs font-bold text-slate-900 leading-tight">Cards & Stripe</div>
-              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Global Credit/Debit</div>
-            </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-center flex flex-col justify-center min-h-[64px]">
-              <div className="text-xs font-bold text-slate-900 leading-tight">Web3 USDT</div>
-              <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Polygon, TRC20, ETH</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={() => { setSelectedMethod('razorpay'); setIsPaymentOpen(true); }}
+                className="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-slate-200/80 hover:border-sky-300 text-center flex flex-col justify-center min-h-[68px] transition-all cursor-pointer group hover:scale-[1.02]"
+              >
+                <div className="text-xs font-bold text-slate-900 group-hover:text-sky-700 leading-tight">UPI QR Scanner</div>
+                <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">GPay, PhonePe, Paytm</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setSelectedMethod('bank'); setIsPaymentOpen(true); }}
+                className="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-slate-200/80 hover:border-sky-300 text-center flex flex-col justify-center min-h-[68px] transition-all cursor-pointer group hover:scale-[1.02]"
+              >
+                <div className="text-xs font-bold text-slate-900 group-hover:text-sky-700 leading-tight">SBI Bank Transfer</div>
+                <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">RTGS, NEFT, IMPS</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setSelectedMethod('stripe'); setIsPaymentOpen(true); }}
+                className="p-3 rounded-2xl bg-slate-50 hover:bg-indigo-50 border border-slate-200/80 hover:border-indigo-300 text-center flex flex-col justify-center min-h-[68px] transition-all cursor-pointer group hover:scale-[1.02]"
+              >
+                <div className="text-xs font-bold text-slate-900 group-hover:text-indigo-700 leading-tight">Cards & Stripe</div>
+                <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Global Credit/Debit</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setSelectedMethod('crypto'); setIsPaymentOpen(true); }}
+                className="p-3 rounded-2xl bg-slate-50 hover:bg-purple-50 border border-slate-200/80 hover:border-purple-300 text-center flex flex-col justify-center min-h-[68px] transition-all cursor-pointer group hover:scale-[1.02]"
+              >
+                <div className="text-xs font-bold text-slate-900 group-hover:text-purple-700 leading-tight">Web3 USDT</div>
+                <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">Polygon, TRC20, ETH</div>
+              </button>
             </div>
           </div>
 
@@ -179,12 +205,13 @@ export default function CheckoutPage() {
 
       </div>
 
-      {/* Embedded Universal Payment Modal with Manual Amount & Currency */}
+      {/* Embedded Universal Payment Modal with Manual Amount, Currency & Selected Method */}
       <PaymentModal
         isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
         initialAmount={parsedVal}
         initialCurrency={currencyMode}
+        initialMethod={selectedMethod}
         serviceName={serviceName}
       />
     </div>

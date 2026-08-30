@@ -45,9 +45,10 @@ export default function PaymentModal({
   onClose,
   initialAmount = '',
   initialCurrency = 'USD',
+  initialMethod = 'razorpay',
   serviceName = 'Custom Engineering Retainer'
 }) {
-  const [paymentMethod, setPaymentMethod] = useState('razorpay'); // 'razorpay' | 'stripe' | 'crypto' | 'bank'
+  const [paymentMethod, setPaymentMethod] = useState(initialMethod || 'razorpay'); // 'razorpay' | 'stripe' | 'crypto' | 'bank'
   const [currencyMode, setCurrencyMode] = useState(initialCurrency); // 'USD' | 'INR'
   const [rawAmountInput, setRawAmountInput] = useState(initialAmount ? String(initialAmount) : '100');
   
@@ -64,7 +65,8 @@ export default function PaymentModal({
   useEffect(() => {
     if (initialAmount) setRawAmountInput(String(initialAmount));
     if (initialCurrency) setCurrencyMode(initialCurrency);
-  }, [initialAmount, initialCurrency]);
+    if (initialMethod) setPaymentMethod(initialMethod);
+  }, [initialAmount, initialCurrency, initialMethod]);
 
   if (!isOpen) return null;
 
