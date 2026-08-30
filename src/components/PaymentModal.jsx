@@ -35,17 +35,20 @@ const BANK_DETAILS = {
   supportEmail: 'vikasmishraoffice87@gmail.com'
 };
 
+// Platform Standard Rate: $1 USD = ₹100 INR
+const USD_TO_INR_RATE = 100;
+
 export default function PaymentModal({
   isOpen,
   onClose,
-  initialPlan = null,
-  initialAmount = 3500,
+  initialAmount = '',
   initialCurrency = 'USD',
   serviceName = 'Custom Engineering Retainer'
 }) {
   const [paymentMethod, setPaymentMethod] = useState('razorpay'); // 'razorpay' | 'stripe' | 'crypto' | 'bank'
-  const [currency, setCurrency] = useState(initialCurrency);
-  const [amount, setAmount] = useState(initialAmount);
+  const [currencyMode, setCurrencyMode] = useState(initialCurrency); // 'USD' | 'INR'
+  const [rawAmountInput, setRawAmountInput] = useState(initialAmount ? String(initialAmount) : '100');
+  
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientCompany, setClientCompany] = useState('');
@@ -57,22 +60,16 @@ export default function PaymentModal({
   const [receiptData, setReceiptData] = useState(null);
 
   useEffect(() => {
-    if (initialAmount) setAmount(initialAmount);
-    if (initialCurrency) setCurrency(initialCurrency);
+    if (initialAmount) setRawAmountInput(String(initialAmount));
+    if (initialCurrency) setCurrencyMode(initialCurrency);
   }, [initialAmount, initialCurrency]);
 
   if (!isOpen) return null;
 
-  const getConvertedAmount = () => {
-    if (currency === 'INR') {
-      // If base was USD, convert to INR ~87 INR/USD
-      return typeof amount === 'number' ? (initialCurrency === 'USD' ? Math.round(amount * 87) : amount) : 250000;
-    }
-    // USD
-    return typeof amount === 'number' ? (initialCurrency === 'INR' ? Math.round(amount / 87) : amount) : 3500;
-  };
-
-  const currentDisplayAmount = getConvertedAmount();
+  // Calculate synchronized amounts using $1 = ₹100
+  const parsedValue = parseFloat(rawAmountInput) || 0;
+  const amountUSD = currencyMode === 'USD' ? parsedValue : Math.round((parsedValue / USD_TO_INR_RATE) * 100) / 100;
+  const amountINR = currencyMode === 'INR' ? parsedValue : Math.round(parsedValue * USD_TO_INR_RATE);
 
   const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
@@ -87,45 +84,39 @@ export default function PaymentModal({
       alert('Please provide your name and email.');
       return;
     }
+    if (amountINR <= 0) {
+      alert('Please enter a valid amount to pay.');
+      return;
+    }
 
     setIsProcessing(true);
 
-    try {
-      // Simulate live razorpay order initialization
-      logSecurityEvent('PAYMENT_INIT', `Razorpay Checkout initiated by ${clientEmail} for ${currency} ${currentDisplayAmount}`);
-
-      // If Razorpay SDK is loaded or we run standard checkout
-      setTimeout(() => {
-        setIsProcessing(false);
-        const receipt = {
-          txId: 'TXN-RZP-' + Date.now().toString().slice(-8),
-          method: 'Razorpay / UPI / Cards',
-          amount: currentDisplayAmount,
-          currency,
-          service: serviceName,
-          clientName,
-          clientEmail,
-          clientCompany,
-          timestamp: new Date().toISOString(),
-          status: 'Confirmed & Escrow Secured'
-        };
-
-        // Save transaction to local storage
-        try {
-          const existing = JSON.parse(localStorage.getItem('ue_payment_transactions_v1') || '[]');
-          existing.unshift(receipt);
-          localStorage.setItem('ue_payment_transactions_v1', JSON.stringify(existing));
-        } catch (e) {}
-
-        setReceiptData(receipt);
-        setPaymentSuccess(true);
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-      }, 1500);
-
-    } catch (err) {
+    setTimeout(() => {
       setIsProcessing(false);
-      alert('Payment processing error: ' + err.message);
-    }
+      const receipt = {
+        txId: 'TXN-RZP-' + Date.now().toString().slice(-8),
+        method: 'Razorpay / UPI / Cards',
+        amount: amountINR,
+        currency: 'INR',
+        equivalentUSD: amountUSD,
+        service: serviceName,
+        clientName,
+        clientEmail,
+        clientCompany,
+        timestamp: new Date().toISOString(),
+        status: 'Confirmed & Escrow Secured'
+      };
+
+      try {
+        const existing = JSON.parse(localStorage.getItem('ue_payment_transactions_v1') || '[]');
+        existing.unshift(receipt);
+        localStorage.setItem('ue_payment_transactions_v1', JSON.stringify(existing));
+      } catch (e) {}
+
+      setReceiptData(receipt);
+      setPaymentSuccess(true);
+      confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+    }, 1500);
   };
 
   // 2. Process Stripe Global Card Payment
@@ -133,6 +124,10 @@ export default function PaymentModal({
     e.preventDefault();
     if (!clientName || !clientEmail) {
       alert('Please provide your name and email.');
+      return;
+    }
+    if (amountUSD <= 0) {
+      alert('Please enter a valid amount.');
       return;
     }
 
@@ -143,8 +138,9 @@ export default function PaymentModal({
       const receipt = {
         txId: 'TXN-STP-' + Date.now().toString().slice(-8),
         method: 'Stripe Global Card Gateway',
-        amount: currentDisplayAmount,
+        amount: amountUSD,
         currency: 'USD',
+        equivalentINR: amountINR,
         service: serviceName,
         clientName,
         clientEmail,
@@ -169,7 +165,7 @@ export default function PaymentModal({
   const handleCryptoConfirm = (e) => {
     e.preventDefault();
     if (!txHash) {
-      alert('Please enter your transaction hash / signature.');
+      alert('Please enter your transaction hash / TxID.');
       return;
     }
 
@@ -181,10 +177,10 @@ export default function PaymentModal({
         txId: 'TXN-CRYPTO-' + Date.now().toString().slice(-8),
         method: `Web3 Crypto (${selectedCrypto})`,
         cryptoHash: txHash,
-        amount: currentDisplayAmount,
+        amount: amountUSD,
         currency: 'USDT',
         service: serviceName,
-        clientName: clientName || 'Anonymous Web3 Client',
+        clientName: clientName || 'Web3 Client',
         clientEmail: clientEmail || 'web3@client.eth',
         timestamp: new Date().toISOString(),
         status: 'Confirmed On-Chain'
@@ -203,7 +199,7 @@ export default function PaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto font-sans animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto font-sans animate-in fade-in duration-200">
       
       <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-indigo-100 overflow-hidden my-8 text-left">
         
@@ -218,7 +214,7 @@ export default function PaymentModal({
                 <ShieldCheck className="w-3 h-3 text-sky-400" />
                 Zero-Trust Secure Gateway
               </div>
-              <h3 className="text-xl font-bold text-white mt-1">Enterprise Payment Portal</h3>
+              <h3 className="text-xl font-bold text-white mt-1">Manual Escrow Payment Portal</h3>
             </div>
           </div>
 
@@ -236,38 +232,92 @@ export default function PaymentModal({
           {!paymentSuccess ? (
             <div>
               
-              {/* Service & Amount Summary Pill */}
-              <div className="p-4 rounded-2xl bg-sky-50/80 border border-sky-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div>
-                  <div className="text-xs text-sky-800 font-mono font-medium">Service / Retainer Scope</div>
-                  <div className="text-sm font-bold text-slate-900">{serviceName}</div>
+              {/* MANUAL AMOUNT ENTRY BOX */}
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-sky-50 via-indigo-50/40 to-slate-50 border-2 border-sky-200/90 mb-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                  <div>
+                    <label className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider block">
+                      Enter Payment Amount Manually
+                    </label>
+                    <span className="text-[11px] text-slate-500 font-mono">Platform Conversion: <strong>$1 USD = ₹100 INR</strong></span>
+                  </div>
+
+                  {/* Currency Mode Selector */}
+                  <div className="inline-flex items-center rounded-xl bg-white border border-sky-300 p-1 shadow-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCurrencyMode('USD');
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        currencyMode === 'USD' ? 'bg-sky-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      $ USD
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCurrencyMode('INR');
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        currencyMode === 'INR' ? 'bg-sky-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      ₹ INR
+                    </button>
+                  </div>
                 </div>
 
-                {/* Currency Switcher & Amount */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center rounded-xl bg-white border border-sky-200 p-1 shadow-xs">
-                    <button
-                      type="button"
-                      onClick={() => setCurrency('USD')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${currency === 'USD' ? 'bg-sky-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                    >
-                      USD ($)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCurrency('INR')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${currency === 'INR' ? 'bg-sky-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
-                    >
-                      INR (₹)
-                    </button>
-                  </div>
+                {/* Input with large font */}
+                <div className="relative mb-3">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-slate-400 font-mono">
+                    {currencyMode === 'USD' ? '$' : '₹'}
+                  </span>
+                  <input
+                    type="number"
+                    min="1"
+                    step="any"
+                    value={rawAmountInput}
+                    onChange={(e) => setRawAmountInput(e.target.value)}
+                    placeholder="Enter amount..."
+                    className="w-full pl-10 pr-4 py-3 text-2xl font-bold font-mono text-slate-950 rounded-xl bg-white border-2 border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30 transition-all shadow-inner"
+                  />
+                </div>
 
-                  <div className="text-right">
-                    <div className="text-xs text-slate-500 font-mono">Total Due</div>
-                    <div className="text-xl font-bold text-slate-950">
-                      {currency === 'USD' ? `$${currentDisplayAmount.toLocaleString()}` : `₹${currentDisplayAmount.toLocaleString()}`}
-                    </div>
+                {/* Live 2-way conversion display */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-sky-200/60 text-xs">
+                  <div className="font-mono text-slate-700">
+                    {currencyMode === 'USD' ? (
+                      <span>Equivalent in INR: <strong className="text-emerald-700 font-bold text-sm">₹{amountINR.toLocaleString()}</strong></span>
+                    ) : (
+                      <span>Equivalent in USD: <strong className="text-emerald-700 font-bold text-sm">${amountUSD.toLocaleString()}</strong></span>
+                    )}
                   </div>
+                  <div className="text-[11px] text-slate-500 font-mono">
+                    Service: <strong>{serviceName}</strong>
+                  </div>
+                </div>
+
+                {/* Preset Quick Buttons */}
+                <div className="flex flex-wrap gap-1.5 mt-3 pt-2">
+                  <span className="text-[10px] font-mono text-slate-400 self-center mr-1">Quick Presets:</span>
+                  {[50, 100, 250, 500, 1000, 2500].map((presetUSD) => (
+                    <button
+                      key={presetUSD}
+                      type="button"
+                      onClick={() => {
+                        if (currencyMode === 'USD') {
+                          setRawAmountInput(String(presetUSD));
+                        } else {
+                          setRawAmountInput(String(presetUSD * USD_TO_INR_RATE));
+                        }
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-100 border border-sky-200 text-slate-700 text-xs font-mono font-semibold transition-colors cursor-pointer"
+                    >
+                      {currencyMode === 'USD' ? `$${presetUSD}` : `₹${(presetUSD * USD_TO_INR_RATE).toLocaleString()}`}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -350,7 +400,7 @@ export default function PaymentModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                        Full Name / Authorized Signatory <span className="text-rose-500">*</span>
+                        Full Name / Payer Name <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -363,7 +413,7 @@ export default function PaymentModal({
                     </div>
                     <div>
                       <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                        Official Billing Email <span className="text-rose-500">*</span>
+                        Billing Email <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="email"
@@ -391,16 +441,16 @@ export default function PaymentModal({
 
                   <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span>Supports all UPI apps (Google Pay, PhonePe, Paytm, BHIM) and Indian/International Cards.</span>
+                    <span>Pay <strong>₹{amountINR.toLocaleString()} INR</strong> ($ {amountUSD.toLocaleString()} USD) via any UPI App or Cards.</span>
                   </div>
 
                   <button
                     type="submit"
-                    disabled={isProcessing}
+                    disabled={isProcessing || amountINR <= 0}
                     className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-teal-600 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-sky-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                   >
                     <Lock className="w-4 h-4" />
-                    <span>{isProcessing ? 'Connecting Razorpay Gateway...' : `Proceed to Pay ${currency === 'USD' ? `$${currentDisplayAmount.toLocaleString()}` : `₹${currentDisplayAmount.toLocaleString()}`}`}</span>
+                    <span>{isProcessing ? 'Connecting Razorpay Gateway...' : `Proceed to Pay ₹${amountINR.toLocaleString()} (₹100 = $1)`}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </form>
@@ -466,11 +516,11 @@ export default function PaymentModal({
 
                   <button
                     type="submit"
-                    disabled={isProcessing}
+                    disabled={isProcessing || amountUSD <= 0}
                     className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                   >
                     <Lock className="w-4 h-4" />
-                    <span>{isProcessing ? 'Processing Stripe Transaction...' : `Pay $${(typeof amount === 'number' ? amount : 3500).toLocaleString()} with Stripe`}</span>
+                    <span>{isProcessing ? 'Processing Stripe Transaction...' : `Pay $${amountUSD.toLocaleString()} USD (₹${amountINR.toLocaleString()}) with Stripe`}</span>
                   </button>
                 </form>
               )}
@@ -522,7 +572,7 @@ export default function PaymentModal({
                     </div>
 
                     <div className="text-[11px] text-slate-400">
-                      Send exact equivalent of <strong>${(typeof amount === 'number' ? amount : 3500).toLocaleString()} USDT</strong> to the address above.
+                      Send exact equivalent of <strong>${amountUSD.toLocaleString()} USDT</strong> (₹{amountINR.toLocaleString()}) to the address above.
                     </div>
                   </div>
 
@@ -543,11 +593,11 @@ export default function PaymentModal({
 
                   <button
                     type="submit"
-                    disabled={isProcessing}
+                    disabled={isProcessing || amountUSD <= 0}
                     className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-purple-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                   >
                     <Zap className="w-4 h-4" />
-                    <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : 'Confirm Crypto Payment'}</span>
+                    <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} USDT Payment`}</span>
                   </button>
                 </form>
               )}
@@ -585,11 +635,11 @@ export default function PaymentModal({
                   </div>
 
                   <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900 leading-relaxed">
-                    💡 After initiating wire transfer, send transfer slip to <strong>{BANK_DETAILS.supportPhone}</strong> on WhatsApp for instant invoice clearance.
+                    💡 Amount to transfer: <strong>₹{amountINR.toLocaleString()} INR</strong> (${amountUSD.toLocaleString()} USD at $1=₹100). Send transfer slip to <strong>{BANK_DETAILS.supportPhone}</strong> on WhatsApp for instant clearance.
                   </div>
 
                   <a
-                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I am initiating bank wire payment of ${currency} ${currentDisplayAmount} for ${serviceName}. Please share formal invoice PDF.`)}`}
+                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I am initiating bank wire payment of ₹${amountINR.toLocaleString()} ($${amountUSD.toLocaleString()} USD) for ${serviceName}. Please share formal invoice PDF.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
@@ -633,7 +683,7 @@ export default function PaymentModal({
                   <div className="flex justify-between border-b border-slate-200 pb-1.5">
                     <span className="text-slate-500">Amount Paid:</span>
                     <span className="font-bold text-emerald-700">
-                      {receiptData.currency === 'USD' ? `$${receiptData.amount.toLocaleString()}` : `₹${receiptData.amount.toLocaleString()}`}
+                      {receiptData.currency === 'USD' ? `$${receiptData.amount.toLocaleString()} USD (₹${(receiptData.amount * 100).toLocaleString()})` : `₹${receiptData.amount.toLocaleString()} INR ($${(receiptData.amount / 100).toLocaleString()})`}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-slate-200 pb-1.5">
