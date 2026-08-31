@@ -9,6 +9,18 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_NETWORKS = {
+  TRX: {
+    id: 'TRX',
+    name: 'Tron (TRC-20)',
+    network: 'Tron Network (TRC-20 Only)',
+    symbol: 'USDT / TRX',
+    address: 'TEFjW6TYrSZBsZ7rTYAt7WAvCagqZFBz8F',
+    token: 'USDT (TRC-20) • TRX',
+    qrImage: '/images/trx_qr.png',
+    badgeClass: 'bg-rose-100 text-rose-900 border-rose-300',
+    qrBorderClass: 'border-rose-400',
+    warning: 'CRITICAL: Send ONLY via the Tron Network (TRC-20). Sending via any other network (e.g. ERC20, BSC, Solana, Polygon) will result in permanent loss of your assets.'
+  },
   SOL: {
     id: 'SOL',
     name: 'Solana (SOL)',
@@ -50,9 +62,9 @@ const CRYPTO_NETWORKS = {
 export default function CryptoPaymentPage() {
   const [searchParams] = useSearchParams();
 
-  // Initial network from query: ?net=sol or ?net=btc or ?net=eth
+  // Initial network from query: ?net=trx or ?net=sol or ?net=btc or ?net=eth
   const requestedNet = searchParams.get('net')?.toUpperCase();
-  const initialNet = (requestedNet && CRYPTO_NETWORKS[requestedNet]) ? requestedNet : 'SOL';
+  const initialNet = (requestedNet && CRYPTO_NETWORKS[requestedNet]) ? requestedNet : 'TRX';
   const [activeNetwork, setActiveNetwork] = useState(initialNet);
 
   const [currencyMode, setCurrencyMode] = useState(searchParams.get('currency')?.toUpperCase() || 'USD');
@@ -68,7 +80,7 @@ export default function CryptoPaymentPage() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
 
-  const selectedWallet = CRYPTO_NETWORKS[activeNetwork] || CRYPTO_NETWORKS.SOL;
+  const selectedWallet = CRYPTO_NETWORKS[activeNetwork] || CRYPTO_NETWORKS.TRX;
 
   const parsedVal = parseFloat(manualAmount) || 0;
   const amountUSD = currencyMode === 'USD' ? parsedVal : Math.round((parsedVal / USD_TO_INR_RATE) * 100) / 100;
@@ -127,10 +139,10 @@ export default function CryptoPaymentPage() {
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
-            Web3 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-amber-600 to-purple-600">Crypto Portal</span>
+            Web3 <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-amber-600 to-purple-600">Crypto Portal</span>
           </h1>
           <p className="text-slate-600 text-sm mt-2">
-            Direct on-chain settlement via <strong>Solana (SOL)</strong>, <strong>Bitcoin (BTC)</strong>, or <strong>Ethereum (ETH)</strong>.
+            Direct on-chain settlement via <strong>Tron (TRC-20)</strong>, <strong>Solana (SOL)</strong>, <strong>Bitcoin (BTC)</strong>, or <strong>Ethereum (ETH)</strong>.
           </p>
         </div>
 
@@ -153,13 +165,32 @@ export default function CryptoPaymentPage() {
                 </div>
               </div>
 
-              {/* NETWORK SELECTOR (SOLANA vs BITCOIN vs ETHEREUM) */}
+              {/* NETWORK SELECTOR (TRON vs SOLANA vs BITCOIN vs ETHEREUM) */}
               <div>
                 <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
                   Select Blockchain Network:
                 </label>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   
+                  {/* Tron Tab */}
+                  <button
+                    type="button"
+                    onClick={() => setActiveNetwork('TRX')}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
+                      activeNetwork === 'TRX'
+                        ? 'border-rose-500 bg-rose-50/80 ring-2 ring-rose-500/30 shadow-xs'
+                        : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-xs font-bold text-slate-950">Tron</span>
+                      <span className="w-5 h-5 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[10px]">
+                        ₮
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-slate-500 font-mono">TRC-20</div>
+                  </button>
+
                   {/* Solana Tab */}
                   <button
                     type="button"
@@ -171,7 +202,7 @@ export default function CryptoPaymentPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs sm:text-sm font-bold text-slate-950">Solana</span>
+                      <span className="text-xs font-bold text-slate-950">Solana</span>
                       <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px]">
                         ◎
                       </span>
@@ -190,7 +221,7 @@ export default function CryptoPaymentPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs sm:text-sm font-bold text-slate-950">Bitcoin</span>
+                      <span className="text-xs font-bold text-slate-950">Bitcoin</span>
                       <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[10px]">
                         ₿
                       </span>
@@ -209,7 +240,7 @@ export default function CryptoPaymentPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs sm:text-sm font-bold text-slate-950">Ethereum</span>
+                      <span className="text-xs font-bold text-slate-950">Ethereum</span>
                       <span className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
                         Ξ
                       </span>
@@ -300,6 +331,7 @@ export default function CryptoPaymentPage() {
 
                 <div className="flex-1 space-y-3 text-left w-full">
                   <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold ${
+                    activeNetwork === 'TRX' ? 'bg-rose-500/20 text-rose-300 border-rose-400/30' :
                     activeNetwork === 'SOL' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30' :
                     activeNetwork === 'BTC' ? 'bg-amber-500/20 text-amber-300 border-amber-400/30' : 
                     'bg-purple-500/20 text-purple-300 border-purple-400/30'
@@ -345,7 +377,7 @@ export default function CryptoPaymentPage() {
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       placeholder="e.g. Vikas Mishra"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -358,7 +390,7 @@ export default function CryptoPaymentPage() {
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       placeholder="billing@company.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-rose-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -372,15 +404,15 @@ export default function CryptoPaymentPage() {
                     required
                     value={txHash}
                     onChange={(e) => setTxHash(e.target.value)}
-                    placeholder={activeNetwork === 'SOL' ? 'Solana transaction signature...' : activeNetwork === 'BTC' ? 'Bitcoin txid...' : '0x...'}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-emerald-500 focus:outline-none"
+                    placeholder={activeNetwork === 'TRX' ? 'Tron TxID / hash...' : activeNetwork === 'SOL' ? 'Solana transaction signature...' : activeNetwork === 'BTC' ? 'Bitcoin txid...' : '0x...'}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-rose-500 focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isProcessing || amountUSD <= 0}
-                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-rose-600 via-amber-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-rose-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <Zap className="w-4 h-4" />
                   <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${selectedWallet.id} Payment`}</span>

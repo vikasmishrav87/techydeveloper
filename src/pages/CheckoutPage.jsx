@@ -10,6 +10,15 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_WALLETS = {
+  TRX: {
+    id: 'TRX',
+    name: 'Tron (TRC-20)',
+    network: 'Tron Network (TRC-20 Only)',
+    address: 'TEFjW6TYrSZBsZ7rTYAt7WAvCagqZFBz8F',
+    token: 'USDT (TRC-20) • TRX',
+    qrImage: '/images/trx_qr.png',
+    warning: 'CRITICAL: Send ONLY via the Tron Network (TRC-20). Sending via any other network will result in permanent asset loss.'
+  },
   SOL: {
     id: 'SOL',
     name: 'Solana (SOL)',
@@ -638,7 +647,7 @@ export default function CheckoutPage() {
                 </form>
               )}
 
-              {/* METHOD 4 VIEW: WEB3 CRYPTO (BITCOIN & ETHEREUM) */}
+              {/* METHOD 4 VIEW: WEB3 CRYPTO (TRON, SOLANA, BITCOIN & ETHEREUM) */}
               {paymentMethod === 'crypto' && (
                 <div className="space-y-4 pt-2">
                   
@@ -647,12 +656,30 @@ export default function CheckoutPage() {
                     <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
                       Choose Blockchain Network:
                     </label>
-                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCrypto('TRX')}
+                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
+                          (selectedCrypto || 'TRX') === 'TRX'
+                            ? 'border-rose-500 bg-rose-50/80 ring-2 ring-rose-500/30 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs sm:text-sm font-bold text-slate-950">Tron</span>
+                          <span className="w-5 h-5 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[10px]">
+                            ₮
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono">TRC-20</div>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('SOL')}
                         className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
-                          (selectedCrypto || 'SOL') === 'SOL'
+                          selectedCrypto === 'SOL'
                             ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
@@ -709,22 +736,26 @@ export default function CheckoutPage() {
                     <span className="text-xl">⚠️</span>
                     <div className="text-xs leading-relaxed">
                       <strong className="font-bold text-amber-900 block uppercase font-mono tracking-wider">
-                        Critical {CRYPTO_WALLETS[selectedCrypto || 'BTC'].name} Requirement:
+                        Critical {CRYPTO_WALLETS[selectedCrypto || 'TRX'].name} Requirement:
                       </strong>
-                      {CRYPTO_WALLETS[selectedCrypto || 'BTC'].warning}
+                      {CRYPTO_WALLETS[selectedCrypto || 'TRX'].warning}
                     </div>
                   </div>
 
                   <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center gap-6 border border-slate-800 shadow-xl">
                     {/* QR Code Image */}
-                    <div className={`bg-white p-3 rounded-2xl border-2 ${selectedCrypto === 'BTC' ? 'border-amber-400' : 'border-purple-400'} shadow-lg flex-shrink-0 text-center`}>
+                    <div className={`bg-white p-3 rounded-2xl border-2 ${
+                      selectedCrypto === 'TRX' ? 'border-rose-400' :
+                      selectedCrypto === 'SOL' ? 'border-emerald-400' :
+                      selectedCrypto === 'BTC' ? 'border-amber-400' : 'border-purple-400'
+                    } shadow-lg flex-shrink-0 text-center`}>
                       <img
-                        src={CRYPTO_WALLETS[selectedCrypto || 'BTC'].qrImage}
-                        alt={`Vikas Mishra - ${CRYPTO_WALLETS[selectedCrypto || 'BTC'].name} QR Code`}
+                        src={CRYPTO_WALLETS[selectedCrypto || 'TRX'].qrImage}
+                        alt={`Vikas Mishra - ${CRYPTO_WALLETS[selectedCrypto || 'TRX'].name} QR Code`}
                         className="w-48 h-auto rounded-xl object-contain mx-auto"
                       />
                       <div className="text-[10px] font-mono text-slate-700 mt-1.5 font-bold">
-                        Vikas Mishra / {selectedCrypto || 'BTC'}
+                        Vikas Mishra / {selectedCrypto || 'TRX'}
                       </div>
                     </div>
 
