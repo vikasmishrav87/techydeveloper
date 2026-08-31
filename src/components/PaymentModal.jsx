@@ -97,7 +97,7 @@ export default function PaymentModal({
   const [clientCompany, setClientCompany] = useState('');
   const [txHash, setTxHash] = useState('');
   const [copiedKey, setCopiedKey] = useState(null);
-  const [selectedCrypto, setSelectedCrypto] = useState('USDT_POLYGON');
+  const [selectedCrypto, setSelectedCrypto] = useState('MATIC');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
@@ -626,16 +626,18 @@ export default function PaymentModal({
               )}
 
               {/* METHOD 3: WEB3 CRYPTO */}
-              {paymentMethod === 'crypto' && (
+              {paymentMethod === 'crypto' && (() => {
+                const activeCryptoWallet = CRYPTO_WALLETS[selectedCrypto] || CRYPTO_WALLETS.MATIC;
+                return (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-2.5 rounded-2xl bg-purple-50 border border-purple-200 text-xs">
                     <span className="font-semibold text-purple-950">⛓️ Full screen Crypto portal?</span>
                     <Link
-                      to={`${selectedCrypto === 'MATIC' ? '/pay/polygon' : selectedCrypto === 'BSC' ? '/pay/bnb' : selectedCrypto === 'TRX' ? '/pay/tron' : selectedCrypto === 'SOL' ? '/pay/sol' : selectedCrypto === 'BTC' ? '/pay/btc' : '/pay/eth'}?amount=${amountUSD}&currency=${currencyMode}`}
+                      to={`${activeCryptoWallet.id === 'MATIC' ? '/pay/polygon' : activeCryptoWallet.id === 'BSC' ? '/pay/bnb' : activeCryptoWallet.id === 'TRX' ? '/pay/tron' : activeCryptoWallet.id === 'SOL' ? '/pay/sol' : activeCryptoWallet.id === 'BTC' ? '/pay/btc' : '/pay/eth'}?amount=${amountUSD}&currency=${currencyMode}`}
                       onClick={onClose}
                       className="inline-flex items-center gap-1 font-bold text-purple-800 hover:text-purple-950 bg-white px-2.5 py-0.5 rounded-lg border border-purple-300 shadow-2xs hover:shadow-xs transition-all text-[11px]"
                     >
-                      <span>Open Dedicated {CRYPTO_WALLETS[selectedCrypto || 'MATIC'].name} Page</span>
+                      <span>Open Dedicated {activeCryptoWallet.name} Page</span>
                       <ExternalLink className="w-3 h-3" />
                     </Link>
                   </div>
@@ -761,9 +763,9 @@ export default function PaymentModal({
                     <span className="text-lg">⚠️</span>
                     <div className="text-xs leading-relaxed">
                       <strong className="font-bold text-amber-900 block uppercase font-mono tracking-wider text-[11px]">
-                        Critical {CRYPTO_WALLETS[selectedCrypto || 'MATIC'].name} Requirement:
+                        Critical {activeCryptoWallet.name} Requirement:
                       </strong>
-                      {CRYPTO_WALLETS[selectedCrypto || 'MATIC'].warning}
+                      {activeCryptoWallet.warning}
                     </div>
                   </div>
 
@@ -777,32 +779,37 @@ export default function PaymentModal({
                       selectedCrypto === 'BTC' ? 'border-amber-400' : 'border-purple-400'
                     } shadow-md flex-shrink-0 text-center`}>
                       <img
-                        src={CRYPTO_WALLETS[selectedCrypto || 'MATIC'].qrImage}
-                        alt={`Vikas Mishra - ${CRYPTO_WALLETS[selectedCrypto || 'MATIC'].name} QR Code`}
+                        src={activeCryptoWallet.qrImage}
+                        alt={`Vikas Mishra - ${activeCryptoWallet.name} QR Code`}
                         className="w-40 h-auto rounded-xl object-contain mx-auto"
                       />
                       <div className="text-[9px] font-mono text-slate-700 mt-1 font-bold">
-                        Vikas Mishra / {selectedCrypto || 'MATIC'}
+                        Vikas Mishra / {activeCryptoWallet.id}
                       </div>
                     </div>
 
                     <div className="flex-1 space-y-2.5 text-left w-full">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
-                        selectedCrypto === 'BTC' ? 'bg-amber-500/20 text-amber-300' : 'bg-purple-500/20 text-purple-300'
+                        selectedCrypto === 'MATIC' ? 'bg-indigo-500/20 text-indigo-300' :
+                        selectedCrypto === 'BSC' ? 'bg-yellow-500/20 text-yellow-300' :
+                        selectedCrypto === 'TRX' ? 'bg-rose-500/20 text-rose-300' :
+                        selectedCrypto === 'SOL' ? 'bg-emerald-500/20 text-emerald-300' :
+                        selectedCrypto === 'BTC' ? 'bg-amber-500/20 text-amber-300' : 
+                        'bg-purple-500/20 text-purple-300'
                       }`}>
                         <Zap className="w-3 h-3" />
-                        {CRYPTO_WALLETS[selectedCrypto || 'BTC'].network}
+                        {activeCryptoWallet.network}
                       </div>
 
                       <div>
-                        <div className="text-[10px] text-slate-400 uppercase font-mono font-semibold">Official {CRYPTO_WALLETS[selectedCrypto || 'BTC'].name} Wallet:</div>
+                        <div className="text-[10px] text-slate-400 uppercase font-mono font-semibold">Official {activeCryptoWallet.name} Wallet:</div>
                         <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 mt-0.5 gap-2">
                           <span className="font-mono text-xs font-bold text-sky-400 break-all select-all">
-                            {CRYPTO_WALLETS[selectedCrypto || 'BTC'].address}
+                            {activeCryptoWallet.address}
                           </span>
                           <button
                             type="button"
-                            onClick={() => handleCopy(CRYPTO_WALLETS[selectedCrypto || 'BTC'].address, 'crypto')}
+                            onClick={() => handleCopy(activeCryptoWallet.address, 'crypto')}
                             className="p-1.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer flex-shrink-0"
                             title="Copy Address"
                           >
@@ -813,7 +820,7 @@ export default function PaymentModal({
                       </div>
 
                       <div className="text-[11px] text-slate-300">
-                        Accepted: <strong className="text-white font-mono">{CRYPTO_WALLETS[selectedCrypto || 'BTC'].token}</strong><br />
+                        Accepted: <strong className="text-white font-mono">{activeCryptoWallet.token}</strong><br />
                         Payable: <strong className="text-emerald-400 font-mono">${amountUSD.toLocaleString()} USD</strong> (₹{amountINR.toLocaleString()})
                       </div>
                     </div>
@@ -823,7 +830,7 @@ export default function PaymentModal({
                   <form onSubmit={handleCryptoConfirm} className="space-y-3">
                     <div>
                       <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                        {selectedCrypto || 'BTC'} Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
+                        {activeCryptoWallet.id} Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -841,11 +848,12 @@ export default function PaymentModal({
                       className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-600 via-purple-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                     >
                       <Zap className="w-4 h-4" />
-                      <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${selectedCrypto || 'BTC'} Payment`}</span>
+                      <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${activeCryptoWallet.name} Payment`}</span>
                     </button>
                   </form>
                 </div>
-              )}
+                );
+              })()}
 
               {/* METHOD 4: DIRECT BANK WIRE / RTGS / NEFT (SBI) */}
               {paymentMethod === 'bank' && (
