@@ -28,6 +28,7 @@ import CryptoPaymentPage from './pages/CryptoPaymentPage';
 import CardPaymentPage from './pages/CardPaymentPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import AdminVerifyPage from './pages/AdminVerifyPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
 
 // Scroll to top and log real telemetry on route navigation
@@ -164,6 +165,9 @@ export default function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/admin/verify" element={<AdminVerifyPage />} />
+          <Route path="/verify" element={<AdminVerifyPage />} />
+          <Route path="/verify-payments" element={<AdminVerifyPage />} />
           {/* Catch-all fallback so no URL ever shows a blank page */}
           <Route path="*" element={<Navigate to="/checkout" replace />} />
         </Routes>

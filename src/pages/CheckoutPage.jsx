@@ -5,6 +5,8 @@ import {
   Building2, Globe2, Copy, Check, QrCode, Globe, Zap, MessageCircle, Download, ExternalLink 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import PaymentProofForm from '../components/PaymentProofForm';
+import LivePaymentStatus from '../components/LivePaymentStatus';
 
 // Platform Standard Rate: $1 USD = ₹100 INR
 const USD_TO_INR_RATE = 100;
@@ -101,6 +103,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
+  const [activeLivePayment, setActiveLivePayment] = useState(null);
 
   const parsedVal = parseFloat(manualAmount) || 0;
   const amountUSD = currencyMode === 'USD' ? parsedVal : Math.round((parsedVal / USD_TO_INR_RATE) * 100) / 100;
@@ -222,7 +225,12 @@ export default function CheckoutPage() {
         {/* Invoice & Complete Payment Suite Card */}
         <div className="bg-white/95 border border-indigo-100 rounded-3xl shadow-xl p-6 sm:p-10 space-y-6">
           
-          {!paymentSuccess ? (
+          {activeLivePayment ? (
+            <LivePaymentStatus 
+              payment={activeLivePayment} 
+              onReset={() => setActiveLivePayment(null)} 
+            />
+          ) : !paymentSuccess ? (
             <>
               {/* Engagement Details */}
               <div className="pb-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -465,46 +473,20 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* Payer Verification Form */}
-                  <form onSubmit={handleUpiConfirm} className="space-y-3 pt-1">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                          Your Name / Payer Name <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={clientName}
-                          onChange={(e) => setClientName(e.target.value)}
-                          placeholder="e.g. Vikas Mishra"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-sky-500 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                          Email for Receipt & Confirmation <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          value={clientEmail}
-                          onChange={(e) => setClientEmail(e.target.value)}
-                          placeholder="billing@company.com"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-sky-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isProcessing || amountINR <= 0}
-                      className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-                    >
-                      <Check className="w-5 h-5 stroke-[3]" />
-                      <span>{isProcessing ? 'Verifying Transaction...' : `I Have Paid ₹${amountINR.toLocaleString()} via UPI (Confirm)`}</span>
-                    </button>
-                  </form>
+                  {/* Payment Proof Submission Form */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <PaymentProofForm
+                      methodName="UPI QR Scanner"
+                      network="GPay / PhonePe / Paytm UPI"
+                      amountUSD={amountUSD}
+                      amountINR={amountINR}
+                      currencyMode={currencyMode}
+                      serviceName={serviceName}
+                      defaultUtrLabel="12-Digit UPI UTR / Transaction ID"
+                      utrPlaceholder="e.g. 423948293849"
+                      onSubmitted={(p) => setActiveLivePayment(p)}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -597,20 +579,20 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900 leading-relaxed">
-                    💡 Transfer <strong>₹{amountINR.toLocaleString()} INR</strong> (${amountUSD.toLocaleString()} USD at $1=₹100). Send transfer slip to <strong>{BANK_DETAILS.supportPhone}</strong> on WhatsApp for instant clearance.
+                  {/* Payment Proof Submission Form */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <PaymentProofForm
+                      methodName="State Bank of India (SBI) Wire"
+                      network="RTGS / NEFT / IMPS Wire Transfer"
+                      amountUSD={amountUSD}
+                      amountINR={amountINR}
+                      currencyMode={currencyMode}
+                      serviceName={serviceName}
+                      defaultUtrLabel="Bank Reference / UTR / IMPS Number"
+                      utrPlaceholder="e.g. SBIN49382948291"
+                      onSubmitted={(p) => setActiveLivePayment(p)}
+                    />
                   </div>
-
-                  <a
-                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I have initiated bank transfer of ₹${amountINR.toLocaleString()} to SBI Account ${BANK_DETAILS.accountNo} for ${serviceName}. Here is the transfer confirmation.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-4 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
-                  >
-                    <MessageCircle className="w-4 h-4 text-emerald-400" />
-                    <span>Send Payment Slip to Vikas Mishra on WhatsApp</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
                 </div>
               )}
 
@@ -628,71 +610,20 @@ export default function CheckoutPage() {
                     </Link>
                   </div>
 
-                  <form onSubmit={handleStripePay} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                          Cardholder Name <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={clientName}
-                          onChange={(e) => setClientName(e.target.value)}
-                          placeholder="Vikas Mishra"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                          Receipt Email <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          value={clientEmail}
-                          onChange={(e) => setClientEmail(e.target.value)}
-                          placeholder="billing@company.com"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                      <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold">
-                        Card Details (256-bit AES SSL Encrypted)
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="4242 •••• •••• 4242"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
-                        />
-                        <CreditCard className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          placeholder="MM / YY"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
-                        />
-                        <input
-                          type="text"
-                          placeholder="CVC"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isProcessing || amountUSD <= 0}
-                      className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>{isProcessing ? 'Processing Stripe Transaction...' : `Pay $${amountUSD.toLocaleString()} USD (₹${amountINR.toLocaleString()}) with Stripe`}</span>
-                    </button>
-                  </form>
+                  {/* Payment Proof Submission Form */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <PaymentProofForm
+                      methodName="Stripe Global Cards"
+                      network="Visa / Mastercard / Amex"
+                      amountUSD={amountUSD}
+                      amountINR={amountINR}
+                      currencyMode={currencyMode}
+                      serviceName={serviceName}
+                      defaultUtrLabel="Stripe Payment Reference / Authorization ID"
+                      utrPlaceholder="e.g. ch_3N28492842948291"
+                      onSubmitted={(p) => setActiveLivePayment(p)}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -896,60 +827,20 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* Confirmation Form */}
-                  <form onSubmit={handleCryptoConfirm} className="space-y-3 pt-1">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                          Your Name / Entity <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={clientName}
-                          onChange={(e) => setClientName(e.target.value)}
-                          placeholder="e.g. Vikas Mishra"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                          Receipt Email <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          value={clientEmail}
-                          onChange={(e) => setClientEmail(e.target.value)}
-                          placeholder="billing@company.com"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-purple-500 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                        {activeCryptoWallet.id} Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={txHash}
-                        onChange={(e) => setTxHash(e.target.value)}
-                        placeholder="0x..."
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-purple-500 focus:outline-none"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isProcessing || amountUSD <= 0}
-                      className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 hover:from-purple-500 hover:to-sky-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-purple-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-                    >
-                      <Zap className="w-4 h-4" />
-                      <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${activeCryptoWallet.name} Payment`}</span>
-                    </button>
-                  </form>
+                  {/* Payment Proof Submission Form */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <PaymentProofForm
+                      methodName={`Web3 Crypto (${activeCryptoWallet.name})`}
+                      network={activeCryptoWallet.network}
+                      amountUSD={amountUSD}
+                      amountINR={amountINR}
+                      currencyMode={currencyMode}
+                      serviceName={serviceName}
+                      defaultUtrLabel={`${activeCryptoWallet.id} Transaction Hash (TxID) / Reference`}
+                      utrPlaceholder={selectedCrypto === 'BTC' ? 'Bitcoin txid...' : '0x...'}
+                      onSubmitted={(p) => setActiveLivePayment(p)}
+                    />
+                  </div>
                 </div>
                 );
               })()}
