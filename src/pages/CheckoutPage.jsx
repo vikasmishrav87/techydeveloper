@@ -10,13 +10,23 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_WALLETS = {
-  ETH_MAINNET: {
+  BTC: {
+    id: 'BTC',
+    name: 'Bitcoin (BTC)',
+    network: 'Bitcoin Network (Native SegWit Only)',
+    address: 'bc1qn3xhw0lptpj0gaecqs6lccw7va3fk9wczvhcn4',
+    token: 'Native Bitcoin (BTC)',
+    qrImage: '/images/btc_qr.png',
+    warning: 'CRITICAL: Send ONLY via native Bitcoin Network. Sending via any other network will result in permanent asset loss.'
+  },
+  ETH: {
+    id: 'ETH',
     name: 'Ethereum (ERC-20)',
     network: 'Ethereum Mainnet (ERC-20 Only)',
     address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
-    token: 'ETH / USDT / USDC (ERC-20)',
+    token: 'ETH • USDT • USDC (ERC-20)',
     qrImage: '/images/eth_qr.png',
-    warning: 'CRITICAL: Send ONLY via Ethereum Network (ERC-20). Any transfer from other networks will result in permanent loss of your assets.'
+    warning: 'CRITICAL: Send ONLY via Ethereum Network (ERC-20). Any transfer from other networks will result in permanent asset loss.'
   }
 };
 
@@ -619,50 +629,96 @@ export default function CheckoutPage() {
                 </form>
               )}
 
-              {/* METHOD 4 VIEW: WEB3 CRYPTO ETHEREUM */}
+              {/* METHOD 4 VIEW: WEB3 CRYPTO (BITCOIN & ETHEREUM) */}
               {paymentMethod === 'crypto' && (
                 <div className="space-y-4 pt-2">
                   
+                  {/* Network Selector Tabs */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
+                      Choose Blockchain Network:
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCrypto('BTC')}
+                        className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                          selectedCrypto === 'BTC'
+                            ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                        }`}
+                      >
+                        <div>
+                          <div className="text-sm font-bold text-slate-950">Bitcoin (BTC)</div>
+                          <div className="text-[11px] text-slate-500 font-mono">Native SegWit Network</div>
+                        </div>
+                        <span className="w-8 h-8 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                          ₿
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCrypto('ETH')}
+                        className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                          selectedCrypto === 'ETH'
+                            ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                        }`}
+                      >
+                        <div>
+                          <div className="text-sm font-bold text-slate-950">Ethereum (ETH)</div>
+                          <div className="text-[11px] text-slate-500 font-mono">ETH / USDT / USDC (ERC-20)</div>
+                        </div>
+                        <span className="w-8 h-8 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                          Ξ
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
                   {/* CRITICAL WARNING ALERT */}
                   <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 text-amber-950 flex items-start gap-3 shadow-xs">
                     <span className="text-xl">⚠️</span>
                     <div className="text-xs leading-relaxed">
                       <strong className="font-bold text-amber-900 block uppercase font-mono tracking-wider">
-                        Critical Network Requirement:
+                        Critical {CRYPTO_WALLETS[selectedCrypto || 'BTC'].name} Requirement:
                       </strong>
-                      Transfer assets <strong className="underline decoration-amber-600 font-bold">ONLY via the Ethereum Network (ERC-20)</strong>. Sending via any other network (such as Tron, BSC, Arbitrum, or Solana) will result in <strong className="text-rose-700">permanent loss of your assets</strong>.
+                      {CRYPTO_WALLETS[selectedCrypto || 'BTC'].warning}
                     </div>
                   </div>
 
                   <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center gap-6 border border-slate-800 shadow-xl">
-                    {/* Ethereum QR Code Image */}
-                    <div className="bg-white p-3 rounded-2xl border-2 border-purple-400 shadow-lg flex-shrink-0 text-center">
+                    {/* QR Code Image */}
+                    <div className={`bg-white p-3 rounded-2xl border-2 ${selectedCrypto === 'BTC' ? 'border-amber-400' : 'border-purple-400'} shadow-lg flex-shrink-0 text-center`}>
                       <img
-                        src={CRYPTO_WALLETS.ETH_MAINNET.qrImage}
-                        alt="Vikas Mishra - Ethereum Wallet QR Code"
+                        src={CRYPTO_WALLETS[selectedCrypto || 'BTC'].qrImage}
+                        alt={`Vikas Mishra - ${CRYPTO_WALLETS[selectedCrypto || 'BTC'].name} QR Code`}
                         className="w-48 h-auto rounded-xl object-contain mx-auto"
                       />
                       <div className="text-[10px] font-mono text-slate-700 mt-1.5 font-bold">
-                        Vikas Mishra / Ethereum
+                        Vikas Mishra / {selectedCrypto || 'BTC'}
                       </div>
                     </div>
 
                     {/* Address & Instructions */}
                     <div className="flex-1 space-y-3 text-left w-full">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-[11px] font-mono font-bold">
-                        <Zap className="w-3.5 h-3.5 text-purple-400" />
-                        Ethereum Mainnet (ERC-20)
+                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold ${
+                        selectedCrypto === 'BTC' ? 'bg-amber-500/20 text-amber-300 border-amber-400/30' : 'bg-purple-500/20 text-purple-300 border-purple-400/30'
+                      }`}>
+                        <Zap className="w-3.5 h-3.5" />
+                        {CRYPTO_WALLETS[selectedCrypto || 'BTC'].network}
                       </div>
 
                       <div>
-                        <div className="text-[11px] text-slate-400 uppercase font-mono font-semibold">Official Ethereum Wallet Address:</div>
+                        <div className="text-[11px] text-slate-400 uppercase font-mono font-semibold">Official {CRYPTO_WALLETS[selectedCrypto || 'BTC'].name} Wallet Address:</div>
                         <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 mt-1 gap-2">
                           <span className="font-mono text-xs font-bold text-sky-400 break-all select-all">
-                            {CRYPTO_WALLETS.ETH_MAINNET.address}
+                            {CRYPTO_WALLETS[selectedCrypto || 'BTC'].address}
                           </span>
                           <button
                             type="button"
-                            onClick={() => handleCopy(CRYPTO_WALLETS.ETH_MAINNET.address, 'crypto')}
+                            onClick={() => handleCopy(CRYPTO_WALLETS[selectedCrypto || 'BTC'].address, 'crypto')}
                             className="p-1.5 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer flex-shrink-0"
                           >
                             {copiedKey === 'crypto' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -672,7 +728,7 @@ export default function CheckoutPage() {
                       </div>
 
                       <div className="text-xs text-slate-300 space-y-1">
-                        <div>Accepted Tokens: <strong className="text-white font-mono">ETH • USDT (ERC-20) • USDC (ERC-20)</strong></div>
+                        <div>Accepted Token: <strong className="text-white font-mono">{CRYPTO_WALLETS[selectedCrypto || 'BTC'].token}</strong></div>
                         <div>Equivalent Payable: <strong className="text-emerald-400 font-mono text-base">${amountUSD.toLocaleString()} USD</strong> (₹{amountINR.toLocaleString()})</div>
                       </div>
                     </div>

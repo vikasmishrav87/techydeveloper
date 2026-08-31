@@ -2,23 +2,45 @@ import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
   Lock, Check, Zap, Copy, CheckCircle2, ArrowRight, ShieldCheck, Download, 
-  ArrowLeft, MessageCircle, QrCode, CreditCard, Building2 
+  ArrowLeft, MessageCircle, QrCode, CreditCard, Building2, Coins 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const USD_TO_INR_RATE = 100;
 
-const CRYPTO_WALLET = {
-  name: 'Ethereum (ERC-20)',
-  network: 'Ethereum Mainnet (ERC-20 Only)',
-  address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
-  token: 'ETH / USDT / USDC (ERC-20)',
-  qrImage: '/images/eth_qr.png',
-  warning: 'CRITICAL: Send ONLY via Ethereum Network (ERC-20). Any transfer from other networks will result in permanent loss of your assets.'
+const CRYPTO_NETWORKS = {
+  BTC: {
+    id: 'BTC',
+    name: 'Bitcoin (BTC)',
+    network: 'Bitcoin Network (Native SegWit Only)',
+    symbol: 'BTC',
+    address: 'bc1qn3xhw0lptpj0gaecqs6lccw7va3fk9wczvhcn4',
+    token: 'Native Bitcoin (BTC)',
+    qrImage: '/images/btc_qr.png',
+    badgeClass: 'bg-amber-100 text-amber-900 border-amber-300',
+    qrBorderClass: 'border-amber-400',
+    warning: 'CRITICAL: Send ONLY via the native Bitcoin Network. Sending via any other network (e.g. BEP20, ERC20, Lightning, Tron) will result in permanent loss of your assets.'
+  },
+  ETH: {
+    id: 'ETH',
+    name: 'Ethereum (ERC-20)',
+    network: 'Ethereum Mainnet (ERC-20 Only)',
+    symbol: 'ETH / USDT / USDC',
+    address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
+    token: 'ETH • USDT • USDC (ERC-20)',
+    qrImage: '/images/eth_qr.png',
+    badgeClass: 'bg-purple-100 text-purple-900 border-purple-300',
+    qrBorderClass: 'border-purple-400',
+    warning: 'CRITICAL: Send ONLY via the Ethereum Network (ERC-20). Any transfer from other networks (e.g. Tron, BSC, Solana, Polygon) will result in permanent loss of your assets.'
+  }
 };
 
 export default function CryptoPaymentPage() {
   const [searchParams] = useSearchParams();
+
+  // Initial network from query: ?net=btc or ?net=eth
+  const requestedNet = searchParams.get('net')?.toUpperCase() === 'BTC' ? 'BTC' : 'BTC';
+  const [activeNetwork, setActiveNetwork] = useState(requestedNet);
 
   const [currencyMode, setCurrencyMode] = useState(searchParams.get('currency')?.toUpperCase() || 'USD');
   const [manualAmount, setManualAmount] = useState(searchParams.get('amount') || '100');
@@ -32,6 +54,8 @@ export default function CryptoPaymentPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
+
+  const selectedWallet = CRYPTO_NETWORKS[activeNetwork];
 
   const parsedVal = parseFloat(manualAmount) || 0;
   const amountUSD = currencyMode === 'USD' ? parsedVal : Math.round((parsedVal / USD_TO_INR_RATE) * 100) / 100;
@@ -53,11 +77,12 @@ export default function CryptoPaymentPage() {
     setTimeout(() => {
       setIsProcessing(false);
       const receipt = {
-        txId: 'TXN-ETH-' + Date.now().toString().slice(-8),
-        method: 'Web3 Crypto (Ethereum ERC-20)',
+        txId: 'TXN-' + activeNetwork + '-' + Date.now().toString().slice(-8),
+        method: `Web3 Crypto (${selectedWallet.name})`,
+        network: selectedWallet.network,
         cryptoHash: txHash,
         amount: amountUSD,
-        currency: 'USDT',
+        currency: activeNetwork === 'BTC' ? 'BTC ($ USD)' : 'USDT / ETH ($ USD)',
         service: serviceName,
         clientName: clientName || 'Web3 Client',
         clientEmail: clientEmail || 'web3@client.eth',
@@ -80,19 +105,19 @@ export default function CryptoPaymentPage() {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to All Payment Methods</span>
           </Link>
-          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-mono font-bold">
-            <Zap className="w-3.5 h-3.5 text-purple-600" />
-            Ethereum ERC-20 Escrow
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-bold ${selectedWallet.badgeClass}`}>
+            <Zap className="w-3.5 h-3.5" />
+            {selectedWallet.network}
           </div>
         </div>
 
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
-            Ethereum <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">Web3 Portal</span>
+            Web3 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-purple-600 to-indigo-600">Crypto Portal</span>
           </h1>
           <p className="text-slate-600 text-sm mt-2">
-            Direct on-chain settlement in <strong>ETH, USDT, or USDC</strong> via Ethereum Network.
+            Direct on-chain settlement via <strong>Bitcoin (BTC)</strong> or <strong>Ethereum (ETH / ERC-20)</strong>.
           </p>
         </div>
 
@@ -115,8 +140,56 @@ export default function CryptoPaymentPage() {
                 </div>
               </div>
 
+              {/* NETWORK SELECTOR (BITCOIN vs ETHEREUM) */}
+              <div>
+                <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
+                  Select Crypto Blockchain Network:
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  
+                  {/* Bitcoin Tab */}
+                  <button
+                    type="button"
+                    onClick={() => setActiveNetwork('BTC')}
+                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                      activeNetwork === 'BTC'
+                        ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
+                        : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                    }`}
+                  >
+                    <div>
+                      <div className="text-sm font-bold text-slate-950">Bitcoin (BTC)</div>
+                      <div className="text-[11px] text-slate-500 font-mono">Native SegWit Network</div>
+                    </div>
+                    <span className="w-8 h-8 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                      ₿
+                    </span>
+                  </button>
+
+                  {/* Ethereum Tab */}
+                  <button
+                    type="button"
+                    onClick={() => setActiveNetwork('ETH')}
+                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                      activeNetwork === 'ETH'
+                        ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
+                        : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                    }`}
+                  >
+                    <div>
+                      <div className="text-sm font-bold text-slate-950">Ethereum (ETH)</div>
+                      <div className="text-[11px] text-slate-500 font-mono">ETH / USDT / USDC ERC-20</div>
+                    </div>
+                    <span className="w-8 h-8 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                      Ξ
+                    </span>
+                  </button>
+
+                </div>
+              </div>
+
               {/* Amount Box */}
-              <div className="p-5 rounded-3xl bg-gradient-to-br from-purple-50/90 via-sky-50/40 to-slate-50 border-2 border-purple-300 space-y-4">
+              <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-50 via-sky-50/30 to-purple-50/30 border-2 border-slate-300 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <label className="text-xs font-mono font-bold text-slate-900 uppercase tracking-wider block">
@@ -126,12 +199,12 @@ export default function CryptoPaymentPage() {
                   </div>
 
                   {/* Currency Selector */}
-                  <div className="inline-flex items-center rounded-2xl bg-white border border-purple-300 p-1 shadow-xs self-start sm:self-auto">
+                  <div className="inline-flex items-center rounded-2xl bg-white border border-slate-300 p-1 shadow-xs self-start sm:self-auto">
                     <button
                       type="button"
                       onClick={() => setCurrencyMode('USD')}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        currencyMode === 'USD' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                        currencyMode === 'USD' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       $ USD
@@ -140,7 +213,7 @@ export default function CryptoPaymentPage() {
                       type="button"
                       onClick={() => setCurrencyMode('INR')}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        currencyMode === 'INR' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                        currencyMode === 'INR' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       ₹ INR
@@ -159,13 +232,13 @@ export default function CryptoPaymentPage() {
                     value={manualAmount}
                     onChange={(e) => setManualAmount(e.target.value)}
                     placeholder="Enter amount..."
-                    className="w-full pl-12 pr-4 py-3.5 text-3xl font-extrabold font-mono text-slate-950 rounded-2xl bg-white border-2 border-purple-400 focus:outline-none focus:ring-4 focus:ring-purple-500/20 transition-all shadow-inner"
+                    className="w-full pl-12 pr-4 py-3.5 text-3xl font-extrabold font-mono text-slate-950 rounded-2xl bg-white border-2 border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-500/20 transition-all shadow-inner"
                   />
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="font-mono text-slate-600">Payable in USD: <strong className="text-purple-700 text-base font-bold font-mono">${amountUSD.toLocaleString()} USD</strong></span>
-                  <span className="font-mono text-slate-500">Equivalent in INR: <strong className="text-slate-900 font-bold font-mono">₹{amountINR.toLocaleString()} INR</strong></span>
+                  <span className="font-mono text-slate-600">Payable in USD: <strong className="text-slate-950 text-base font-bold font-mono">${amountUSD.toLocaleString()} USD</strong></span>
+                  <span className="font-mono text-slate-500">Equivalent in INR: <strong className="text-emerald-700 font-bold font-mono">₹{amountINR.toLocaleString()} INR</strong></span>
                 </div>
               </div>
 
@@ -174,40 +247,42 @@ export default function CryptoPaymentPage() {
                 <span className="text-xl">⚠️</span>
                 <div className="text-xs leading-relaxed">
                   <strong className="font-bold text-amber-900 block uppercase font-mono tracking-wider">
-                    Critical Network Requirement:
+                    Critical {selectedWallet.name} Requirement:
                   </strong>
-                  Transfer assets <strong className="underline decoration-amber-600 font-bold">ONLY via the Ethereum Network (ERC-20)</strong>. Sending via any other network (such as Tron, BSC, Arbitrum, or Solana) will result in <strong className="text-rose-700">permanent loss of your assets</strong>.
+                  {selectedWallet.warning}
                 </div>
               </div>
 
               {/* Wallet & QR Box */}
               <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center gap-6 border border-slate-800 shadow-xl">
-                <div className="bg-white p-3 rounded-2xl border-2 border-purple-400 shadow-lg flex-shrink-0 text-center">
+                <div className={`bg-white p-3 rounded-2xl border-2 ${selectedWallet.qrBorderClass} shadow-lg flex-shrink-0 text-center`}>
                   <img
-                    src={CRYPTO_WALLET.qrImage}
-                    alt="Vikas Mishra - Ethereum QR Code"
+                    src={selectedWallet.qrImage}
+                    alt={`Vikas Mishra - ${selectedWallet.name} QR Code`}
                     className="w-52 h-auto rounded-xl object-contain mx-auto"
                   />
                   <div className="text-[10px] font-mono text-slate-700 mt-1.5 font-bold">
-                    Vikas Mishra / Ethereum
+                    Vikas Mishra / {selectedWallet.id}
                   </div>
                 </div>
 
                 <div className="flex-1 space-y-3 text-left w-full">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-[11px] font-mono font-bold">
-                    <Zap className="w-3.5 h-3.5 text-purple-400" />
-                    Ethereum Mainnet (ERC-20 Only)
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold ${
+                    activeNetwork === 'BTC' ? 'bg-amber-500/20 text-amber-300 border-amber-400/30' : 'bg-purple-500/20 text-purple-300 border-purple-400/30'
+                  }`}>
+                    <Zap className="w-3.5 h-3.5" />
+                    {selectedWallet.network}
                   </div>
 
                   <div>
-                    <div className="text-[11px] text-slate-400 uppercase font-mono font-semibold">Official Ethereum Wallet:</div>
+                    <div className="text-[11px] text-slate-400 uppercase font-mono font-semibold">Official {selectedWallet.name} Wallet Address:</div>
                     <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 mt-1 gap-2">
                       <span className="font-mono text-xs font-bold text-sky-400 break-all select-all">
-                        {CRYPTO_WALLET.address}
+                        {selectedWallet.address}
                       </span>
                       <button
                         type="button"
-                        onClick={() => handleCopy(CRYPTO_WALLET.address, 'crypto')}
+                        onClick={() => handleCopy(selectedWallet.address, 'crypto')}
                         className="p-1.5 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer flex-shrink-0"
                       >
                         {copiedKey === 'crypto' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -217,8 +292,8 @@ export default function CryptoPaymentPage() {
                   </div>
 
                   <div className="text-xs text-slate-300 space-y-1">
-                    <div>Accepted: <strong className="text-white font-mono">ETH • USDT (ERC-20) • USDC (ERC-20)</strong></div>
-                    <div>Payable: <strong className="text-emerald-400 font-mono text-base">${amountUSD.toLocaleString()} USD</strong></div>
+                    <div>Accepted Token: <strong className="text-white font-mono">{selectedWallet.token}</strong></div>
+                    <div>Payable Equivalent: <strong className="text-emerald-400 font-mono text-base">${amountUSD.toLocaleString()} USD</strong></div>
                   </div>
                 </div>
               </div>
@@ -236,7 +311,7 @@ export default function CryptoPaymentPage() {
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       placeholder="e.g. Vikas Mishra"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -249,32 +324,32 @@ export default function CryptoPaymentPage() {
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       placeholder="billing@company.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-purple-500 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                    Ethereum Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
+                    {activeNetwork} Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={txHash}
                     onChange={(e) => setTxHash(e.target.value)}
-                    placeholder="0x..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-purple-500 focus:outline-none"
+                    placeholder={activeNetwork === 'BTC' ? 'Bitcoin txid...' : '0x...'}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-amber-500 focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isProcessing || amountUSD <= 0}
-                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 hover:from-purple-500 hover:to-sky-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-purple-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-amber-600 via-purple-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <Zap className="w-4 h-4" />
-                  <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} Ethereum Payment`}</span>
+                  <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${activeNetwork} Payment`}</span>
                 </button>
               </form>
 
@@ -296,8 +371,8 @@ export default function CryptoPaymentPage() {
               </div>
 
               <div>
-                <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-mono font-semibold">
-                  Ethereum Transaction Recorded
+                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-mono font-semibold">
+                  {receiptData?.network} Recorded
                 </span>
                 <h3 className="text-2xl font-bold text-slate-950 mt-2">On-Chain Payment Confirmed!</h3>
               </div>
@@ -309,12 +384,16 @@ export default function CryptoPaymentPage() {
                     <span className="font-mono font-bold text-slate-900">{receiptData.txId}</span>
                   </div>
                   <div className="flex justify-between border-b border-slate-200 pb-2">
+                    <span className="text-slate-500">Blockchain Network:</span>
+                    <span className="font-semibold text-slate-900">{receiptData.network}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-200 pb-2">
                     <span className="text-slate-500">Tx Hash:</span>
                     <span className="font-mono text-sky-700 break-all">{receiptData.cryptoHash}</span>
                   </div>
                   <div className="flex justify-between border-b border-slate-200 pb-2">
                     <span className="text-slate-500">Amount Paid:</span>
-                    <span className="font-bold text-emerald-700 font-mono">${receiptData.amount.toLocaleString()} USDT / ETH</span>
+                    <span className="font-bold text-emerald-700 font-mono">${receiptData.amount.toLocaleString()} USD ({receiptData.currency})</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Date:</span>
