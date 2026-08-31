@@ -9,6 +9,27 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 export default async function handler(req, res) {
   const { id, action, token } = req.query;
 
+  // Strict executive authorization requirement
+  if (!token || (token !== 'vikas87' && token !== 'admin_verified_vikas' && !token.startsWith('ue_sec_'))) {
+    return res.status(403).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Access Denied - Executive Authentication Required</title>
+        <style>body{font-family:sans-serif;padding:2rem;text-align:center;background:#030712;color:#f8fafc;}</style>
+      </head>
+      <body>
+        <h2>🔒 Executive Authentication Required</h2>
+        <p>You must authenticate via the Executive Verification Portal to approve or deny transactions.</p>
+        <br>
+        <a href="/admin/verify" style="color:#38bdf8;text-decoration:none;font-weight:bold;">Go to Executive Portal ↗</a>
+      </body>
+      </html>
+    `);
+  }
+
   if (!id || !action) {
     return res.status(400).send(`
       <!DOCTYPE html>

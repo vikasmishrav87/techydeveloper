@@ -10,12 +10,29 @@ export default function AdminVerifyPage() {
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get('id');
 
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('ue_admin_auth_verified') === 'true' || sessionStorage.getItem('ue_admin_auth_verified') === 'true';
+  });
+  const [passcode, setPasscode] = useState('');
+  const [authError, setAuthError] = useState('');
+
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (passcode === 'vikas87' || passcode === 'admin87' || passcode === 'vikasmishraji87' || passcode === '87') {
+      setIsAuthenticated(true);
+      localStorage.setItem('ue_admin_auth_verified', 'true');
+      setAuthError('');
+    } else {
+      setAuthError('Invalid executive passkey.');
+    }
+  };
 
   const fetchPayments = async () => {
     setIsLoading(true);
@@ -97,6 +114,50 @@ export default function AdminVerifyPage() {
     }
     return true;
   });
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 bg-slate-950 text-white font-sans flex items-center justify-center p-4">
+        <div className="max-w-md w-full p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold text-white">Executive Verification Portal</h2>
+            <p className="text-slate-400 text-xs mt-1">
+              Restricted to Vikas Mishra. Enter your executive passkey to review and approve live client transactions.
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <input
+                type="password"
+                required
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Enter Executive Passkey..."
+                className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-center font-mono text-sm focus:border-sky-500 focus:outline-none tracking-widest"
+                autoFocus
+              />
+              {authError && (
+                <div className="text-rose-400 text-xs font-semibold mt-1.5">{authError}</div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/20"
+            >
+              <span>Unlock Verification Ledger</span>
+              <Check className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-28 pb-20 bg-slate-950 text-white font-sans">

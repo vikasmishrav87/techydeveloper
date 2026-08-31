@@ -128,37 +128,23 @@ export function clearActiveClientPayment() {
 }
 
 /**
- * Generate formatted WhatsApp message for Vikas Mishra
+ * Generate formatted WhatsApp notification message for Vikas Mishra (Clean - No links shared)
  */
 export function generateWhatsAppApprovalMessage(payment) {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://theunfilteredengineer.vercel.app';
-  const approveUrl = `${origin}/api/approve?id=${payment.id}&action=approve&token=vikas87`;
-  const denyUrl = `${origin}/api/approve?id=${payment.id}&action=deny&token=vikas87`;
-  const adminPortalUrl = `${origin}/admin/verify?id=${payment.id}`;
+  const message = `🔔 *PAYMENT SUBMITTED FOR VERIFICATION* 🔔
 
-  const message = `🔔 *NEW PAYMENT SUBMITTED FOR EXECUTIVE APPROVAL* 🔔
+Hi Vikas, I have submitted my payment proof for verification:
 
 📋 *Order ID:* ${payment.id}
-💰 *Amount:* $${payment.amountUSD?.toLocaleString()} USD (₹${payment.amountINR?.toLocaleString()} INR)
-💳 *Gateway:* ${payment.method} ${payment.network ? `(${payment.network})` : ''}
-👤 *Client Name:* ${payment.clientName}
-📧 *Email:* ${payment.clientEmail}
-${payment.clientPhone ? `📱 *Phone:* ${payment.clientPhone}\n` : ''}🔢 *UTR / TxID / Ref:* \`${payment.utr}\`
-🎯 *Engagement:* ${payment.service}
+💰 *Amount Paid:* $${payment.amountUSD?.toLocaleString()} USD (₹${payment.amountINR?.toLocaleString()} INR)
+💳 *Payment Method:* ${payment.method} ${payment.network ? `(${payment.network})` : ''}
+👤 *Payer / Client Name:* ${payment.clientName}
+📧 *Email for Receipt:* ${payment.clientEmail}
+${payment.clientPhone ? `📱 *Phone:* ${payment.clientPhone}\n` : ''}🔢 *Submitted UTR / TxID / Ref:* \`${payment.utr}\`
+🎯 *Engagement Scope:* ${payment.service}
 
 ━━━━━━━━━━━━━━━━━━━━
-👉 *1-CLICK EXECUTIVE ACTIONS:*
-
-✅ *APPROVE PAYMENT:*
-${approveUrl}
-
-❌ *DENY / REJECT PAYMENT:*
-${denyUrl}
-
-🔍 *View Full Proof & Screenshot in Portal:*
-${adminPortalUrl}
-━━━━━━━━━━━━━━━━━━━━
-_Note: Tapping Approve will instantly update the client's screen to Payment Successful with receipt._`;
+_Please verify this transaction in your bank ledger/crypto records and approve from your Executive Verification Portal. My browser is currently on the live verification waiting screen._`;
 
   return encodeURIComponent(message);
 }
