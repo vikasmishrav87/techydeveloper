@@ -10,20 +10,13 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_WALLETS = {
-  USDT_POLYGON: {
-    network: 'Polygon (MATIC / Low Gas)',
-    address: '0x854374b94D74205561a3D0E8160E53f7B4F9736c',
-    token: 'USDT (Polygon PoS)'
-  },
-  USDT_TRC20: {
-    network: 'Tron (TRC20 / Instant)',
-    address: 'TYNq4H8fV3y9Lp1e8U6K2aB7mD5cX9wQ3Z',
-    token: 'USDT (TRC-20)'
-  },
-  ETH: {
-    network: 'Ethereum Mainnet (ERC20)',
-    address: '0x854374b94D74205561a3D0E8160E53f7B4F9736c',
-    token: 'ETH / USDT (ERC-20)'
+  ETH_MAINNET: {
+    name: 'Ethereum (ERC-20)',
+    network: 'Ethereum Mainnet (ERC-20 Only)',
+    address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
+    token: 'ETH / USDT / USDC (ERC-20)',
+    qrImage: '/images/eth_qr.png',
+    warning: 'CRITICAL: Send ONLY via Ethereum Network (ERC-20). Any transfer from other networks will result in permanent loss of your assets.'
   }
 };
 
@@ -626,81 +619,120 @@ export default function CheckoutPage() {
                 </form>
               )}
 
-              {/* METHOD 4 VIEW: WEB3 CRYPTO USDT */}
+              {/* METHOD 4 VIEW: WEB3 CRYPTO ETHEREUM */}
               {paymentMethod === 'crypto' && (
-                <form onSubmit={handleCryptoConfirm} className="space-y-4 pt-2">
-                  <div>
-                    <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-2">
-                      Select Crypto Network:
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {Object.keys(CRYPTO_WALLETS).map((key) => (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => setSelectedCrypto(key)}
-                          className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all ${
-                            selectedCrypto === key
-                              ? 'border-purple-600 bg-purple-50 text-purple-900 ring-2 ring-purple-600/20'
-                              : 'border-slate-200 hover:bg-slate-50 text-slate-700'
-                          }`}
-                        >
-                          {key.replace('_', ' ')}
-                        </button>
-                      ))}
+                <div className="space-y-4 pt-2">
+                  
+                  {/* CRITICAL WARNING ALERT */}
+                  <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 text-amber-950 flex items-start gap-3 shadow-xs">
+                    <span className="text-xl">⚠️</span>
+                    <div className="text-xs leading-relaxed">
+                      <strong className="font-bold text-amber-900 block uppercase font-mono tracking-wider">
+                        Critical Network Requirement:
+                      </strong>
+                      Transfer assets <strong className="underline decoration-amber-600 font-bold">ONLY via the Ethereum Network (ERC-20)</strong>. Sending via any other network (such as Tron, BSC, Arbitrum, or Solana) will result in <strong className="text-rose-700">permanent loss of your assets</strong>.
                     </div>
                   </div>
 
-                  {/* Wallet Box */}
-                  <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 font-mono">{CRYPTO_WALLETS[selectedCrypto].network}</span>
-                      <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px]">Direct Escrow</span>
+                  <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center gap-6 border border-slate-800 shadow-xl">
+                    {/* Ethereum QR Code Image */}
+                    <div className="bg-white p-3 rounded-2xl border-2 border-purple-400 shadow-lg flex-shrink-0 text-center">
+                      <img
+                        src={CRYPTO_WALLETS.ETH_MAINNET.qrImage}
+                        alt="Vikas Mishra - Ethereum Wallet QR Code"
+                        className="w-48 h-auto rounded-xl object-contain mx-auto"
+                      />
+                      <div className="text-[10px] font-mono text-slate-700 mt-1.5 font-bold">
+                        Vikas Mishra / Ethereum
+                      </div>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs text-sky-400 break-all select-all">
-                        {CRYPTO_WALLETS[selectedCrypto].address}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(CRYPTO_WALLETS[selectedCrypto].address, 'crypto')}
-                        className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white flex-shrink-0 cursor-pointer"
-                        title="Copy Address"
-                      >
-                        {copiedKey === 'crypto' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
+                    {/* Address & Instructions */}
+                    <div className="flex-1 space-y-3 text-left w-full">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-[11px] font-mono font-bold">
+                        <Zap className="w-3.5 h-3.5 text-purple-400" />
+                        Ethereum Mainnet (ERC-20)
+                      </div>
 
-                    <div className="text-[11px] text-slate-400">
-                      Send exact equivalent of <strong>${amountUSD.toLocaleString()} USDT</strong> (₹{amountINR.toLocaleString()}) to the address above.
+                      <div>
+                        <div className="text-[11px] text-slate-400 uppercase font-mono font-semibold">Official Ethereum Wallet Address:</div>
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 mt-1 gap-2">
+                          <span className="font-mono text-xs font-bold text-sky-400 break-all select-all">
+                            {CRYPTO_WALLETS.ETH_MAINNET.address}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(CRYPTO_WALLETS.ETH_MAINNET.address, 'crypto')}
+                            className="p-1.5 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer flex-shrink-0"
+                          >
+                            {copiedKey === 'crypto' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                            <span>{copiedKey === 'crypto' ? 'Copied' : 'Copy'}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="text-xs text-slate-300 space-y-1">
+                        <div>Accepted Tokens: <strong className="text-white font-mono">ETH • USDT (ERC-20) • USDC (ERC-20)</strong></div>
+                        <div>Equivalent Payable: <strong className="text-emerald-400 font-mono text-base">${amountUSD.toLocaleString()} USD</strong> (₹{amountINR.toLocaleString()})</div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Transaction Hash */}
-                  <div>
-                    <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                      Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={txHash}
-                      onChange={(e) => setTxHash(e.target.value)}
-                      placeholder="0x... or Tron TxID"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-purple-500 focus:outline-none"
-                    />
-                  </div>
+                  {/* Confirmation Form */}
+                  <form onSubmit={handleCryptoConfirm} className="space-y-3 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
+                          Your Name / Entity <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={clientName}
+                          onChange={(e) => setClientName(e.target.value)}
+                          placeholder="e.g. Vikas Mishra"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-purple-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
+                          Receipt Email <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={clientEmail}
+                          onChange={(e) => setClientEmail(e.target.value)}
+                          placeholder="billing@company.com"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-purple-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
 
-                  <button
-                    type="submit"
-                    disabled={isProcessing || amountUSD <= 0}
-                    className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-purple-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-                  >
-                    <Zap className="w-4 h-4" />
-                    <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} USDT Payment`}</span>
-                  </button>
-                </form>
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
+                        Ethereum Transaction Hash / TxID (After Sending) <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={txHash}
+                        onChange={(e) => setTxHash(e.target.value)}
+                        placeholder="0x..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isProcessing || amountUSD <= 0}
+                      className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 hover:from-purple-500 hover:to-sky-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-purple-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                    >
+                      <Zap className="w-4 h-4" />
+                      <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} Ethereum Payment`}</span>
+                    </button>
+                  </form>
+                </div>
               )}
 
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
