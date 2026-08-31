@@ -246,18 +246,18 @@ export default function PaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto font-sans animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto font-sans animate-in fade-in duration-200">
       
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-indigo-100 overflow-hidden my-8 text-left">
+      <div className="relative w-full max-w-2xl bg-[#FAF7EE] rounded-3xl shadow-[7px_7px_0_0_#141414] border-2 border-[#141414] overflow-hidden my-8 text-left text-[#141414]">
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-slate-950 via-[#0B1120] to-indigo-950 text-white p-6 sm:p-7 flex items-center justify-between border-b border-slate-800">
+        <div className="bg-[#141414] text-[#FAF7EE] p-6 sm:p-7 flex items-center justify-between border-b-2 border-[#141414]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-[#FF4D00] text-[#FAF7EE] flex items-center justify-center border border-[#FAF7EE]">
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-400/10 border border-sky-400/20 text-sky-300 text-[10px] font-mono uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FFC72E] text-[#141414] text-[10px] font-display font-black uppercase tracking-wider">
                 <ShieldCheck className="w-3 h-3 text-sky-400" />
                 Zero-Trust Secure Gateway
               </div>

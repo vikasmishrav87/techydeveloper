@@ -1,22 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+﻿import React from 'react';
 import ProjectEstimator from '../components/ProjectEstimator';
-import { useScrollReveal } from '../hooks/useScrollReveal';
-import { ArrowLeft } from 'lucide-react';
+import BigCtaBanner from '../components/BigCtaBanner';
 
 export default function EstimatorPage() {
-  useScrollReveal();
-
   return (
-    <div className="min-h-screen bg-sky-lavender-mesh text-slate-900 pt-28 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 reveal-on-scroll">
-        <Link to="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-sky-700 font-medium transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Home
-        </Link>
-      </div>
-
-      <div className="reveal-on-scroll">
+    <div className="min-h-screen bg-[#FAF7EE] text-[#141414] pt-28 pb-24 font-sans">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <ProjectEstimator />
+        <BigCtaBanner />
       </div>
     </div>
   );

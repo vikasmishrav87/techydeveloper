@@ -1,136 +1,113 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PRICING_TIERS, CONTACT_INFO } from '../data/agencyData';
 import PaymentModal from './PaymentModal';
-import { Check, MessageCircle, Send, Zap, ArrowRight, ShieldCheck, Sparkles, CreditCard } from 'lucide-react';
+import { Check, MessageCircle, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 export default function PricingTiers() {
   const [selectedTierForPayment, setSelectedTierForPayment] = useState(null);
 
-  const getWhatsAppForTier = (tier) => {
-    const text = encodeURIComponent(`Hi Vikas, I would like to know in details about The Unfiltered Engineer's "${tier.name}" (${tier.scopeType}) engagement for my company. Please share scope details and quote.`);
-    return `https://wa.me/919137507092?text=${text}`;
-  };
-
-  const getTierEstimatedAmount = (tierId) => {
-    if (tierId === 'scale') return 7500;
-    if (tierId === 'enterprise') return 15000;
-    return 3500;
-  };
+  const cardThemes = [
+    { bg: 'bg-[#F4EFE6]', text: 'text-[#141414]', border: 'border-[#141414]', badgeBg: 'bg-[#141414]', badgeText: 'text-[#FAF7EE]' },
+    { bg: 'bg-[#FFC72E]', text: 'text-[#141414]', border: 'border-[#141414]', badgeBg: 'bg-[#FF4D00]', badgeText: 'text-[#FAF7EE]', popular: true },
+    { bg: 'bg-[#141414]', text: 'text-[#FAF7EE]', border: 'border-[#141414]', badgeBg: 'bg-[#FFC72E]', badgeText: 'text-[#141414]' },
+  ];
 
   return (
-    <section id="pricing" className="relative py-28 bg-[#EEF2FF] text-slate-900 overflow-hidden border-t border-b border-indigo-100/90">
-      
-      <div className="absolute inset-0 bg-light-grid opacity-60 pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="pricing" className="relative py-16 sm:py-28 bg-[#FAF7EE] text-[#141414] border-b-2 border-[#141414]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20 reveal-on-scroll">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-sky-200 text-sky-800 text-xs font-mono uppercase tracking-widest mb-4 shadow-xs">
-            <Zap className="w-3.5 h-3.5 text-sky-600" />
-            Specialized Engagements
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-16">
+          <div>
+            <p className="font-display text-xs sm:text-sm font-black tracking-[0.2em] text-[#FF4D00] uppercase">
+              TRANSPARENT SQUAD PRICING
+            </p>
+            <h2 className="mt-2 font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#141414]">
+              TAILORED SCOPE. ZERO FLUFF.
+            </h2>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-slate-950 mb-6">
-            Tailored Scope. <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 font-normal">Dedicated Squads</span>.
-          </h2>
-          <p className="text-slate-700 text-base sm:text-lg font-normal leading-relaxed">
-            Zero legacy IT overhead or bureaucracy. Dedicated senior engineering squads and tech architects working directly with your team. Pay retainers securely via Razorpay (UPI/Cards), Stripe, or Web3 USDT.
+          <p className="max-w-md text-sm sm:text-base font-medium text-[#141414]/70">
+            Dedicated senior engineering squads deployed directly into your stack. Pay via UPI, SBI Wire, or Web3 USDT.
           </p>
         </div>
 
         {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-          
-          {PRICING_TIERS.map((tier) => {
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
+          {PRICING_TIERS.map((tier, idx) => {
+            const theme = cardThemes[idx % cardThemes.length];
+
             return (
               <div
                 key={tier.id}
-                className={"rounded-3xl p-8 flex flex-col justify-between transition-all duration-300 relative bg-white/95 border " + (
-                  tier.popular
-                    ? "border-sky-400 shadow-xl shadow-sky-100 md:-translate-y-2 ring-2 ring-sky-400/30"
-                    : "border-indigo-100 shadow-sm hover:shadow-md hover:border-sky-200"
-                ) + " reveal-on-scroll"}
+                className={`rounded-3xl border-2 border-[#141414] p-7 sm:p-8 flex flex-col justify-between ${theme.bg} ${theme.text} shadow-[6px_6px_0_0_#141414] transition-transform duration-200 hover:-translate-y-1`}
               >
-                {tier.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-1 rounded-full bg-gradient-to-r from-sky-600 to-indigo-600 text-white text-xs font-semibold uppercase tracking-wider shadow-sm">
-                      Most Popular For Enterprise
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <span className="font-display text-xs font-black uppercase tracking-wider text-[#FF4D00]">
+                      {tier.scopeType}
+                    </span>
+                    {tier.popular && (
+                      <span className="rounded-full bg-[#FF4D00] px-3 py-0.5 font-display text-[10px] font-black uppercase text-[#FAF7EE]">
+                        MOST POPULAR
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="font-display text-2xl sm:text-3xl font-black uppercase leading-tight">
+                    {tier.name}
+                  </h3>
+
+                  <p className="mt-2 text-xs sm:text-sm font-medium opacity-80 line-clamp-2">
+                    {tier.tagline}
+                  </p>
+
+                  <div className="mt-6 pt-6 border-t-2 border-current/20">
+                    <span className="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight">
+                      {tier.priceRange}
                     </span>
                   </div>
-                )}
 
-                <div>
-                  <div className="mb-4">
-                    <h3 className="text-xl font-bold text-slate-950">{tier.name}</h3>
-                    <div className="inline-block mt-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-xs font-mono font-medium">
-                      {tier.scopeType}
-                    </div>
-                    <p className="text-xs text-slate-600 font-normal mt-3 min-h-[34px] leading-relaxed">
-                      {tier.tagline}
-                    </p>
-                  </div>
-
-                  {/* Know Details Banner */}
-                  <div className="py-4 border-t border-b border-slate-100 mb-6 bg-slate-50/60 rounded-2xl p-4 my-4">
-                    <div className="text-xs font-mono uppercase text-slate-500 font-semibold mb-1">Pricing & Scope</div>
-                    <div className="text-sm font-semibold text-slate-950 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-sky-600" />
-                      <span>Starting at ${(getTierEstimatedAmount(tier.id)).toLocaleString()}/mo</span>
-                    </div>
-                    <div className="text-[11px] text-slate-500 mt-1">Dedicated Squad • Zero Vendor Overhead</div>
-                  </div>
-
-                  {/* Feature Checklist */}
-                  <div className="space-y-3.5 mb-8">
-                    <span className="text-xs font-mono uppercase text-slate-400 tracking-wider font-semibold">Included Deliverables</span>
+                  <ul className="mt-6 flex flex-col gap-2.5 border-t-2 border-current/20 pt-6">
                     {tier.features.map((feat, fIdx) => (
-                      <div key={fIdx} className="flex items-start gap-3 text-xs text-slate-700">
-                        <Check className="w-4 h-4 text-sky-600 flex-shrink-0 mt-0.5" />
-                        <span className="leading-snug">{feat}</span>
-                      </div>
+                      <li key={fIdx} className="flex items-center gap-2 text-xs sm:text-sm font-bold">
+                        <span className="grid size-4 place-items-center rounded-full bg-[#FF4D00] text-[#FAF7EE] text-[9px] flex-shrink-0">✓</span>
+                        <span>{feat}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
-                {/* Actions: Direct Payment + WhatsApp Buttons */}
-                <div className="space-y-2.5 pt-4 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedTierForPayment(tier)}
-                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-sky-600/20 hover:scale-[1.02] cursor-pointer"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    <span>Deploy Squad & Pay Retainer</span>
-                  </button>
-
+                <div className="mt-8 pt-6 border-t-2 border-current/20 flex flex-col gap-2.5">
                   <a
-                    href={getWhatsAppForTier(tier)}
+                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I am interested in The Unfiltered Engineer's "${tier.name}" plan. Let's discuss scope and contract.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-medium text-xs transition-all"
+                    className="w-full py-3.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs sm:text-sm font-black uppercase text-center shadow-[4px_4px_0_0_#FF4D00] transition-all hover:-translate-y-0.5 cursor-pointer"
                   >
-                    <MessageCircle className="w-4 h-4 text-emerald-600" />
-                    <span>Discuss Custom Scope on WhatsApp</span>
+                    REQUEST SQUAD SCOPING
                   </a>
-                </div>
 
+                  <Link
+                    to="/checkout"
+                    className="w-full py-3 rounded-full border-2 border-current bg-transparent hover:bg-black/10 text-center font-display text-xs font-bold uppercase transition-all"
+                  >
+                    DIRECT CLIENT CHECKOUT
+                  </Link>
+                </div>
               </div>
             );
           })}
-
         </div>
 
       </div>
 
-      {/* Universal Payment Gateway Modal */}
       {selectedTierForPayment && (
         <PaymentModal
-          isOpen={!!selectedTierForPayment}
+          isOpen={true}
           onClose={() => setSelectedTierForPayment(null)}
-          initialAmount={getTierEstimatedAmount(selectedTierForPayment.id)}
-          initialCurrency="USD"
-          serviceName={`${selectedTierForPayment.name} (${selectedTierForPayment.scopeType})`}
+          serviceName={selectedTierForPayment.name}
+          initialAmount={3500}
         />
       )}
     </section>

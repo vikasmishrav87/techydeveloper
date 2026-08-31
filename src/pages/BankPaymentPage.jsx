@@ -42,7 +42,7 @@ export default function BankPaymentPage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-24 bg-sky-lavender-mesh text-slate-900 font-sans flex items-center justify-center">
+    <div className="min-h-screen pt-28 pb-24 bg-[#FAF7EE] text-[#141414] font-sans flex items-center justify-center">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 w-full text-left">
         
         {/* Navigation Breadcrumb */}

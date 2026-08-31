@@ -1,88 +1,47 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Lock, Eye, CheckCircle2, Cookie, Database, ArrowRight } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen pt-32 pb-24 bg-[#030712] text-slate-100 font-sans">
+    <div className="min-h-screen pt-28 pb-24 bg-[#FAF7EE] text-[#141414] font-sans">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
         
         {/* Header */}
-        <div className="mb-12 pb-8 border-b border-slate-800">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950/80 border border-sky-500/30 text-sky-400 text-[11px] font-mono uppercase tracking-wider mb-4">
-            <Lock className="w-3.5 h-3.5" />
-            Zero-Trust Privacy Standard
+        <div className="mb-12 pb-8 border-b-2 border-[#141414]/15">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] font-display text-xs font-black uppercase tracking-wider mb-4 shadow-[2px_2px_0_0_#141414]">
+            <ShieldCheck className="size-3.5" />
+            <span>ZERO-DATA RETENTION PRIVACY POLICY</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
-            Global Privacy & Cookie Policy
+          <h1 className="font-display text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#141414]">
+            PRIVACY POLICY
           </h1>
-          <p className="text-sm text-slate-400 font-light leading-relaxed">
-            GDPR, CCPA & Cryptographic Security Telemetry Compliance • Version 2026.4
+          <p className="text-sm text-[#141414]/75 font-medium mt-2">
+            The Unfiltered Engineer • Zero third-party telemetry or ad tracking cookies.
           </p>
         </div>
 
-        {/* Policy Body */}
-        <div className="space-y-10 text-slate-300 text-sm leading-relaxed font-light">
+        {/* Sections */}
+        <div className="space-y-6 text-sm leading-relaxed font-medium">
           
-          <section className="p-6 rounded-3xl bg-obsidian-900 border border-slate-800 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="text-sky-400 font-mono">1.</span>
-              Information We Collect
+          <section className="p-6 sm:p-8 rounded-3xl border-2 border-[#141414] bg-[#F4EFE6] shadow-[5px_5px_0_0_#141414] space-y-3">
+            <h2 className="font-display text-lg sm:text-xl font-black uppercase text-[#141414]">
+              1. ZERO-LOGGING ARCHITECTURE
             </h2>
-            <p>
-              When you interact with The Unfiltered Engineer platform, we collect technical data essential for service delivery:
-            </p>
-            <ul className="list-disc list-inside space-y-1.5 text-xs text-slate-400 pl-2">
-              <li><strong className="text-slate-200">Account Identity Data:</strong> Verified Google Name, Email, Profile Picture, and Google Sub ID during OAuth login, or Work Email during direct sign-up.</li>
-              <li><strong className="text-slate-200">Security & SEO Telemetry:</strong> Target URLs submitted for automated penetration testing and audit scoring.</li>
-              <li><strong className="text-slate-200">Project Scoping Metadata:</strong> Selected engineering practices, estimated timeline velocity, and squad scale parameters.</li>
-            </ul>
-          </section>
-
-          <section className="p-6 rounded-3xl bg-obsidian-900 border border-slate-800 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="text-sky-400 font-mono">2.</span>
-              Cookie Classifications & Consent Controls
-            </h2>
-            <p>
-              In accordance with international privacy regulations, our cookie classifications include:
-            </p>
-            <div className="space-y-2 text-xs">
-              <div className="p-3 rounded-xl bg-obsidian-950 border border-slate-800">
-                <strong className="text-emerald-400">Strictly Necessary Cookies:</strong> Essential for session authentication, cryptographic token validation, and account security. Cannot be disabled.
-              </div>
-              <div className="p-3 rounded-xl bg-obsidian-950 border border-slate-800">
-                <strong className="text-sky-400">Telemetry & Performance Cookies:</strong> Used to record live zero-trust security scan logs, system response times, and prevent DDoS abuse.
-              </div>
-            </div>
-          </section>
-
-          <section className="p-6 rounded-3xl bg-obsidian-900 border border-slate-800 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="text-sky-400 font-mono">3.</span>
-              Data Protection & Zero Third-Party Monetization
-            </h2>
-            <p>
-              <strong className="text-white">We never sell, monetize, or rent your personal or technical data to third-party advertisers.</strong> All data is used strictly for engineering execution, audit generation, and direct communication with Vikas Mishra and assigned squad leads.
+            <p className="text-[#141414]/80">
+              We do not sell, rent, or monetize client data. Technical audit results and project briefs are strictly encrypted and accessible only to authorized architects.
             </p>
           </section>
 
-          <section className="p-6 rounded-3xl bg-obsidian-900 border border-slate-800 space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="text-sky-400 font-mono">4.</span>
-              Your Rights & Account Deletion
+          <section className="p-6 sm:p-8 rounded-3xl border-2 border-[#141414] bg-[#F4EFE6] shadow-[5px_5px_0_0_#141414] space-y-3">
+            <h2 className="font-display text-lg sm:text-xl font-black uppercase text-[#141414]">
+              2. CRYPTOGRAPHIC PROOF OF SETTLEMENT
             </h2>
-            <p>
-              You have the right to request a full export of your registered data, or request permanent deletion of your profile and audit records by contacting the Executive Admin via the portal or direct WhatsApp concierge.
+            <p className="text-[#141414]/80">
+              Transaction receipts and UTR numbers provided during payment verification are stored solely for ledger audit purposes and WhatsApp founder verification.
             </p>
           </section>
 
-        </div>
-
-        {/* Footer Actions */}
-        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <Link to="/" className="text-sky-400 hover:underline">← Return to Homepage</Link>
-          <Link to="/terms" className="text-sky-400 hover:underline">Read Terms of Service →</Link>
         </div>
 
       </div>

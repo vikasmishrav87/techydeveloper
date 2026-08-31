@@ -172,33 +172,31 @@ export default function AIChatBot({ isOpen, onClose }) {
       {/* Mobile Backdrop */}
       <div 
         onClick={onClose} 
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs sm:hidden transition-opacity" 
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs sm:hidden transition-opacity" 
       />
 
       {/* Chat Window Container */}
-      <div className="relative w-full sm:w-[440px] md:w-[480px] h-[92vh] sm:h-[620px] bg-white rounded-t-3xl sm:rounded-3xl border border-indigo-100 shadow-2xl flex flex-col overflow-hidden animate-fadeIn font-sans z-10">
+      <div className="relative w-full sm:w-[440px] md:w-[480px] h-[92vh] sm:h-[620px] bg-[#FAF7EE] rounded-t-3xl sm:rounded-3xl border-2 border-[#141414] shadow-[7px_7px_0_0_#141414] flex flex-col overflow-hidden animate-fadeIn font-sans z-10 text-[#141414]">
         
         {/* Header Bar */}
-        <div className="p-4 sm:p-4.5 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between shadow-md">
+        <div className="p-4 bg-[#141414] text-[#FAF7EE] flex items-center justify-between border-b-2 border-[#141414]">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 p-0.5 shadow-sm">
-                <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-sky-400" />
-                </div>
+              <div className="w-10 h-10 rounded-2xl bg-[#FF4D00] flex items-center justify-center border border-[#FAF7EE]">
+                <Bot className="w-5 h-5 text-[#FAF7EE]" />
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950 animate-pulse" />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#25D366] border-2 border-[#141414] animate-pulse" />
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white tracking-tight">Unfiltered AI Architect</h3>
-                <span className="px-2 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/40 text-[10px] font-mono text-sky-300">
+                <h3 className="font-display text-sm font-black uppercase text-[#FAF7EE]">AI ARCHITECT</h3>
+                <span className="px-2 py-0.5 rounded-full bg-[#FFC72E] text-[10px] font-display font-black text-[#141414]">
                   GPT-4o
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-light flex items-center gap-1">
-                <span>1,000+ Senior Engineers Knowledge Base</span>
+              <p className="text-[11px] text-[#FAF7EE]/70 font-medium">
+                Vikas Mishra Senior Engineering Intelligence
               </p>
             </div>
           </div>
@@ -206,14 +204,14 @@ export default function AIChatBot({ isOpen, onClose }) {
           <div className="flex items-center gap-1">
             <button
               onClick={handleClearChat}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors text-xs"
+              className="p-2 rounded-xl text-[#FAF7EE]/70 hover:text-[#FAF7EE] hover:bg-white/10 transition-colors text-xs cursor-pointer"
               title="Reset Chat"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+              className="p-2 rounded-xl text-[#FAF7EE]/70 hover:text-[#FAF7EE] hover:bg-white/10 transition-colors cursor-pointer"
               title="Close AI Assistant"
             >
               <X className="w-5 h-5" />
@@ -222,24 +220,23 @@ export default function AIChatBot({ isOpen, onClose }) {
         </div>
 
         {/* Quick Founder Callout Banner */}
-        <div className="bg-sky-50 px-4 py-2 border-b border-sky-100 flex items-center justify-between text-xs text-sky-900">
-          <div className="flex items-center gap-1.5 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
-            <span>Direct WhatsApp: <strong>{CONTACT_INFO.phoneDisplay}</strong></span>
+        <div className="bg-[#FFC72E] px-4 py-2 border-b-2 border-[#141414] flex items-center justify-between text-xs text-[#141414] font-display font-black uppercase">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#FF4D00]" />
+            <span>DIRECT FOUNDER: <strong>{CONTACT_INFO.phoneDisplay}</strong></span>
           </div>
           <a
             href={CONTACT_INFO.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+            className="underline hover:text-[#FF4D00]"
           >
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>WhatsApp Vikas</span>
+            WHATSAPP →
           </a>
         </div>
 
         {/* Message Stream */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F8FAFC]">
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F4EFE6]">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
             return (

@@ -205,25 +205,25 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-24 bg-sky-lavender-mesh text-slate-900 font-sans flex items-center justify-center">
+    <div className="min-h-screen pt-28 pb-24 bg-[#FAF7EE] text-[#141414] font-sans flex items-center justify-center">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 w-full text-left">
         
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-sky-200 text-sky-800 text-xs font-mono uppercase tracking-wider mb-3 shadow-xs">
-            <Lock className="w-3.5 h-3.5 text-sky-600" />
-            Official Enterprise Payment Portal
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] text-xs font-display font-black uppercase tracking-wider mb-3 shadow-[3px_3px_0_0_#141414]">
+            <Lock className="w-3.5 h-3.5 text-[#141414]" />
+            OFFICIAL CLIENT SETTLEMENT PORTAL
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
-            Escrow-Secured <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-indigo-600">Client Checkout</span>
+          <h1 className="text-3xl sm:text-5xl font-display font-black uppercase tracking-tight text-[#141414]">
+            ESCROW <span className="text-[#FF4D00]">CHECKOUT</span>
           </h1>
-          <p className="text-slate-600 text-sm mt-2">
+          <p className="text-[#141414]/75 text-sm font-medium mt-2">
             Enter your payable amount manually in <strong>USD ($)</strong> or <strong>INR (₹)</strong> ($1 = ₹100 platform rate).
           </p>
         </div>
 
         {/* Invoice & Complete Payment Suite Card */}
-        <div className="bg-white/95 border border-indigo-100 rounded-3xl shadow-xl p-6 sm:p-10 space-y-6">
+        <div className="bg-[#F4EFE6] border-2 border-[#141414] rounded-3xl shadow-[7px_7px_0_0_#141414] p-6 sm:p-10 space-y-6">
           
           {activeLivePayment ? (
             <LivePaymentStatus 
@@ -233,31 +233,31 @@ export default function CheckoutPage() {
           ) : !paymentSuccess ? (
             <>
               {/* Engagement Details */}
-              <div className="pb-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="pb-5 border-b-2 border-[#141414]/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <div className="text-xs text-sky-700 font-mono font-semibold uppercase">Engagement Description</div>
-                  <h2 className="text-xl font-bold text-slate-950 mt-0.5">{serviceName}</h2>
+                  <div className="text-xs text-[#FF4D00] font-display font-black uppercase tracking-wider">Engagement Description</div>
+                  <h2 className="text-xl font-display font-black uppercase text-[#141414] mt-0.5">{serviceName}</h2>
                   {clientParam && (
-                    <div className="text-xs text-slate-500 mt-1">Issued for: <strong>{clientParam}</strong></div>
+                    <div className="text-xs text-[#141414]/70 mt-1 font-bold">Issued for: <strong>{clientParam}</strong></div>
                   )}
                 </div>
 
                 <div className="text-left sm:text-right">
-                  <div className="text-[11px] text-slate-400 font-mono uppercase">Standard Rate</div>
-                  <div className="text-xs font-bold font-mono text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200 inline-block mt-0.5">
+                  <div className="text-[11px] text-[#141414]/60 font-display font-black uppercase">Standard Rate</div>
+                  <div className="text-xs font-black font-mono text-[#141414] bg-[#FFC72E] px-3 py-1 rounded-full border-2 border-[#141414] inline-block mt-0.5 shadow-[2px_2px_0_0_#141414]">
                     $1 USD = ₹100 INR
                   </div>
                 </div>
               </div>
 
               {/* MANUAL AMOUNT ENTRY BOX */}
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-sky-50/90 via-indigo-50/40 to-slate-50 border-2 border-sky-300 space-y-4">
+              <div className="p-6 rounded-3xl bg-[#FFC72E] border-2 border-[#141414] space-y-4 text-[#141414] shadow-[4px_4px_0_0_#141414]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <label className="text-xs font-mono font-bold text-slate-900 uppercase tracking-wider block">
-                      Enter Payment Amount Manually:
+                    <label className="text-xs font-display font-black text-[#141414] uppercase tracking-wider block">
+                      ENTER PAYMENT AMOUNT:
                     </label>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                    <div className="text-[11px] text-[#141414]/80 font-mono mt-0.5">
                       Platform Conversion: <strong className="text-sky-700 font-bold">$1 USD = ₹100 INR</strong>
                     </div>
                   </div>
