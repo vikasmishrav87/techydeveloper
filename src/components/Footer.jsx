@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO, SERVICE_PILLARS, GLOBAL_HUBS } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
-import { Shield, MessageCircle, Send, Mail, Terminal, ArrowUp, Lock, Award, Heart } from 'lucide-react';
+import { Shield, ShieldCheck, MessageCircle, Send, Mail, Terminal, ArrowUp, Lock, Award, Heart } from 'lucide-react';
 
 export default function Footer({ onOpenTerminal, onOpenAdmin }) {
   const scrollToTop = () => {
@@ -90,12 +90,13 @@ export default function Footer({ onOpenTerminal, onOpenAdmin }) {
             </ul>
 
             <div className="pt-2">
-              <button
-                onClick={onOpenAdmin}
-                className="text-[11px] font-mono text-slate-400 hover:text-sky-700 underline"
+              <Link
+                to="/admin/verify"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-mono font-bold shadow-xs hover:border-emerald-400 border border-slate-700 transition-all"
               >
-                Executive Portal
-              </button>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Executive Portal 🛡️</span>
+              </Link>
             </div>
           </div>
 

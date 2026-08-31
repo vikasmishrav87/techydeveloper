@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
-import { MessageCircle, Send, Terminal, Calculator, Shield, ChevronUp, Sparkles, X, Bot } from 'lucide-react';
+import { MessageCircle, Send, Terminal, Calculator, Shield, ShieldCheck, ChevronUp, Sparkles, X, Bot } from 'lucide-react';
 
 export default function FloatingDock({ onOpenTerminal, onOpenEstimator, onOpenScanner, onOpenAIChat }) {
   const [expanded, setExpanded] = useState(false);
@@ -12,6 +13,16 @@ export default function FloatingDock({ onOpenTerminal, onOpenEstimator, onOpenSc
       {expanded && (
         <div className="flex flex-col items-end gap-2 mb-1 animate-fadeIn">
           
+          {/* Executive Verification Portal */}
+          <Link
+            to="/admin/verify"
+            onClick={() => setExpanded(false)}
+            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-900 text-white text-xs font-bold shadow-xl hover:scale-105 transition-all border border-emerald-400/50 backdrop-blur-md"
+          >
+            <span className="text-emerald-300">Executive Portal 🛡️</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          </Link>
+
           {/* Ask AI Assistant (GPT-4o) */}
           <button
             onClick={() => {

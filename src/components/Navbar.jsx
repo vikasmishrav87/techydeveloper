@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
-import { Terminal, Shield, MessageCircle, Send, Menu, X, Globe, Sparkles, UserCheck, Bot, ChevronDown, CreditCard } from 'lucide-react';
+import { Terminal, Shield, ShieldCheck, MessageCircle, Send, Menu, X, Globe, Sparkles, UserCheck, Bot, ChevronDown, CreditCard } from 'lucide-react';
 
 export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
   const [scrolled, setScrolled] = useState(false);
@@ -32,6 +32,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
   // Secondary tools in clean dropdown
   const extraTools = [
+    { name: 'Executive Verification Portal', to: '/admin/verify', icon: ShieldCheck, desc: 'Review & approve client payments (Passkey required)' },
     { name: 'Client Payment & Checkout', to: '/checkout', icon: CreditCard, desc: 'Pay via Razorpay, Stripe, or Web3 USDT' },
     { name: 'Free SEO & Speed Audit', to: '/seo-audit', icon: Sparkles, desc: 'Real-time Core Web Vitals scanner' },
     { name: 'Worldwide 3D Network', to: '/worldwide', icon: Globe, desc: '1,000+ senior engineers worldwide' },
@@ -84,7 +85,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             </button>
 
             {moreDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-64 p-2 bg-white rounded-2xl border border-indigo-100 shadow-xl shadow-indigo-500/10 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="absolute top-full right-0 mt-2 w-68 p-2 bg-white rounded-2xl border border-indigo-100 shadow-xl shadow-indigo-500/10 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                 {extraTools.map((tool) => {
                   const Icon = tool.icon;
                   return (
@@ -109,13 +110,23 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           </div>
         </nav>
 
-        {/* Right: Clean Actions (AI Assistant + Terminal + WhatsApp) */}
+        {/* Right: Clean Actions (Executive Portal + AI Bot + Terminal + WhatsApp) */}
         <div className="hidden md:flex items-center gap-2 xl:gap-2.5 flex-shrink-0">
           
+          {/* Executive Portal Button */}
+          <Link
+            to="/admin/verify"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 text-xs font-semibold shadow-xs hover:border-emerald-400 transition-all cursor-pointer whitespace-nowrap"
+            title="Executive Verification Portal (Passkey: vikasmusickeytosuccess)"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Executive Portal</span>
+          </Link>
+
           {/* AI Principal GPT Assistant */}
           <button
             onClick={onOpenAIChat}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-white transition-all text-xs font-semibold shadow-xs border border-sky-400/30 hover:scale-105 cursor-pointer whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-white transition-all text-xs font-semibold shadow-xs border border-sky-400/30 hover:scale-105 cursor-pointer whitespace-nowrap"
             title="Ask Unfiltered AI Principal"
           >
             <Bot className="w-3.5 h-3.5 text-sky-400 animate-pulse" />
@@ -129,15 +140,6 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             title="Open Interactive CLI Terminal (Ctrl+K or `)"
           >
             <Terminal className="w-4 h-4" />
-          </button>
-
-          {/* Executive Portal */}
-          <button
-            onClick={onOpenAdmin}
-            className="p-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-indigo-600 hover:border-indigo-300 transition-all text-xs shadow-xs cursor-pointer"
-            title="Executive Portal Login"
-          >
-            <UserCheck className="w-4 h-4" />
           </button>
 
           {/* WhatsApp Direct Line */}
@@ -189,6 +191,18 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           ))}
           
           <div className="pt-3 mt-3 border-t border-slate-100 space-y-2">
+            <Link
+              to="/admin/verify"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
+            >
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Executive Verification Portal</span>
+              </div>
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">Secured</span>
+            </Link>
+
             <Link
               to="/seo-audit"
               onClick={() => setMobileMenuOpen(false)}
