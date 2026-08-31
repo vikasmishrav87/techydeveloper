@@ -219,14 +219,37 @@ export default function CardPaymentPage() {
                 </button>
               </form>
 
-              {/* Quick Links */}
-              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
-                <div className="flex items-center gap-3">
-                  <Link to="/pay/upi" className="text-emerald-700 font-semibold hover:underline">📱 Instant UPI QR</Link>
-                  <Link to="/pay/bank" className="text-sky-700 font-semibold hover:underline">🏦 SBI Bank Wire</Link>
-                  <Link to="/pay/crypto" className="text-purple-700 font-semibold hover:underline">⛓️ Ethereum Crypto</Link>
+              {/* All Dedicated Gateways List */}
+              <div className="pt-4 border-t border-slate-100 space-y-2">
+                <div className="text-[11px] font-mono text-slate-500 uppercase font-bold">
+                  All Dedicated Payment Portals:
                 </div>
-                <span>256-Bit SSL Secured</span>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <Link to={`/pay/upi?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-medium">
+                    📱 UPI QR
+                  </Link>
+                  <Link to={`/pay/bank?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 font-medium">
+                    🏦 SBI Wire
+                  </Link>
+                  <Link to={`/pay/polygon?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 font-medium">
+                    ⬡ Polygon (POL)
+                  </Link>
+                  <Link to={`/pay/bnb?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 hover:bg-yellow-100 font-medium">
+                    🔶 BNB Chain
+                  </Link>
+                  <Link to={`/pay/tron?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 font-medium">
+                    ₮ Tron (TRC-20)
+                  </Link>
+                  <Link to={`/pay/sol?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-medium">
+                    ◎ Solana
+                  </Link>
+                  <Link to={`/pay/btc?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 font-medium">
+                    ₿ Bitcoin
+                  </Link>
+                  <Link to={`/pay/eth?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 font-medium">
+                    Ξ Ethereum
+                  </Link>
+                </div>
               </div>
             </>
           ) : (

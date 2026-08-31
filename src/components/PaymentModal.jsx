@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   X, Check, ShieldCheck, CreditCard, QrCode, Globe, Building2, Copy, CheckCircle2, 
   Sparkles, Lock, ArrowRight, DollarSign, RefreshCw, Download, ExternalLink, Zap
@@ -440,6 +441,18 @@ export default function PaymentModal({
               {/* METHOD 1: UPI & QR SCANNER */}
               {paymentMethod === 'razorpay' && (
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs">
+                    <span className="font-semibold text-emerald-950">⚡ Want full screen QR?</span>
+                    <Link
+                      to={`/pay/upi?amount=${amountUSD}&currency=${currencyMode}`}
+                      onClick={onClose}
+                      className="inline-flex items-center gap-1 font-bold text-emerald-800 hover:text-emerald-950 bg-white px-2.5 py-0.5 rounded-lg border border-emerald-300 shadow-2xs hover:shadow-xs transition-all text-[11px]"
+                    >
+                      <span>Open Dedicated UPI Page</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
+
                   <div className="p-5 rounded-3xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center gap-6">
                     {/* QR Code Image Container */}
                     <div className="bg-white p-3 rounded-2xl border-2 border-sky-300 shadow-md flex-shrink-0 text-center">
@@ -531,76 +544,101 @@ export default function PaymentModal({
 
               {/* METHOD 2: STRIPE GLOBAL FORM */}
               {paymentMethod === 'stripe' && (
-                <form onSubmit={handleStripePayment} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                        Cardholder Name <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
-                        placeholder="Vikas Mishra"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
-                        Receipt Email <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={clientEmail}
-                        onChange={(e) => setClientEmail(e.target.value)}
-                        placeholder="billing@company.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
-                      />
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs">
+                    <span className="font-semibold text-indigo-950">💳 Full screen Stripe gateway?</span>
+                    <Link
+                      to={`/pay/card?amount=${amountUSD}&currency=${currencyMode}`}
+                      onClick={onClose}
+                      className="inline-flex items-center gap-1 font-bold text-indigo-800 hover:text-indigo-950 bg-white px-2.5 py-0.5 rounded-lg border border-indigo-300 shadow-2xs hover:shadow-xs transition-all text-[11px]"
+                    >
+                      <span>Open Dedicated Card Page</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold">
-                      Card Details (256-bit AES SSL Encrypted)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="4242 •••• •••• 4242"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
-                      />
-                      <CreditCard className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                  <form onSubmit={handleStripePayment} className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
+                          Cardholder Name <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={clientName}
+                          onChange={(e) => setClientName(e.target.value)}
+                          placeholder="Vikas Mishra"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold mb-1">
+                          Receipt Email <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={clientEmail}
+                          onChange={(e) => setClientEmail(e.target.value)}
+                          placeholder="billing@company.com"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
+                        />
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="MM / YY"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
-                      />
-                      <input
-                        type="text"
-                        placeholder="CVC"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
 
-                  <button
-                    type="submit"
-                    disabled={isProcessing || amountUSD <= 0}
-                    className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-                  >
-                    <Lock className="w-4 h-4" />
-                    <span>{isProcessing ? 'Processing Stripe Transaction...' : `Pay $${amountUSD.toLocaleString()} USD (₹${amountINR.toLocaleString()}) with Stripe`}</span>
-                  </button>
-                </form>
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase font-semibold">
+                        Card Details (256-bit AES SSL Encrypted)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="4242 •••• •••• 4242"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
+                        />
+                        <CreditCard className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="MM / YY"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
+                        />
+                        <input
+                          type="text"
+                          placeholder="CVC"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-mono focus:border-indigo-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isProcessing || amountUSD <= 0}
+                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>{isProcessing ? 'Processing Stripe Transaction...' : `Pay $${amountUSD.toLocaleString()} USD (₹${amountINR.toLocaleString()}) with Stripe`}</span>
+                    </button>
+                  </form>
+                </div>
               )}
 
-              {/* METHOD 3: WEB3 CRYPTO (BITCOIN & ETHEREUM) */}
+              {/* METHOD 3: WEB3 CRYPTO */}
               {paymentMethod === 'crypto' && (
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-purple-50 border border-purple-200 text-xs">
+                    <span className="font-semibold text-purple-950">⛓️ Full screen Crypto portal?</span>
+                    <Link
+                      to={`${selectedCrypto === 'MATIC' ? '/pay/polygon' : selectedCrypto === 'BSC' ? '/pay/bnb' : selectedCrypto === 'TRX' ? '/pay/tron' : selectedCrypto === 'SOL' ? '/pay/sol' : selectedCrypto === 'BTC' ? '/pay/btc' : '/pay/eth'}?amount=${amountUSD}&currency=${currencyMode}`}
+                      onClick={onClose}
+                      className="inline-flex items-center gap-1 font-bold text-purple-800 hover:text-purple-950 bg-white px-2.5 py-0.5 rounded-lg border border-purple-300 shadow-2xs hover:shadow-xs transition-all text-[11px]"
+                    >
+                      <span>Open Dedicated {CRYPTO_WALLETS[selectedCrypto || 'MATIC'].name} Page</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
                   
                   {/* Network Selector Tabs */}
                   <div>
@@ -812,6 +850,18 @@ export default function PaymentModal({
               {/* METHOD 4: DIRECT BANK WIRE / RTGS / NEFT (SBI) */}
               {paymentMethod === 'bank' && (
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-sky-50 border border-sky-200 text-xs">
+                    <span className="font-semibold text-sky-950">🏦 Full screen Bank wire?</span>
+                    <Link
+                      to={`/pay/bank?amount=${amountUSD}&currency=${currencyMode}`}
+                      onClick={onClose}
+                      className="inline-flex items-center gap-1 font-bold text-sky-800 hover:text-sky-950 bg-white px-2.5 py-0.5 rounded-lg border border-sky-300 shadow-2xs hover:shadow-xs transition-all text-[11px]"
+                    >
+                      <span>Open Dedicated Bank Page</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
+
                   <div className="p-5 rounded-3xl bg-slate-50 border border-slate-200 space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                       <div className="text-xs font-mono font-bold text-slate-900 uppercase">

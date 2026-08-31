@@ -77,11 +77,16 @@ export default function Footer({ onOpenTerminal, onOpenAdmin }) {
           {/* Col 4: Payment Portals & Admin */}
           <div className="lg:col-span-2 space-y-3">
             <h4 className="text-xs font-mono uppercase text-emerald-800 tracking-wider font-semibold">Payment Portals</h4>
-            <ul className="space-y-1.5 text-xs font-mono text-slate-600">
-              <li><Link to="/pay/upi" className="hover:text-emerald-700 transition-colors">📱 Google Pay UPI</Link></li>
-              <li><Link to="/pay/bank" className="hover:text-sky-700 transition-colors">🏦 SBI Wire Transfer</Link></li>
-              <li><Link to="/pay/crypto" className="hover:text-purple-700 transition-colors">⛓️ Ethereum ERC-20</Link></li>
-              <li><Link to="/pay/card" className="hover:text-indigo-700 transition-colors">💳 Stripe Global Cards</Link></li>
+            <ul className="space-y-1.5 text-[11px] font-mono text-slate-600">
+              <li><Link to="/pay/upi" className="hover:text-emerald-700 transition-colors font-semibold">📱 Google Pay UPI</Link></li>
+              <li><Link to="/pay/bank" className="hover:text-sky-700 transition-colors">🏦 SBI Bank Wire</Link></li>
+              <li><Link to="/pay/card" className="hover:text-indigo-700 transition-colors">💳 Stripe Cards</Link></li>
+              <li><Link to="/pay/polygon" className="hover:text-purple-700 transition-colors">⬡ Polygon (POL)</Link></li>
+              <li><Link to="/pay/bnb" className="hover:text-yellow-700 transition-colors">🔶 BNB Chain</Link></li>
+              <li><Link to="/pay/tron" className="hover:text-rose-700 transition-colors">₮ Tron (TRC-20)</Link></li>
+              <li><Link to="/pay/sol" className="hover:text-emerald-700 transition-colors">◎ Solana (SPL)</Link></li>
+              <li><Link to="/pay/btc" className="hover:text-amber-700 transition-colors">₿ Bitcoin (BTC)</Link></li>
+              <li><Link to="/pay/eth" className="hover:text-purple-700 transition-colors">Ξ Ethereum (ETH)</Link></li>
             </ul>
 
             <div className="pt-2">

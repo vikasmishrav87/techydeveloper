@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   Lock, Check, Zap, Copy, CheckCircle2, ArrowRight, ShieldCheck, Download, 
-  ArrowLeft, MessageCircle, QrCode, CreditCard, Building2, Coins 
+  ArrowLeft, MessageCircle, QrCode, CreditCard, Building2, Coins, ExternalLink 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -19,6 +19,7 @@ const CRYPTO_NETWORKS = {
     qrImage: '/images/matic_qr.png',
     badgeClass: 'bg-indigo-100 text-indigo-900 border-indigo-300',
     qrBorderClass: 'border-indigo-500',
+    path: '/pay/polygon',
     warning: 'CRITICAL: Send ONLY via the Polygon Network (PoS). Sending via any other network (e.g. ERC20, Tron, Solana, BSC) will result in permanent loss of your assets.'
   },
   BSC: {
@@ -31,6 +32,7 @@ const CRYPTO_NETWORKS = {
     qrImage: '/images/bnb_qr.png',
     badgeClass: 'bg-yellow-100 text-yellow-900 border-yellow-300',
     qrBorderClass: 'border-yellow-400',
+    path: '/pay/bnb',
     warning: 'CRITICAL: Send ONLY via the BNB Smart Chain (BEP-20). Sending via any other network (e.g. ERC20, Tron, Solana, Polygon) will result in permanent loss of your assets.'
   },
   TRX: {
@@ -43,6 +45,7 @@ const CRYPTO_NETWORKS = {
     qrImage: '/images/trx_qr.png',
     badgeClass: 'bg-rose-100 text-rose-900 border-rose-300',
     qrBorderClass: 'border-rose-400',
+    path: '/pay/tron',
     warning: 'CRITICAL: Send ONLY via the Tron Network (TRC-20). Sending via any other network (e.g. ERC20, BSC, Solana, Polygon) will result in permanent loss of your assets.'
   },
   SOL: {
@@ -55,6 +58,7 @@ const CRYPTO_NETWORKS = {
     qrImage: '/images/sol_qr.png',
     badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300',
     qrBorderClass: 'border-emerald-400',
+    path: '/pay/sol',
     warning: 'CRITICAL: Send ONLY via the Solana Network (SPL). Sending via any other network (e.g. BSC, Ethereum, Tron, Polygon) will result in permanent loss of your assets.'
   },
   BTC: {
@@ -67,6 +71,7 @@ const CRYPTO_NETWORKS = {
     qrImage: '/images/btc_qr.png',
     badgeClass: 'bg-amber-100 text-amber-900 border-amber-300',
     qrBorderClass: 'border-amber-400',
+    path: '/pay/btc',
     warning: 'CRITICAL: Send ONLY via the native Bitcoin Network. Sending via any other network (e.g. BEP20, ERC20, Lightning, Tron) will result in permanent loss of your assets.'
   },
   ETH: {
@@ -79,17 +84,34 @@ const CRYPTO_NETWORKS = {
     qrImage: '/images/eth_qr.png',
     badgeClass: 'bg-purple-100 text-purple-900 border-purple-300',
     qrBorderClass: 'border-purple-400',
+    path: '/pay/eth',
     warning: 'CRITICAL: Send ONLY via the Ethereum Network (ERC-20). Any transfer from other networks (e.g. Tron, BSC, Solana, Polygon) will result in permanent loss of your assets.'
   }
 };
 
 export default function CryptoPaymentPage() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // Initial network from query: ?net=matic or ?net=bsc or ?net=trx or ?net=sol or ?net=btc or ?net=eth
-  const requestedNet = searchParams.get('net')?.toUpperCase();
-  const initialNet = (requestedNet && CRYPTO_NETWORKS[requestedNet]) ? requestedNet : 'MATIC';
-  const [activeNetwork, setActiveNetwork] = useState(initialNet);
+  const resolveNetwork = () => {
+    const path = location.pathname.toLowerCase();
+    if (path.includes('polygon') || path.includes('matic') || path.includes('pol')) return 'MATIC';
+    if (path.includes('bnb') || path.includes('bsc') || path.includes('bep20')) return 'BSC';
+    if (path.includes('tron') || path.includes('trx') || path.includes('trc20')) return 'TRX';
+    if (path.includes('sol') || path.includes('solana')) return 'SOL';
+    if (path.includes('btc') || path.includes('bitcoin')) return 'BTC';
+    if (path.includes('eth') || path.includes('ethereum') || path.includes('crypto')) return 'ETH';
+    const qNet = searchParams.get('net')?.toUpperCase();
+    if (qNet && CRYPTO_NETWORKS[qNet]) return qNet;
+    return 'MATIC';
+  };
+
+  const [activeNetwork, setActiveNetwork] = useState(resolveNetwork());
+
+  useEffect(() => {
+    setActiveNetwork(resolveNetwork());
+  }, [location.pathname, searchParams]);
 
   const [currencyMode, setCurrencyMode] = useState(searchParams.get('currency')?.toUpperCase() || 'USD');
   const [manualAmount, setManualAmount] = useState(searchParams.get('amount') || '100');
@@ -114,6 +136,13 @@ export default function CryptoPaymentPage() {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const handleNetworkSelect = (netKey) => {
+    setActiveNetwork(netKey);
+    const targetPath = CRYPTO_NETWORKS[netKey]?.path || '/pay/crypto';
+    const currentParams = searchParams.toString();
+    navigate(`${targetPath}${currentParams ? `?${currentParams}` : ''}`);
   };
 
   const handleConfirm = (e) => {
@@ -152,7 +181,7 @@ export default function CryptoPaymentPage() {
         <div className="flex items-center justify-between mb-6">
           <Link to="/checkout" className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-slate-600 hover:text-sky-700 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to All Payment Methods</span>
+            <span>Universal Checkout Suite</span>
           </Link>
           <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-bold ${selectedWallet.badgeClass}`}>
             <Zap className="w-3.5 h-3.5" />
@@ -162,11 +191,14 @@ export default function CryptoPaymentPage() {
 
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-mono uppercase font-bold tracking-wider mb-2">
+            <span>Dedicated Payment Gateway</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
-            Web3 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-yellow-600 to-purple-600">Crypto Portal</span>
+            {selectedWallet.name} <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600">Portal</span>
           </h1>
-          <p className="text-slate-600 text-sm mt-2">
-            Direct on-chain settlement via <strong>Polygon</strong>, <strong>BNB Chain</strong>, <strong>Tron</strong>, <strong>Solana</strong>, <strong>Bitcoin</strong>, or <strong>Ethereum</strong>.
+          <p className="text-slate-600 text-xs sm:text-sm mt-1.5">
+            Dedicated URL: <strong className="font-mono text-slate-900">{selectedWallet.path}</strong> • Direct on-chain settlement.
           </p>
         </div>
 
@@ -191,15 +223,19 @@ export default function CryptoPaymentPage() {
 
               {/* NETWORK SELECTOR (6 BLOCKCHAINS) */}
               <div>
-                <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
-                  Select Blockchain Network:
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider">
+                    Dedicated Blockchain Pages:
+                  </label>
+                  <span className="text-[11px] font-mono text-slate-500">6 Blockchains</span>
+                </div>
+                
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   
                   {/* Polygon Tab */}
                   <button
                     type="button"
-                    onClick={() => setActiveNetwork('MATIC')}
+                    onClick={() => handleNetworkSelect('MATIC')}
                     className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'MATIC'
                         ? 'border-indigo-500 bg-indigo-50/80 ring-2 ring-indigo-500/30 shadow-xs'
@@ -218,7 +254,7 @@ export default function CryptoPaymentPage() {
                   {/* BNB Chain Tab */}
                   <button
                     type="button"
-                    onClick={() => setActiveNetwork('BSC')}
+                    onClick={() => handleNetworkSelect('BSC')}
                     className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'BSC'
                         ? 'border-yellow-500 bg-yellow-50/80 ring-2 ring-yellow-500/30 shadow-xs'
@@ -237,7 +273,7 @@ export default function CryptoPaymentPage() {
                   {/* Tron Tab */}
                   <button
                     type="button"
-                    onClick={() => setActiveNetwork('TRX')}
+                    onClick={() => handleNetworkSelect('TRX')}
                     className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'TRX'
                         ? 'border-rose-500 bg-rose-50/80 ring-2 ring-rose-500/30 shadow-xs'
@@ -256,7 +292,7 @@ export default function CryptoPaymentPage() {
                   {/* Solana Tab */}
                   <button
                     type="button"
-                    onClick={() => setActiveNetwork('SOL')}
+                    onClick={() => handleNetworkSelect('SOL')}
                     className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'SOL'
                         ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-500/30 shadow-xs'
@@ -275,7 +311,7 @@ export default function CryptoPaymentPage() {
                   {/* Bitcoin Tab */}
                   <button
                     type="button"
-                    onClick={() => setActiveNetwork('BTC')}
+                    onClick={() => handleNetworkSelect('BTC')}
                     className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'BTC'
                         ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
@@ -294,7 +330,7 @@ export default function CryptoPaymentPage() {
                   {/* Ethereum Tab */}
                   <button
                     type="button"
-                    onClick={() => setActiveNetwork('ETH')}
+                    onClick={() => handleNetworkSelect('ETH')}
                     className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'ETH'
                         ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
@@ -476,21 +512,47 @@ export default function CryptoPaymentPage() {
                 <button
                   type="submit"
                   disabled={isProcessing || amountUSD <= 0}
-                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-yellow-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-sky-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <Zap className="w-4 h-4" />
                   <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${selectedWallet.id} Payment`}</span>
                 </button>
               </form>
 
-              {/* Quick Links */}
-              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
-                <div className="flex items-center gap-3">
-                  <Link to="/pay/upi" className="text-emerald-700 font-semibold hover:underline">📱 Instant UPI QR</Link>
-                  <Link to="/pay/bank" className="text-sky-700 font-semibold hover:underline">🏦 SBI Bank Wire</Link>
-                  <Link to="/pay/card" className="text-indigo-700 font-semibold hover:underline">💳 Stripe Cards</Link>
+              {/* All Dedicated Gateways List */}
+              <div className="pt-4 border-t border-slate-100 space-y-2">
+                <div className="text-[11px] font-mono text-slate-500 uppercase font-bold">
+                  All Standalone Payment Gateways:
                 </div>
-                <span>256-Bit SSL Secured</span>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <Link to={`/pay/upi?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-medium">
+                    📱 UPI QR
+                  </Link>
+                  <Link to={`/pay/bank?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 font-medium">
+                    🏦 SBI Wire
+                  </Link>
+                  <Link to={`/pay/card?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100 font-medium">
+                    💳 Stripe Cards
+                  </Link>
+                  <Link to={`/pay/polygon?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 font-medium">
+                    ⬡ Polygon (POL)
+                  </Link>
+                  <Link to={`/pay/bnb?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-yellow-50 text-yellow-800 border border-yellow-200 hover:bg-yellow-100 font-medium">
+                    🔶 BNB Chain
+                  </Link>
+                  <Link to={`/pay/tron?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 font-medium">
+                    ₮ Tron (TRC-20)
+                  </Link>
+                  <Link to={`/pay/sol?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-medium">
+                    ◎ Solana
+                  </Link>
+                  <Link to={`/pay/btc?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 font-medium">
+                    ₿ Bitcoin
+                  </Link>
+                  <Link to={`/pay/eth?amount=${amountUSD}&currency=${currencyMode}`} className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 font-medium">
+                    Ξ Ethereum
+                  </Link>
+                </div>
               </div>
             </>
           ) : (
