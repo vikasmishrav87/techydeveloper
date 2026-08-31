@@ -10,6 +10,15 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_WALLETS = {
+  BSC: {
+    id: 'BSC',
+    name: 'BNB Smart Chain (BEP-20)',
+    network: 'BNB Smart Chain (BEP-20 Only)',
+    address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
+    token: 'Native BNB • USDT (BEP-20) • USDC (BEP-20)',
+    qrImage: '/images/bnb_qr.png',
+    warning: 'CRITICAL: Send ONLY via the BNB Smart Chain (BEP-20). Sending via any other network will result in permanent asset loss.'
+  },
   TRX: {
     id: 'TRX',
     name: 'Tron (TRC-20)',
@@ -656,18 +665,36 @@ export default function CheckoutPage() {
                     <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
                       Choose Blockchain Network:
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCrypto('BSC')}
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                          (selectedCrypto || 'BSC') === 'BSC'
+                            ? 'border-yellow-500 bg-yellow-50/80 ring-2 ring-yellow-500/30 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs font-bold text-slate-950">BNB Chain</span>
+                          <span className="w-5 h-5 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center text-[10px]">
+                            🔶
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono">BEP-20</div>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('TRX')}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
-                          (selectedCrypto || 'TRX') === 'TRX'
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                          selectedCrypto === 'TRX'
                             ? 'border-rose-500 bg-rose-50/80 ring-2 ring-rose-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs sm:text-sm font-bold text-slate-950">Tron</span>
+                          <span className="text-xs font-bold text-slate-950">Tron</span>
                           <span className="w-5 h-5 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[10px]">
                             ₮
                           </span>
@@ -678,14 +705,14 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('SOL')}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
                           selectedCrypto === 'SOL'
                             ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs sm:text-sm font-bold text-slate-950">Solana</span>
+                          <span className="text-xs font-bold text-slate-950">Solana</span>
                           <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px]">
                             ◎
                           </span>
@@ -696,14 +723,14 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('BTC')}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
                           selectedCrypto === 'BTC'
                             ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs sm:text-sm font-bold text-slate-950">Bitcoin</span>
+                          <span className="text-xs font-bold text-slate-950">Bitcoin</span>
                           <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[10px]">
                             ₿
                           </span>
@@ -714,14 +741,14 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('ETH')}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] ${
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
                           selectedCrypto === 'ETH'
                             ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs sm:text-sm font-bold text-slate-950">Ethereum</span>
+                          <span className="text-xs font-bold text-slate-950">Ethereum</span>
                           <span className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
                             Ξ
                           </span>
