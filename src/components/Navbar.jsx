@@ -147,15 +147,15 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
         <div className="flex lg:hidden items-center gap-2">
           <button
             onClick={onOpenAIChat}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-950 text-white text-xs font-medium border border-sky-400/30"
+            className="brutal-btn flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#141414] text-[#FAF7EE] text-xs font-display font-black border-2 border-[#141414] shadow-[2px_2px_0_0_#FF4D00]"
           >
-            <Bot className="w-3.5 h-3.5 text-sky-400" />
+            <Bot className="w-3.5 h-3.5 text-[#FF4D00]" />
             <span>AI</span>
           </button>
           
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-800 shadow-xs cursor-pointer"
+            className="brutal-btn p-2 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-[#141414] shadow-[3px_3px_0_0_#141414] cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -166,64 +166,57 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden px-4 pt-3 pb-6 bg-white border-b border-slate-200 shadow-xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
+        <div className="lg:hidden px-4 pt-4 pb-6 bg-[#FAF7EE] border-b-2 border-[#141414] shadow-[0_6px_0_0_#141414] space-y-2 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
           {primaryNavLinks.map((link) => (
             <Link
               key={link.name}
               to={link.to}
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3.5 py-2 rounded-xl text-sm font-medium text-slate-800 hover:bg-sky-50 hover:text-sky-700 transition-colors"
+              className="block px-4 py-2.5 rounded-2xl font-display text-sm font-black uppercase text-[#141414] hover:bg-[#FFC72E] border-2 border-transparent hover:border-[#141414] transition-all"
             >
               {link.name}
             </Link>
           ))}
           
-          <div className="pt-3 mt-3 border-t border-slate-100 space-y-2">
+          <div className="pt-3 mt-3 border-t-2 border-[#141414]/15 space-y-2.5">
             <Link
               to="/admin/verify"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
+              className="brutal-btn flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FFC72E] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]"
             >
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Executive Verification Portal</span>
+                <ShieldCheck className="w-4 h-4 text-[#141414]" />
+                <span>EXECUTIVE PORTAL</span>
               </div>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">Secured</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#141414] text-[#FAF7EE] text-[10px]">SECURED</span>
             </Link>
 
             <Link
-              to="/seo-audit"
+              to="/checkout"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3.5 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-sky-50"
+              className="brutal-btn block w-full text-center py-3 rounded-full font-display text-xs font-black uppercase bg-[#FF4D00] text-[#FAF7EE] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]"
             >
-              ⚡ Free SEO & Core Web Vitals Audit
-            </Link>
-            <Link
-              to="/worldwide"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3.5 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-sky-50"
-            >
-              🌍 Worldwide 3D Global Hubs
+              💳 DIRECT CLIENT CHECKOUT
             </Link>
 
-            <div className="pt-2 flex items-center gap-2">
+            <div className="pt-1 flex items-center gap-2">
               <a
                 href={CONTACT_INFO.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm"
+                className="brutal-btn flex-1 py-3 px-4 rounded-full bg-[#25D366] text-[#141414] border-2 border-[#141414] text-xs font-display font-black uppercase flex items-center justify-center gap-2 shadow-[3px_3px_0_0_#141414]"
               >
                 <MessageCircle className="w-4 h-4" />
-                WhatsApp Vikas
+                <span>WHATSAPP</span>
               </a>
               <a
                 href={CONTACT_INFO.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-2.5 px-3 rounded-xl bg-sky-50 text-sky-700 border border-sky-200 text-xs font-semibold flex items-center justify-center gap-1.5"
+                className="brutal-btn py-3 px-4 rounded-full bg-[#F4EFE6] text-[#141414] border-2 border-[#141414] text-xs font-display font-black uppercase flex items-center justify-center gap-1.5 shadow-[3px_3px_0_0_#141414]"
               >
-                <Send className="w-3.5 h-3.5" />
-                Telegram
+                <Send className="w-3.5 h-3.5 text-[#0284C7]" />
+                <span>TELEGRAM</span>
               </a>
             </div>
           </div>

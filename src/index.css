@@ -1,4 +1,4 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -74,25 +74,42 @@
     box-shadow: 5px 5px 0 0 #FFC72E;
   }
 
-  /* Interactive Button Physics */
+  /* Interactive Button Physics & Mobile Responsiveness */
+  .brutal-btn,
+  button,
+  a[role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
   .brutal-btn {
-    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
-  .brutal-btn:hover {
-    transform: translate(-2px, -2px);
+
+  @media (hover: hover) {
+    .brutal-btn:hover {
+      transform: translate(-2px, -2px);
+    }
   }
+
   .brutal-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 0 #141414 !important;
+    transform: translate(2px, 2px) !important;
+    box-shadow: 1px 1px 0 0 #141414 !important;
   }
 
   /* Interactive Card Physics */
   .brutal-card {
     transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  .brutal-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 8px 8px 0 0 #141414;
+  @media (hover: hover) {
+    .brutal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 8px 8px 0 0 #141414;
+    }
   }
 }
 
