@@ -128,9 +128,12 @@ export function clearActiveClientPayment() {
 }
 
 /**
- * Generate formatted WhatsApp notification message for Vikas Mishra (Clean - No links shared)
+ * Generate formatted WhatsApp notification message for Vikas Mishra with Secured Executive Portal link
  */
 export function generateWhatsAppApprovalMessage(payment) {
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://theunfilteredengineer.vercel.app';
+  const portalUrl = `${origin}/admin/verify?id=${payment.id}`;
+
   const message = `🔔 *PAYMENT SUBMITTED FOR VERIFICATION* 🔔
 
 Hi Vikas, I have submitted my payment proof for verification:
@@ -144,7 +147,10 @@ ${payment.clientPhone ? `📱 *Phone:* ${payment.clientPhone}\n` : ''}🔢 *Subm
 🎯 *Engagement Scope:* ${payment.service}
 
 ━━━━━━━━━━━━━━━━━━━━
-_Please verify this transaction in your bank ledger/crypto records and approve from your Executive Verification Portal. My browser is currently on the live verification waiting screen._`;
+🛡️ *Executive Verification Portal (Secured):*
+${portalUrl}
+━━━━━━━━━━━━━━━━━━━━
+_Please log in with your Executive Passkey to review my proof/screenshot and approve. My browser is currently waiting on the live verification screen._`;
 
   return encodeURIComponent(message);
 }

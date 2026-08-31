@@ -37,6 +37,7 @@ export default function AdminVerifyPage() {
   };
 
   const fetchPayments = async () => {
+    if (!isAuthenticated) return;
     setIsLoading(true);
     try {
       // 1. Fetch from serverless API
@@ -68,10 +69,19 @@ export default function AdminVerifyPage() {
   };
 
   useEffect(() => {
-    fetchPayments();
-    const interval = setInterval(fetchPayments, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (isAuthenticated) {
+      fetchPayments();
+      const interval = setInterval(fetchPayments, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('ue_admin_auth_verified');
+    sessionStorage.removeItem('ue_admin_auth_verified');
+    setPayments([]);
+  };
 
   const handleDecision = async (id, status, reason = '') => {
     setActionLoading(prev => ({ ...prev, [id]: true }));
@@ -185,13 +195,19 @@ export default function AdminVerifyPage() {
               className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono font-semibold flex items-center gap-1.5 border border-slate-800 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-              <span>Refresh Ledger</span>
+              <span>Refresh</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-3.5 py-2 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-300 text-xs font-mono font-bold border border-rose-800/80 cursor-pointer transition-all"
+            >
+              🔒 Lock Portal
             </button>
             <Link
               to="/checkout"
               className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all shadow-md"
             >
-              Open Checkout ↗
+              Checkout ↗
             </Link>
           </div>
         </div>
