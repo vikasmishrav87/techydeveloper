@@ -31,7 +31,7 @@ export default function ServicesSection() {
     <section id="services" className="relative py-16 sm:py-28 bg-[#FAF7EE] text-[#141414] border-b-2 border-[#141414]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header (aijugaad style) */}
+        {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 sm:mb-12">
           <div>
             <p className="font-display text-xs sm:text-sm font-black tracking-[0.2em] text-[#FF4D00] uppercase">
@@ -47,16 +47,16 @@ export default function ServicesSection() {
         </div>
 
         {/* Dynamic Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 mb-10">
+        <div className="flex flex-wrap items-center gap-2.5 mb-10">
           {categories.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setActiveCategory(cat)}
-              className={`brutal-btn px-4 py-2 rounded-full font-display text-xs font-black uppercase transition-all border-2 border-[#141414] cursor-pointer ${
+              className={`sticker-pill px-4 py-2 text-xs cursor-pointer transition-all ${
                 activeCategory === cat
                   ? 'bg-[#FF4D00] text-[#FAF7EE] shadow-[3px_3px_0_0_#141414]'
-                  : 'bg-[#F4EFE6] hover:bg-[#FFC72E] text-[#141414]'
+                  : 'bg-[#F4EFE6] hover:bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414]'
               }`}
             >
               {cat}
@@ -116,7 +116,7 @@ export default function ServicesSection() {
                     href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I want to discuss hiring the ${service.title} engineering squad.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="brutal-btn grid size-9 place-items-center rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] shadow-[2px_2px_0_0_#141414]"
+                    className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"
                     title="Chat on WhatsApp"
                   >
                     <MessageCircle className="size-4 text-[#141414]" />
@@ -132,7 +132,7 @@ export default function ServicesSection() {
         <div className="mt-14 sm:mt-16 text-center">
           <Link
             to="/services"
-            className="brutal-btn inline-flex items-center gap-3 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FF4D00] px-8 py-4 sm:px-10 sm:py-5 font-display text-sm sm:text-base font-black text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer uppercase"
+            className="sticker-pill px-8 py-4 sm:px-10 sm:py-5 text-sm sm:text-base bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer"
           >
             <span>EXPLORE ALL SPECIALIZED SQUADS</span>
             <ArrowRight className="size-4" />

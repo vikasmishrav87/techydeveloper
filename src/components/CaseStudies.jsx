@@ -23,7 +23,7 @@ export default function CaseStudies() {
     <section id="work" className="relative py-16 sm:py-28 bg-[#F4EFE6] text-[#141414] border-b-2 border-[#141414]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header (aijugaad style) */}
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 sm:mb-12">
           <div>
             <p className="font-display text-xs sm:text-sm font-black tracking-[0.2em] text-[#FF4D00] uppercase">
@@ -39,16 +39,16 @@ export default function CaseStudies() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 mb-10">
+        <div className="flex flex-wrap items-center gap-2.5 mb-10">
           {categories.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`brutal-btn px-4 py-2 rounded-full font-display text-xs font-black uppercase transition-all border-2 border-[#141414] cursor-pointer ${
+              className={`sticker-pill px-4 py-2 text-xs cursor-pointer transition-all ${
                 selectedCategory === cat
                   ? 'bg-[#FF4D00] text-[#FAF7EE] shadow-[3px_3px_0_0_#141414]'
-                  : 'bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414]'
+                  : 'bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414]'
               }`}
             >
               {cat}
@@ -79,12 +79,12 @@ export default function CaseStudies() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 via-transparent to-transparent" />
                   
                   {/* Category Pill Tag */}
-                  <span className="absolute top-3 left-3 sm:top-4 sm:left-4 rounded-full border-2 border-[#141414] bg-[#FFC72E] px-3 py-1 font-display text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#141414] shadow-[2px_2px_0_0_#141414]">
+                  <span className="sticker-pill absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#FFC72E] text-[#141414] px-3 py-1 text-[10px] sm:text-xs shadow-[3px_3px_0_0_#141414]">
                     {study.tag}
                   </span>
 
                   {/* Impact Metric Tag */}
-                  <span className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 rounded-full border-2 border-[#FAF7EE] bg-[#141414]/90 px-3 py-1 font-display text-[11px] sm:text-xs font-black text-[#FAF7EE]">
+                  <span className="sticker-pill absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-[#141414] text-[#FAF7EE] border-[#FAF7EE] px-3 py-1 text-[11px] sm:text-xs shadow-[3px_3px_0_0_#FAF7EE]">
                     {study.impact}
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export default function CaseStudies() {
                       href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to build a similar solution.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="brutal-btn grid size-9 place-items-center rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] shadow-[2px_2px_0_0_#141414]"
+                      className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"
                       title="Discuss via WhatsApp"
                     >
                       <MessageCircle className="size-4 text-[#141414]" />
@@ -135,7 +135,7 @@ export default function CaseStudies() {
         <div className="mt-14 text-center">
           <Link
             to="/case-studies"
-            className="brutal-btn inline-flex items-center gap-3 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FF4D00] px-8 py-4 sm:px-10 sm:py-5 font-display text-sm sm:text-base font-black text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer uppercase"
+            className="sticker-pill px-8 py-4 sm:px-10 sm:py-5 text-sm sm:text-base bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer"
           >
             <span>VIEW ALL CLIENT CASE STUDIES</span>
             <ArrowRight className="size-4" />

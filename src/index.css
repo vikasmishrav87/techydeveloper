@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -59,22 +59,53 @@
 
   /* Neo-Brutalist Hard Shadows */
   .brutal-shadow {
-    box-shadow: 5px 5px 0 0 #141414;
+    box-shadow: 4px 4px 0 0 #141414;
   }
   .brutal-shadow-sm {
     box-shadow: 3px 3px 0 0 #141414;
   }
   .brutal-shadow-lg {
-    box-shadow: 7px 7px 0 0 #141414;
+    box-shadow: 6px 6px 0 0 #141414;
   }
   .brutal-shadow-orange {
-    box-shadow: 5px 5px 0 0 #FF4D00;
+    box-shadow: 4px 4px 0 0 #FF4D00;
   }
   .brutal-shadow-yellow {
-    box-shadow: 5px 5px 0 0 #FFC72E;
+    box-shadow: 4px 4px 0 0 #FFC72E;
   }
 
-  /* Interactive Button Physics & Mobile Responsiveness */
+  /* Neo-Brutalist Sticker Capsule Pills (Exact AI Jugaad Style) */
+  .sticker-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 2.5px solid #141414;
+    box-shadow: 4px 4px 0 0 #141414;
+    font-family: inherit;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @media (hover: hover) {
+    .sticker-pill:hover {
+      transform: translate(-2px, -3px);
+      box-shadow: 6px 6px 0 0 #141414;
+    }
+  }
+
+  .sticker-pill:active {
+    transform: translate(2px, 2px) !important;
+    box-shadow: 1px 1px 0 0 #141414 !important;
+  }
+
+  /* Interactive Universal Button Physics */
   .brutal-btn,
   button,
   a[role="button"] {
@@ -84,15 +115,21 @@
   }
 
   .brutal-btn {
-    transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    border-radius: 9999px;
+    border: 2px solid #141414;
+    box-shadow: 4px 4px 0 0 #141414;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   @media (hover: hover) {
     .brutal-btn:hover {
       transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 0 #141414;
     }
   }
 
@@ -225,20 +262,4 @@
 
 .animate-card-pop {
   animation: cardPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Radar Pulse Animation */
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.15);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
 }

@@ -7,8 +7,8 @@ export default function BigCtaBanner() {
   return (
     <section id="contact-banner" className="relative py-20 sm:py-32 bg-[#141414] text-[#FAF7EE] border-t-2 border-[#141414] text-center overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid size-12 place-items-center rounded-full bg-[#FF4D00] mx-auto mb-6 shadow-[3px_3px_0_0_#FFC72E]">
-          <svg viewBox="0 0 64 64" className="size-6 text-[#FAF7EE]" aria-hidden="true">
+        <div className="grid size-14 place-items-center rounded-full bg-[#FF4D00] border-2 border-[#FAF7EE] mx-auto mb-6 shadow-[4px_4px_0_0_#FFC72E] hover:scale-110 active:scale-95 transition-transform cursor-pointer">
+          <svg viewBox="0 0 64 64" className="size-7 text-[#FAF7EE]" aria-hidden="true">
             <g stroke="currentColor" strokeWidth="9" strokeLinecap="round">
               <line x1="32" y1="10" x2="32" y2="54"></line>
               <line x1="12.9" y1="21" x2="51.1" y2="43"></line>
@@ -26,7 +26,7 @@ export default function BigCtaBanner() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/contact"
-            className="rounded-full bg-[#FF4D00] hover:bg-[#FF5500] px-9 py-4 sm:px-12 sm:py-5 font-display text-base sm:text-lg font-black uppercase text-[#FAF7EE] shadow-[6px_6px_0_0_#FFC72E] transition-all hover:shadow-[7px_7px_0_0_#FFC72E] hover:-translate-y-1 cursor-pointer"
+            className="sticker-pill px-9 py-4 sm:px-12 sm:py-5 text-base sm:text-lg bg-[#FF4D00] hover:bg-[#FFC72E] hover:text-[#141414] text-[#FAF7EE] border-[#FAF7EE] shadow-[5px_5px_0_0_#FFC72E] cursor-pointer"
           >
             START A PROJECT
           </Link>
@@ -34,9 +34,9 @@ export default function BigCtaBanner() {
             href={CONTACT_INFO.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#FAF7EE] bg-transparent hover:bg-[#FAF7EE] hover:text-[#141414] px-8 py-4 sm:px-10 sm:py-5 font-display text-base sm:text-lg font-black uppercase text-[#FAF7EE] transition-all hover:-translate-y-1"
+            className="sticker-pill px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg bg-[#25D366] hover:bg-[#1EBE5D] text-[#141414] border-[#FAF7EE] shadow-[5px_5px_0_0_#FAF7EE] cursor-pointer"
           >
-            <MessageCircle className="size-5" />
+            <MessageCircle className="size-5 text-[#141414]" />
             <span>CHAT ON WHATSAPP</span>
           </a>
         </div>
