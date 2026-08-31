@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
 import { MessageCircle, Flame } from 'lucide-react';
@@ -16,6 +16,63 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
     'ZERO-TRUST DEFENSE',
     '360° TECH GROWTH'
   ];
+
+  // Dynamic Rotating Headline Phrases (Original & Tailored to The Unfiltered Engineer)
+  const rotatingHeadlines = [
+    {
+      line1: 'WE ARE ARCHITECTS.',
+      line2: 'WE COOK SYSTEMS',
+      line3: 'AND SCALE AI.',
+      sub: 'Zero-breach Cyber Security, high-throughput Web3 protocols, production AI swarms, and high-converting tech architectures.'
+    },
+    {
+      line1: 'WE ARE BUILDERS.',
+      line2: 'WE CODE PLATFORMS',
+      line3: 'THAT NEVER CRASH.',
+      sub: 'Enterprise SaaS, real-time distributed microservices, and battle-tested cloud backbones deployed with sub-second latency.'
+    },
+    {
+      line1: 'WE ARE RED-TEAMS.',
+      line2: 'WE AUDIT WEB3',
+      line3: 'AND DEFEND DATA.',
+      sub: 'Military-grade cryptographic defense, smart contract penetration testing, and zero-trust perimeters for high-stakes protocols.'
+    },
+    {
+      line1: 'WE ARE INNOVATORS.',
+      line2: 'WE DEPLOY SWARMS',
+      line3: 'OF AUTONOMOUS BOTS.',
+      sub: 'Custom LLMs, automated WhatsApp agents, and multi-agent neural pipelines that replace 100+ hours of manual labor.'
+    },
+    {
+      line1: 'WE ARE ACCELERATORS.',
+      line2: 'WE ENGINEER FUNNELS',
+      line3: 'AND DOMINATE ROAS.',
+      sub: 'Programmatic technical SEO, ultra-fast Lighthouse 100/100 web performance, and high-converting revenue infrastructure.'
+    },
+    {
+      line1: 'WE ARE WAR ROOMS.',
+      line2: 'WE SHIP PRODUCTION',
+      line3: 'WITH ZERO EXCUSES.',
+      sub: 'Senior squads deployed directly into your engineering roadmap. Zero junior delegation, 100% direct accountability.'
+    }
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsFading(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % rotatingHeadlines.length);
+        setIsFading(false);
+      }, 300); // 300ms transition fade
+    }, 3200); // changes every 3.2s
+
+    return () => clearInterval(timer);
+  }, [rotatingHeadlines.length]);
+
+  const activeHeadline = rotatingHeadlines[currentIndex];
 
   return (
     <div className="relative overflow-hidden pt-20 sm:pt-24 bg-[#FAF7EE] text-[#141414]">
@@ -54,29 +111,48 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
         {/* Hero Content Container */}
         <div className="relative z-10 mx-auto w-full max-w-6xl">
           
-          {/* Eyebrow Tag */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border-2 border-[#141414] bg-[#FFC72E] text-[#141414] font-display text-xs font-black uppercase tracking-wider mb-6 shadow-[3px_3px_0_0_#141414]">
-            <Flame className="size-3.5 text-[#FF4D00] fill-[#FF4D00] animate-pulse" />
-            <span>GLOBAL ARCHITECTURE & AI COLLECTIVE</span>
+          {/* Eyebrow Tag + Rotation Dots */}
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border-2 border-[#141414] bg-[#FFC72E] text-[#141414] font-display text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_#141414]">
+              <Flame className="size-3.5 text-[#FF4D00] fill-[#FF4D00] animate-pulse" />
+              <span>GLOBAL ARCHITECTURE & AI COLLECTIVE</span>
+            </div>
+
+            {/* Quick Phrase Jump Indicators */}
+            <div className="hidden sm:flex items-center gap-1.5 bg-[#FAF7EE] border-2 border-[#141414] px-3 py-1 rounded-full shadow-[2px_2px_0_0_#141414]">
+              {rotatingHeadlines.map((_, dotIdx) => (
+                <button
+                  key={dotIdx}
+                  type="button"
+                  onClick={() => setCurrentIndex(dotIdx)}
+                  className={`size-2.5 rounded-full border border-[#141414] transition-all cursor-pointer ${
+                    currentIndex === dotIdx ? 'bg-[#FF4D00] scale-125' : 'bg-[#141414]/20 hover:bg-[#FFC72E]'
+                  }`}
+                  title={`Phrase ${dotIdx + 1}`}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Giant Display Typography */}
-          <h1 className="font-display text-[clamp(2.5rem,8vw,7.5rem)] font-black uppercase leading-[0.92] tracking-tight text-[#141414]">
-            WE ARE ARCHITECTS.
-            <span className="block text-outline mt-1 sm:mt-2">
-              WE COOK SYSTEMS
-            </span>
-            <span className="block text-[#FF4D00] mt-1 sm:mt-2">
-              AND SCALE AI.
-            </span>
-          </h1>
+          {/* Dynamic Rotating Display Typography */}
+          <div className={`transition-all duration-300 transform ${isFading ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0'}`}>
+            <h1 className="font-display text-[clamp(2.4rem,7.5vw,7.2rem)] font-black uppercase leading-[0.92] tracking-tight text-[#141414]">
+              <span>{activeHeadline.line1}</span>
+              <span className="block text-outline mt-1 sm:mt-2">
+                {activeHeadline.line2}
+              </span>
+              <span className="block text-[#FF4D00] mt-1 sm:mt-2">
+                {activeHeadline.line3}
+              </span>
+            </h1>
+          </div>
 
           {/* Subtext and Action Split Row */}
           <div className="mt-6 sm:mt-10 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
             
             <div className="max-w-xl">
-              <p className="text-base sm:text-xl font-medium leading-relaxed text-[#141414]/85">
-                Zero-breach Cyber Security, high-throughput Web3 protocols, production AI swarms, and high-converting tech architectures.
+              <p className={`text-base sm:text-xl font-medium leading-relaxed text-[#141414]/85 min-h-[56px] transition-all duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
+                {activeHeadline.sub}
               </p>
 
               {/* Action Buttons */}
