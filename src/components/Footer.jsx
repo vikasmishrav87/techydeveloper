@@ -67,30 +67,27 @@ export default function Footer({ onOpenTerminal, onOpenAdmin }) {
             <h4 className="text-xs font-mono uppercase text-indigo-800 tracking-wider font-semibold">Growth & Tools</h4>
             <ul className="space-y-2 text-xs font-normal text-slate-700">
               <li><Link to="/seo-audit" className="hover:text-sky-700 transition-colors font-medium text-sky-800">⚡ Free Live SEO & Speed Audit</Link></li>
-              <li><Link to="/marketing" className="hover:text-sky-700 transition-colors">Meta Ads CAPI & Scale</Link></li>
-              <li><Link to="/marketing" className="hover:text-sky-700 transition-colors">Google Ads & PMax Bidding</Link></li>
-              <li><Link to="/marketing" className="hover:text-sky-700 transition-colors">Technical & Programmatic SEO</Link></li>
               <li><Link to="/security-audit" className="hover:text-sky-700 transition-colors">Live Security & Exploit Scanner</Link></li>
               <li><Link to="/estimator" className="hover:text-sky-700 transition-colors">Interactive Scope Estimator</Link></li>
+              <li><Link to="/checkout" className="hover:text-sky-700 transition-colors font-semibold text-slate-900">💳 Universal Client Checkout</Link></li>
               <li><button onClick={onOpenTerminal} className="hover:text-sky-700 transition-colors">Interactive CLI Terminal</button></li>
             </ul>
           </div>
 
-          {/* Col 4: Global Hubs & Admin */}
+          {/* Col 4: Payment Portals & Admin */}
           <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-mono uppercase text-slate-500 tracking-wider font-semibold">Global PoPs</h4>
-            <div className="flex flex-wrap gap-1 text-[11px] font-mono text-slate-600">
-              {GLOBAL_HUBS.map((h) => (
-                <span key={h.id} className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
-                  {h.name.split(',')[0]}
-                </span>
-              ))}
-            </div>
+            <h4 className="text-xs font-mono uppercase text-emerald-800 tracking-wider font-semibold">Payment Portals</h4>
+            <ul className="space-y-1.5 text-xs font-mono text-slate-600">
+              <li><Link to="/pay/upi" className="hover:text-emerald-700 transition-colors">📱 Google Pay UPI</Link></li>
+              <li><Link to="/pay/bank" className="hover:text-sky-700 transition-colors">🏦 SBI Wire Transfer</Link></li>
+              <li><Link to="/pay/crypto" className="hover:text-purple-700 transition-colors">⛓️ Ethereum ERC-20</Link></li>
+              <li><Link to="/pay/card" className="hover:text-indigo-700 transition-colors">💳 Stripe Global Cards</Link></li>
+            </ul>
 
-            <div className="pt-4">
+            <div className="pt-2">
               <button
                 onClick={onOpenAdmin}
-                className="text-xs font-mono text-slate-500 hover:text-sky-700 underline"
+                className="text-[11px] font-mono text-slate-400 hover:text-sky-700 underline"
               >
                 Executive Portal
               </button>

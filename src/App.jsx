@@ -22,6 +22,10 @@ import EstimatorPage from './pages/EstimatorPage';
 import PricingPage from './pages/PricingPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from './pages/CheckoutPage';
+import UPIPaymentPage from './pages/UPIPaymentPage';
+import BankPaymentPage from './pages/BankPaymentPage';
+import CryptoPaymentPage from './pages/CryptoPaymentPage';
+import CardPaymentPage from './pages/CardPaymentPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
@@ -102,12 +106,32 @@ export default function App() {
           <Route path="/case-studies/:studyId" element={<CaseStudyDetailPage />} />
           <Route path="/estimator" element={<EstimatorPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          
+          {/* Universal Checkout Hub */}
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/payment" element={<CheckoutPage />} />
           <Route path="/pay" element={<CheckoutPage />} />
           <Route path="/invoice" element={<CheckoutPage />} />
-          <Route path="/bank" element={<CheckoutPage />} />
-          <Route path="/upi" element={<CheckoutPage />} />
+          
+          {/* Dedicated Individual Payment Pages */}
+          <Route path="/pay/upi" element={<UPIPaymentPage />} />
+          <Route path="/upi" element={<UPIPaymentPage />} />
+          <Route path="/upi-payment" element={<UPIPaymentPage />} />
+          
+          <Route path="/pay/bank" element={<BankPaymentPage />} />
+          <Route path="/bank" element={<BankPaymentPage />} />
+          <Route path="/bank-transfer" element={<BankPaymentPage />} />
+          
+          <Route path="/pay/crypto" element={<CryptoPaymentPage />} />
+          <Route path="/crypto" element={<CryptoPaymentPage />} />
+          <Route path="/ethereum" element={<CryptoPaymentPage />} />
+          <Route path="/crypto-payment" element={<CryptoPaymentPage />} />
+          
+          <Route path="/pay/card" element={<CardPaymentPage />} />
+          <Route path="/card" element={<CardPaymentPage />} />
+          <Route path="/stripe" element={<CardPaymentPage />} />
+          <Route path="/card-payment" element={<CardPaymentPage />} />
+
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
