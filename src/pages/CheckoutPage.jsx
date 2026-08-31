@@ -10,6 +10,15 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_WALLETS = {
+  MATIC: {
+    id: 'MATIC',
+    name: 'Polygon (MATIC / POL)',
+    network: 'Polygon Network (PoS Only)',
+    address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
+    token: 'Native POL (MATIC) • USDT (Polygon) • USDC (Polygon)',
+    qrImage: '/images/matic_qr.png',
+    warning: 'CRITICAL: Send ONLY via the Polygon Network (PoS). Sending via any other network will result in permanent asset loss.'
+  },
   BSC: {
     id: 'BSC',
     name: 'BNB Smart Chain (BEP-20)',
@@ -665,95 +674,113 @@ export default function CheckoutPage() {
                     <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
                       Choose Blockchain Network:
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCrypto('MATIC')}
+                        className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
+                          (selectedCrypto || 'MATIC') === 'MATIC'
+                            ? 'border-indigo-500 bg-indigo-50/80 ring-2 ring-indigo-500/30 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[11px] font-bold text-slate-950">Polygon</span>
+                          <span className="w-4 h-4 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[9px]">
+                            ⬡
+                          </span>
+                        </div>
+                        <div className="text-[9px] text-slate-500 font-mono">PoS (POL)</div>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('BSC')}
-                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
-                          (selectedCrypto || 'BSC') === 'BSC'
+                        className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
+                          selectedCrypto === 'BSC'
                             ? 'border-yellow-500 bg-yellow-50/80 ring-2 ring-yellow-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs font-bold text-slate-950">BNB Chain</span>
-                          <span className="w-5 h-5 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center text-[10px]">
+                          <span className="text-[11px] font-bold text-slate-950">BNB Chain</span>
+                          <span className="w-4 h-4 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center text-[9px]">
                             🔶
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono">BEP-20</div>
+                        <div className="text-[9px] text-slate-500 font-mono">BEP-20</div>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('TRX')}
-                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                        className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                           selectedCrypto === 'TRX'
                             ? 'border-rose-500 bg-rose-50/80 ring-2 ring-rose-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs font-bold text-slate-950">Tron</span>
-                          <span className="w-5 h-5 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[10px]">
+                          <span className="text-[11px] font-bold text-slate-950">Tron</span>
+                          <span className="w-4 h-4 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[9px]">
                             ₮
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono">TRC-20</div>
+                        <div className="text-[9px] text-slate-500 font-mono">TRC-20</div>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('SOL')}
-                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                        className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                           selectedCrypto === 'SOL'
                             ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs font-bold text-slate-950">Solana</span>
-                          <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px]">
+                          <span className="text-[11px] font-bold text-slate-950">Solana</span>
+                          <span className="w-4 h-4 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[9px]">
                             ◎
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono">SOL / SPL</div>
+                        <div className="text-[9px] text-slate-500 font-mono">SPL</div>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('BTC')}
-                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                        className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                           selectedCrypto === 'BTC'
                             ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs font-bold text-slate-950">Bitcoin</span>
-                          <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[10px]">
+                          <span className="text-[11px] font-bold text-slate-950">Bitcoin</span>
+                          <span className="w-4 h-4 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[9px]">
                             ₿
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono">Native BTC</div>
+                        <div className="text-[9px] text-slate-500 font-mono">BTC</div>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('ETH')}
-                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                        className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                           selectedCrypto === 'ETH'
                             ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-xs font-bold text-slate-950">Ethereum</span>
-                          <span className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
+                          <span className="text-[11px] font-bold text-slate-950">Ethereum</span>
+                          <span className="w-4 h-4 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[9px]">
                             Ξ
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono">ERC-20</div>
+                        <div className="text-[9px] text-slate-500 font-mono">ERC-20</div>
                       </button>
                     </div>
                   </div>
@@ -763,26 +790,28 @@ export default function CheckoutPage() {
                     <span className="text-xl">⚠️</span>
                     <div className="text-xs leading-relaxed">
                       <strong className="font-bold text-amber-900 block uppercase font-mono tracking-wider">
-                        Critical {CRYPTO_WALLETS[selectedCrypto || 'TRX'].name} Requirement:
+                        Critical {CRYPTO_WALLETS[selectedCrypto || 'MATIC'].name} Requirement:
                       </strong>
-                      {CRYPTO_WALLETS[selectedCrypto || 'TRX'].warning}
+                      {CRYPTO_WALLETS[selectedCrypto || 'MATIC'].warning}
                     </div>
                   </div>
 
                   <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center gap-6 border border-slate-800 shadow-xl">
                     {/* QR Code Image */}
                     <div className={`bg-white p-3 rounded-2xl border-2 ${
+                      selectedCrypto === 'MATIC' ? 'border-indigo-400' :
+                      selectedCrypto === 'BSC' ? 'border-yellow-400' :
                       selectedCrypto === 'TRX' ? 'border-rose-400' :
                       selectedCrypto === 'SOL' ? 'border-emerald-400' :
                       selectedCrypto === 'BTC' ? 'border-amber-400' : 'border-purple-400'
                     } shadow-lg flex-shrink-0 text-center`}>
                       <img
-                        src={CRYPTO_WALLETS[selectedCrypto || 'TRX'].qrImage}
-                        alt={`Vikas Mishra - ${CRYPTO_WALLETS[selectedCrypto || 'TRX'].name} QR Code`}
+                        src={CRYPTO_WALLETS[selectedCrypto || 'MATIC'].qrImage}
+                        alt={`Vikas Mishra - ${CRYPTO_WALLETS[selectedCrypto || 'MATIC'].name} QR Code`}
                         className="w-48 h-auto rounded-xl object-contain mx-auto"
                       />
                       <div className="text-[10px] font-mono text-slate-700 mt-1.5 font-bold">
-                        Vikas Mishra / {selectedCrypto || 'TRX'}
+                        Vikas Mishra / {selectedCrypto || 'MATIC'}
                       </div>
                     </div>
 

@@ -9,6 +9,18 @@ import confetti from 'canvas-confetti';
 const USD_TO_INR_RATE = 100;
 
 const CRYPTO_NETWORKS = {
+  MATIC: {
+    id: 'MATIC',
+    name: 'Polygon (MATIC / POL)',
+    network: 'Polygon Network (PoS Only)',
+    symbol: 'POL / USDT / USDC',
+    address: '0xaf3c37fBD1091175f164d753d53Cc420f7bF2aB3',
+    token: 'Native POL (MATIC) • USDT (Polygon) • USDC (Polygon)',
+    qrImage: '/images/matic_qr.png',
+    badgeClass: 'bg-indigo-100 text-indigo-900 border-indigo-300',
+    qrBorderClass: 'border-indigo-500',
+    warning: 'CRITICAL: Send ONLY via the Polygon Network (PoS). Sending via any other network (e.g. ERC20, Tron, Solana, BSC) will result in permanent loss of your assets.'
+  },
   BSC: {
     id: 'BSC',
     name: 'BNB Smart Chain (BEP-20)',
@@ -74,9 +86,9 @@ const CRYPTO_NETWORKS = {
 export default function CryptoPaymentPage() {
   const [searchParams] = useSearchParams();
 
-  // Initial network from query: ?net=bsc or ?net=trx or ?net=sol or ?net=btc or ?net=eth
+  // Initial network from query: ?net=matic or ?net=bsc or ?net=trx or ?net=sol or ?net=btc or ?net=eth
   const requestedNet = searchParams.get('net')?.toUpperCase();
-  const initialNet = (requestedNet && CRYPTO_NETWORKS[requestedNet]) ? requestedNet : 'BSC';
+  const initialNet = (requestedNet && CRYPTO_NETWORKS[requestedNet]) ? requestedNet : 'MATIC';
   const [activeNetwork, setActiveNetwork] = useState(initialNet);
 
   const [currencyMode, setCurrencyMode] = useState(searchParams.get('currency')?.toUpperCase() || 'USD');
@@ -92,7 +104,7 @@ export default function CryptoPaymentPage() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
 
-  const selectedWallet = CRYPTO_NETWORKS[activeNetwork] || CRYPTO_NETWORKS.BSC;
+  const selectedWallet = CRYPTO_NETWORKS[activeNetwork] || CRYPTO_NETWORKS.MATIC;
 
   const parsedVal = parseFloat(manualAmount) || 0;
   const amountUSD = currencyMode === 'USD' ? parsedVal : Math.round((parsedVal / USD_TO_INR_RATE) * 100) / 100;
@@ -151,10 +163,10 @@ export default function CryptoPaymentPage() {
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
-            Web3 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-emerald-600 to-purple-600">Crypto Portal</span>
+            Web3 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-yellow-600 to-purple-600">Crypto Portal</span>
           </h1>
           <p className="text-slate-600 text-sm mt-2">
-            Direct on-chain settlement via <strong>BNB Chain</strong>, <strong>Tron</strong>, <strong>Solana</strong>, <strong>Bitcoin</strong>, or <strong>Ethereum</strong>.
+            Direct on-chain settlement via <strong>Polygon</strong>, <strong>BNB Chain</strong>, <strong>Tron</strong>, <strong>Solana</strong>, <strong>Bitcoin</strong>, or <strong>Ethereum</strong>.
           </p>
         </div>
 
@@ -177,106 +189,125 @@ export default function CryptoPaymentPage() {
                 </div>
               </div>
 
-              {/* NETWORK SELECTOR (BNB vs TRON vs SOLANA vs BITCOIN vs ETHEREUM) */}
+              {/* NETWORK SELECTOR (6 BLOCKCHAINS) */}
               <div>
                 <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
                   Select Blockchain Network:
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   
+                  {/* Polygon Tab */}
+                  <button
+                    type="button"
+                    onClick={() => setActiveNetwork('MATIC')}
+                    className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
+                      activeNetwork === 'MATIC'
+                        ? 'border-indigo-500 bg-indigo-50/80 ring-2 ring-indigo-500/30 shadow-xs'
+                        : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-[11px] font-bold text-slate-950">Polygon</span>
+                      <span className="w-4 h-4 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[9px]">
+                        ⬡
+                      </span>
+                    </div>
+                    <div className="text-[9px] text-slate-500 font-mono">PoS (POL)</div>
+                  </button>
+
                   {/* BNB Chain Tab */}
                   <button
                     type="button"
                     onClick={() => setActiveNetwork('BSC')}
-                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'BSC'
                         ? 'border-yellow-500 bg-yellow-50/80 ring-2 ring-yellow-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold text-slate-950">BNB Chain</span>
-                      <span className="w-5 h-5 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center text-[10px]">
+                      <span className="text-[11px] font-bold text-slate-950">BNB Chain</span>
+                      <span className="w-4 h-4 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center text-[9px]">
                         🔶
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">BEP-20</div>
+                    <div className="text-[9px] text-slate-500 font-mono">BEP-20</div>
                   </button>
 
                   {/* Tron Tab */}
                   <button
                     type="button"
                     onClick={() => setActiveNetwork('TRX')}
-                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'TRX'
                         ? 'border-rose-500 bg-rose-50/80 ring-2 ring-rose-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold text-slate-950">Tron</span>
-                      <span className="w-5 h-5 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[10px]">
+                      <span className="text-[11px] font-bold text-slate-950">Tron</span>
+                      <span className="w-4 h-4 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-[9px]">
                         ₮
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">TRC-20</div>
+                    <div className="text-[9px] text-slate-500 font-mono">TRC-20</div>
                   </button>
 
                   {/* Solana Tab */}
                   <button
                     type="button"
                     onClick={() => setActiveNetwork('SOL')}
-                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'SOL'
                         ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold text-slate-950">Solana</span>
-                      <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px]">
+                      <span className="text-[11px] font-bold text-slate-950">Solana</span>
+                      <span className="w-4 h-4 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[9px]">
                         ◎
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">SOL / SPL</div>
+                    <div className="text-[9px] text-slate-500 font-mono">SPL</div>
                   </button>
 
                   {/* Bitcoin Tab */}
                   <button
                     type="button"
                     onClick={() => setActiveNetwork('BTC')}
-                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'BTC'
                         ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold text-slate-950">Bitcoin</span>
-                      <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[10px]">
+                      <span className="text-[11px] font-bold text-slate-950">Bitcoin</span>
+                      <span className="w-4 h-4 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[9px]">
                         ₿
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">Native BTC</div>
+                    <div className="text-[9px] text-slate-500 font-mono">BTC</div>
                   </button>
 
                   {/* Ethereum Tab */}
                   <button
                     type="button"
                     onClick={() => setActiveNetwork('ETH')}
-                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] ${
+                    className={`p-2 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                       activeNetwork === 'ETH'
                         ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold text-slate-950">Ethereum</span>
-                      <span className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
+                      <span className="text-[11px] font-bold text-slate-950">Ethereum</span>
+                      <span className="w-4 h-4 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[9px]">
                         Ξ
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">ERC-20</div>
+                    <div className="text-[9px] text-slate-500 font-mono">ERC-20</div>
                   </button>
 
                 </div>
@@ -362,6 +393,7 @@ export default function CryptoPaymentPage() {
 
                 <div className="flex-1 space-y-3 text-left w-full">
                   <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-mono font-bold ${
+                    activeNetwork === 'MATIC' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-400/30' :
                     activeNetwork === 'BSC' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30' :
                     activeNetwork === 'TRX' ? 'bg-rose-500/20 text-rose-300 border-rose-400/30' :
                     activeNetwork === 'SOL' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30' :
@@ -409,7 +441,7 @@ export default function CryptoPaymentPage() {
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       placeholder="e.g. Vikas Mishra"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-yellow-500 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -422,7 +454,7 @@ export default function CryptoPaymentPage() {
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       placeholder="billing@company.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-yellow-500 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-indigo-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -437,14 +469,14 @@ export default function CryptoPaymentPage() {
                     value={txHash}
                     onChange={(e) => setTxHash(e.target.value)}
                     placeholder="0x... or transaction hash"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-yellow-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono focus:bg-white focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isProcessing || amountUSD <= 0}
-                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-yellow-600 via-amber-600 to-purple-600 hover:from-yellow-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-yellow-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-yellow-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <Zap className="w-4 h-4" />
                   <span>{isProcessing ? 'Verifying Blockchain Confirmation...' : `Confirm $${amountUSD.toLocaleString()} ${selectedWallet.id} Payment`}</span>
