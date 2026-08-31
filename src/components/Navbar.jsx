@@ -41,31 +41,31 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b-2 border-[#141414] ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-xl border-b border-indigo-100/90 shadow-sm shadow-indigo-100/40 py-2.5'
-          : 'bg-[#EEF2FF]/90 backdrop-blur-md border-b border-indigo-100/60 py-3.5'
+          ? 'bg-[#FAF7EE]/95 backdrop-blur-md py-3 shadow-[0_4px_0_0_#141414]'
+          : 'bg-[#FAF7EE]/90 backdrop-blur-sm py-4'
       }`}
     >
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 xl:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         
         {/* Left: Brand Logo */}
         <div className="flex-shrink-0">
           <BrandLogo size="md" withText={true} linkTo="/" />
         </div>
 
-        {/* Center: Desktop Nav Links with generous whitespace */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+        {/* Center: Desktop Nav Links (aijugaad style) */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           {primaryNavLinks.map((link) => {
             const isActive = location.pathname === link.to;
             return (
               <Link
                 key={link.name}
                 to={link.to}
-                className={`text-[13px] font-medium transition-all tracking-normal px-3 py-2 rounded-xl whitespace-nowrap ${
+                className={`font-display text-xs xl:text-sm font-bold tracking-wide uppercase transition-colors ${
                   isActive 
-                    ? "text-sky-700 bg-sky-100/80 font-semibold shadow-xs" 
-                    : "text-slate-700 hover:text-sky-600 hover:bg-white/80"
+                    ? "text-[#FF4D00] underline decoration-[#141414] decoration-2 underline-offset-4" 
+                    : "text-[#141414] hover:text-[#FF4D00]"
                 }`}
               >
                 {link.name}
@@ -78,14 +78,14 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             <button
               onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
               onBlur={() => setTimeout(() => setMoreDropdownOpen(false), 250)}
-              className="inline-flex items-center gap-1 text-[13px] font-medium text-slate-700 hover:text-sky-600 hover:bg-white/80 px-3 py-2 rounded-xl transition-all cursor-pointer whitespace-nowrap"
+              className="inline-flex items-center gap-1 font-display text-xs xl:text-sm font-bold tracking-wide uppercase text-[#141414] hover:text-[#FF4D00] transition-colors cursor-pointer"
             >
-              <span>More</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-sky-600' : 'text-slate-400'}`} />
+              <span>MORE</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-[#FF4D00]' : 'text-[#141414]'}`} />
             </button>
 
             {moreDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-68 p-2 bg-white rounded-2xl border border-indigo-100 shadow-xl shadow-indigo-500/10 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="absolute top-full right-0 mt-3 w-72 p-2.5 bg-[#FAF7EE] rounded-2xl border-2 border-[#141414] shadow-[5px_5px_0_0_#141414] animate-in fade-in slide-in-from-top-2 duration-200 z-50 text-left">
                 {extraTools.map((tool) => {
                   const Icon = tool.icon;
                   return (
@@ -93,14 +93,14 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
                       key={tool.name}
                       to={tool.to}
                       onClick={() => setMoreDropdownOpen(false)}
-                      className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/80 transition-colors text-left group"
+                      className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#FFC72E] border border-transparent hover:border-[#141414] transition-all group"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="size-8 rounded-lg bg-[#141414] text-[#FF4D00] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-slate-900 group-hover:text-sky-700">{tool.name}</div>
-                        <div className="text-[11px] text-slate-500 line-clamp-1">{tool.desc}</div>
+                        <div className="text-xs font-black uppercase text-[#141414]">{tool.name}</div>
+                        <div className="text-[11px] text-[#141414]/70 font-medium line-clamp-1">{tool.desc}</div>
                       </div>
                     </Link>
                   );
@@ -110,48 +110,36 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           </div>
         </nav>
 
-        {/* Right: Clean Actions (Executive Portal + AI Bot + Terminal + WhatsApp) */}
-        <div className="hidden md:flex items-center gap-2 xl:gap-2.5 flex-shrink-0">
+        {/* Right: Studio Action Buttons */}
+        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
           
-          {/* Executive Portal Button */}
+          {/* Executive Portal */}
           <Link
             to="/admin/verify"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 text-xs font-semibold shadow-xs hover:border-emerald-400 transition-all cursor-pointer whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] transition-transform hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
             title="Executive Verification Portal (Passkey: vikasmusickeytosuccess)"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Executive Portal</span>
+            <ShieldCheck className="w-4 h-4 text-[#141414]" />
+            <span>PORTAL</span>
           </Link>
 
-          {/* AI Principal GPT Assistant */}
+          {/* AI Bot */}
           <button
             onClick={onOpenAIChat}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-white transition-all text-xs font-semibold shadow-xs border border-sky-400/30 hover:scale-105 cursor-pointer whitespace-nowrap"
-            title="Ask Unfiltered AI Principal"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[3px_3px_0_0_#141414] transition-transform hover:-translate-y-0.5 cursor-pointer whitespace-nowrap"
+            title="Ask AI Principal"
           >
-            <Bot className="w-3.5 h-3.5 text-sky-400 animate-pulse" />
-            <span>AI Bot</span>
+            <Bot className="w-4 h-4 text-[#FF4D00]" />
+            <span>AI BOT</span>
           </button>
 
-          {/* CLI Terminal Shortcut */}
-          <button
-            onClick={onOpenTerminal}
-            className="p-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-sky-600 hover:border-sky-300 transition-all text-xs font-mono shadow-xs cursor-pointer"
-            title="Open Interactive CLI Terminal (Ctrl+K or `)"
+          {/* START A PROJECT Big Button */}
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs xl:text-sm font-black tracking-wide uppercase transition-all shadow-[4px_4px_0_0_#FF4D00] hover:shadow-[4px_4px_0_0_#141414] hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
           >
-            <Terminal className="w-4 h-4" />
-          </button>
-
-          {/* WhatsApp Direct Line */}
-          <a
-            href={CONTACT_INFO.whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium text-xs shadow-sm shadow-emerald-600/20 transition-all hover:scale-105 whitespace-nowrap ml-1"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>WhatsApp</span>
-          </a>
+            <span>START A PROJECT</span>
+          </Link>
 
         </div>
 

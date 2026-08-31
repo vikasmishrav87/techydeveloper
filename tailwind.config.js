@@ -8,6 +8,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        cream: '#FAF7EE',
+        paper: '#F4EFE6',
+        ink: '#141414',
+        orange: '#FF4D00',
+        yellow: '#FFC72E',
         sky: {
           50: '#F0F9FF',
           100: '#E0F2FE',
@@ -27,7 +32,7 @@ export default {
           200: '#DDD6FE',
           300: '#C4B5FD',
           400: '#A78BFA',
-          500: '#818CF8', // primary blue-lavender
+          500: '#818CF8',
           600: '#6366F1',
           700: '#4F46E5',
           800: '#4338CA',
@@ -35,10 +40,10 @@ export default {
           950: '#1E1B4B',
         },
         obsidian: {
-          950: '#030712', // deep background
-          900: '#090D16', // elevated dark surface
-          850: '#0E1424', // card surface
-          800: '#131B2E', // border & subtle surface
+          950: '#030712',
+          900: '#090D16',
+          850: '#0E1424',
+          800: '#131B2E',
           750: '#1E293B',
           700: '#334155',
           600: '#475569',

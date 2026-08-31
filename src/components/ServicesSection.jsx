@@ -1,200 +1,112 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { SERVICE_PILLARS, CONTACT_INFO } from '../data/agencyData';
-import { Shield, Cpu, Brain, Layers, Globe2, ArrowRight, CheckCircle2, MessageCircle, Send, Users, Terminal, Sparkles, Database, Cloud, Code2, Rocket, Bot } from 'lucide-react';
+import { SERVICE_PILLARS } from '../data/agencyData';
+import { ArrowRight, MessageCircle, ArrowUpRight } from 'lucide-react';
 
 export default function ServicesSection() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
-  const categories = ['All', 'AI Agents', 'AI/ML', 'SaaS', 'Security', 'Web', 'Data', 'Web3', 'Enterprise', 'Growth'];
-
-  const getServiceIcon = (id) => {
-    switch (id) {
-      case 'saas-products':
-        return <Rocket className="w-5 h-5 text-sky-600" />;
-      case 'cyber-security':
-        return <Shield className="w-5 h-5 text-sky-600" />;
-      case 'fullstack-web-dev':
-        return <Code2 className="w-5 h-5 text-indigo-600" />;
-      case 'data-engineering-models':
-        return <Database className="w-5 h-5 text-sky-600" />;
-      case 'blockchain-web3':
-        return <Layers className="w-5 h-5 text-indigo-600" />;
-      case 'ai-cognitive':
-        return <Brain className="w-5 h-5 text-purple-600" />;
-      case 'ai-agents-workflow':
-        return <Bot className="w-5 h-5 text-indigo-600" />;
-      case 'software-services':
-        return <Cloud className="w-5 h-5 text-indigo-600" />;
-      case 'digital-marketing-360':
-        return <Globe2 className="w-5 h-5 text-emerald-600" />;
-      default:
-        return <Sparkles className="w-5 h-5 text-sky-600" />;
-    }
-  };
-
-  const filteredServices = selectedCategory === 'All' 
-    ? SERVICE_PILLARS 
-    : SERVICE_PILLARS.filter(s => {
-        if (selectedCategory === 'AI Agents') return s.id === 'ai-agents-workflow';
-        if (selectedCategory === 'AI/ML') return s.id === 'ai-cognitive';
-        if (selectedCategory === 'SaaS') return s.id === 'saas-products';
-        if (selectedCategory === 'Security') return s.id === 'cyber-security';
-        if (selectedCategory === 'Web') return s.id === 'fullstack-web-dev';
-        if (selectedCategory === 'Data') return s.id === 'data-engineering-models';
-        if (selectedCategory === 'Web3') return s.id === 'blockchain-web3';
-        if (selectedCategory === 'Enterprise') return s.id === 'software-services';
-        if (selectedCategory === 'Growth') return s.id === 'digital-marketing-360';
-        return true;
-      });
-
-  const getWhatsAppForService = (service) => {
-    const text = encodeURIComponent("Hi Vikas, I want to discuss engaging The Unfiltered Engineer's specialized " + service.title + " team.");
-    return "https://wa.me/919137507092?text=" + text;
-  };
+  const cardThemes = [
+    { bg: 'bg-[#FFC72E]', text: 'text-[#141414]', numColor: 'text-[#FF4D00]', subText: 'text-[#141414]/80' },
+    { bg: 'bg-[#F4EFE6]', text: 'text-[#141414]', numColor: 'text-[#FF4D00]', subText: 'text-[#141414]/80' },
+    { bg: 'bg-[#141414]', text: 'text-[#FAF7EE]', numColor: 'text-[#FF4D00]', subText: 'text-[#FAF7EE]/80' },
+    { bg: 'bg-[#FF4D00]', text: 'text-[#FAF7EE]', numColor: 'text-[#FFC72E]', subText: 'text-[#FAF7EE]/90' },
+    { bg: 'bg-[#FAF7EE]', text: 'text-[#141414]', numColor: 'text-[#FF4D00]', subText: 'text-[#141414]/80' },
+  ];
 
   return (
-    <section id="services" className="relative py-28 bg-[#EEF2FF] text-slate-900 overflow-hidden">
-      
-      {/* Ambient background glows */}
-      <div className="absolute top-1/3 left-0 w-80 h-80 bg-sky-200/40 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/3 right-0 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute inset-0 bg-light-grid opacity-60 pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="services" className="relative py-16 sm:py-28 bg-[#FAF7EE] text-[#141414] border-b-2 border-[#141414]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-sky-200 text-sky-800 text-xs font-mono uppercase tracking-widest mb-4 shadow-xs">
-            <Users className="w-3.5 h-3.5 text-sky-600" />
-            1,000+ Senior Engineers • 9 Specialized Practices
+        {/* Section Header (aijugaad style) */}
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-16">
+          <div>
+            <p className="font-display text-xs sm:text-sm font-black tracking-[0.2em] text-[#FF4D00] uppercase">
+              CORE SPECIALIZATIONS. DONE RIGHT.
+            </p>
+            <h2 className="mt-2 font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#141414]">
+              WHAT WE ENGINEER
+            </h2>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-slate-950 mb-6">
-            Enterprise Technology & <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 font-normal">IT Solutions</span> Practices
-          </h2>
-          <p className="text-slate-700 text-base sm:text-lg font-normal leading-relaxed">
-            We deliver full-lifecycle enterprise technology and IT solutions across all modern technological pillars. Every practice is staffed by dedicated senior specialists with proven track records.
+          <p className="max-w-md text-sm sm:text-base font-medium text-[#141414]/70">
+            Dedicated senior engineering squads deployed directly into your architecture. Zero fluff, 100% production delivery.
           </p>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-14 reveal-on-scroll">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={"px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer " + (
-                selectedCategory === cat
-                  ? "bg-slate-950 text-white shadow-sm scale-105"
-                  : "bg-white/80 hover:bg-white text-slate-700 border border-slate-200"
-              )}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Services Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {SERVICE_PILLARS.map((service, index) => {
+            const theme = cardThemes[index % cardThemes.length];
+            const numStr = String(index + 1).padStart(2, '0');
 
-        {/* 9 Service Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          
-          {filteredServices.map((service) => {
             return (
               <div
                 key={service.id}
-                className="group rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden bg-white/90 border border-indigo-100 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-100/60 animate-fadeIn"
+                className={`flex flex-col justify-between rounded-3xl border-2 border-[#141414] p-6 sm:p-8 ${theme.bg} ${theme.text} shadow-[6px_6px_0_0_#141414] transition-transform duration-200 hover:-translate-y-1`}
               >
-                {/* Visual Image Preview */}
-                <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-5 bg-slate-900 border border-slate-200 shadow-sm">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = '/assets/ai-neural-mesh.jpg';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-                  
-                  {/* Badge Pill */}
-                  <div className="absolute top-2.5 left-2.5">
-                    <span className="px-2.5 py-0.5 rounded-full bg-slate-950/85 border border-slate-700 text-sky-300 text-[10px] font-mono backdrop-blur-md">
-                      {service.badge}
-                    </span>
-                  </div>
-                </div>
+                <div>
+                  {/* Big Number */}
+                  <span className={`font-display text-4xl sm:text-5xl font-black ${theme.numColor}`}>
+                    {numStr}
+                  </span>
 
-                {/* Content Block */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2.5 mb-2.5">
-                    <div className="p-2 rounded-xl bg-sky-50 border border-sky-200 flex-shrink-0">
-                      {getServiceIcon(service.id)}
-                    </div>
-                    <div className="text-[10px] font-mono uppercase text-indigo-700 font-bold tracking-wider truncate">
-                      {service.category}
-                    </div>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-slate-950 group-hover:text-sky-700 transition-colors mb-2 leading-snug">
+                  {/* Title */}
+                  <h3 className="mt-3 font-display text-xl sm:text-2xl font-black tracking-tight uppercase leading-tight">
                     {service.title}
                   </h3>
 
-                  <p className="text-slate-600 text-xs font-normal leading-relaxed mb-4 line-clamp-3">
+                  {/* Tagline */}
+                  <p className={`mt-2 text-sm font-medium leading-relaxed ${theme.subText}`}>
                     {service.tagline}
                   </p>
 
-                  {/* Key Stats Bar */}
-                  <div className="grid grid-cols-2 gap-2 py-2.5 border-t border-b border-slate-100 mb-4">
-                    {service.keyStats.slice(0, 2).map((stat, sIdx) => (
-                      <div key={sIdx}>
-                        <div className="text-base font-bold text-slate-900 font-mono">{stat.value}</div>
-                        <div className="text-[10px] text-slate-500 uppercase">{stat.label}</div>
-                      </div>
+                  {/* Capabilities List with Bullet Points */}
+                  <ul className="mt-6 flex flex-col gap-2 border-t-2 border-current/20 pt-5">
+                    {service.capabilities.slice(0, 4).map((cap, cIdx) => (
+                      <li key={cIdx} className="flex items-center gap-2.5 font-display text-xs font-bold tracking-wide uppercase">
+                        <span className="size-2 rounded-full bg-[#FF4D00] flex-shrink-0" />
+                        <span className="truncate">{cap}</span>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
-                {/* Bottom Actions — Direct Link to Dedicated Page */}
-                <div className="pt-2 flex items-center gap-2">
+                {/* Card Bottom CTA Link */}
+                <div className="mt-8 pt-5 border-t-2 border-current/20 flex items-center justify-between gap-3">
                   <Link
-                    to={"/services/" + service.id}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition-all shadow-xs"
+                    to={`/services/${service.id}`}
+                    className="inline-flex items-center gap-1.5 font-display text-xs sm:text-sm font-black uppercase tracking-wider underline decoration-2 underline-offset-4 hover:text-[#FF4D00] transition-colors"
                   >
-                    <span>View Full Details</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>VIEW SQUAD DOSSIER</span>
+                    <ArrowUpRight className="size-4" />
                   </Link>
 
                   <a
-                    href={getWhatsAppForService(service)}
+                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I want to discuss hiring the ${service.title} engineering squad.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all shadow-xs"
-                    title="Direct WhatsApp"
+                    className="grid size-9 place-items-center rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] shadow-[2px_2px_0_0_#141414] hover:scale-105 transition-transform"
+                    title="Chat on WhatsApp"
                   >
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle className="size-4 text-[#141414]" />
                   </a>
                 </div>
 
               </div>
             );
           })}
-
         </div>
 
-        {/* View All Services CTA */}
-        <div className="text-center mt-16 reveal-on-scroll">
+        {/* View All Services Bottom Banner */}
+        <div className="mt-14 sm:mt-16 text-center">
           <Link
             to="/services"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 border border-sky-300 hover:border-sky-500 text-base font-semibold transition-all shadow-sm"
+            className="inline-flex items-center gap-3 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FF4D00] px-8 py-4 sm:px-10 sm:py-5 font-display text-sm sm:text-base font-black text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] transition-all hover:shadow-[5px_5px_0_0_#141414] hover:-translate-y-1 cursor-pointer uppercase"
           >
-            <span>Explore All 8 Practice Squads in Depth</span>
-            <ArrowRight className="w-5 h-5 text-sky-600" />
+            <span>EXPLORE ALL SPECIALIZED SQUADS</span>
+            <ArrowRight className="size-4" />
           </Link>
         </div>
 
       </div>
-
     </section>
   );
 }

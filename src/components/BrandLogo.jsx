@@ -28,15 +28,23 @@ export default function BrandLogo({ size = 'md', withText = true, className = ''
 
   const content = (
     <div className="flex items-center gap-2.5 group flex-shrink-0">
-      {LogoIcon}
+      <span className="grid size-9 sm:size-10 place-items-center rounded-xl bg-[#141414] border border-[#141414] shadow-[3px_3px_0_0_#FF4D00] group-hover:scale-105 transition-transform">
+        <svg viewBox="0 0 64 64" className="size-5 sm:size-6 text-[#FF4D00]" aria-hidden="true">
+          <g stroke="currentColor" strokeWidth="8" strokeLinecap="round">
+            <line x1="32" y1="10" x2="32" y2="54"></line>
+            <line x1="12.9" y1="21" x2="51.1" y2="43"></line>
+            <line x1="12.9" y1="43" x2="51.1" y2="21"></line>
+          </g>
+        </svg>
+      </span>
       {withText && (
         <div className="flex flex-col pr-1">
-          <span className={`${currentSize.text} font-bold tracking-tight text-slate-950 group-hover:text-sky-700 transition-colors whitespace-nowrap leading-tight`}>
-            The Unfiltered Engineer
+          <span className="font-display text-base sm:text-lg font-black tracking-tight text-[#141414] group-hover:text-[#FF4D00] transition-colors whitespace-nowrap leading-none uppercase">
+            THE UNFILTERED ENGINEER
           </span>
-          <span className={`${currentSize.sub} font-mono font-medium text-indigo-600/90 tracking-widest uppercase flex items-center gap-1`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Blockchain · Web3 · AI
+          <span className="text-[10px] font-display font-bold text-[#FF4D00] tracking-[0.14em] uppercase flex items-center gap-1.5 mt-0.5">
+            <span className="size-1.5 rounded-full bg-[#FF4D00] animate-ping" />
+            DESIGN • BUILD • AUTOMATE
           </span>
         </div>
       )}

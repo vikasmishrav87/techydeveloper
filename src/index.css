@@ -4,60 +4,74 @@
 
 @layer base {
   body {
-    background-color: #EEF2FF;
-    color: #090D16;
+    background-color: #FAF7EE;
+    color: #141414;
     overflow-x: hidden;
-    letter-spacing: -0.015em;
-    font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
   }
 
-  /* Custom Sleek Scrollbar */
+  /* Custom Studio Sleek Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #EEF2FF;
+    background: #FAF7EE;
   }
   ::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #141414;
     border-radius: 9999px;
-    border: 2px solid #EEF2FF;
+    border: 2px solid #FAF7EE;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #38BDF8;
+    background: #FF4D00;
   }
 }
 
 @layer utilities {
-  /* Dynamic Background Grids & Patterns for Sky-Lavender Theme */
-  .bg-sky-lavender-mesh {
-    background-color: #EEF2FF;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.18) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.22) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(224, 242, 254, 0.4) 0px, transparent 60%),
-      radial-gradient(at 0% 100%, rgba(165, 180, 252, 0.18) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.15) 0px, transparent 50%);
-  }
-
-  .bg-cyber-grid {
-    background-size: 36px 36px;
-    background-image: 
-      linear-gradient(to right, rgba(14, 165, 233, 0.07) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
-  }
-
-  .bg-light-grid {
-    background-size: 32px 32px;
-    background-image: 
-      linear-gradient(to right, rgba(14, 165, 233, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
-  }
-
-  .bg-radial-dots {
-    background-image: radial-gradient(rgba(14, 165, 233, 0.15) 1.2px, transparent 1.2px);
+  /* AI Jugaad Studio Dot-Grid Background */
+  .dot-grid {
+    background-image: radial-gradient(#141414 1.2px, transparent 1.2px);
     background-size: 24px 24px;
+  }
+
+  .dot-grid-dense {
+    background-image: radial-gradient(#141414 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* Outline Text (Hollow Black Stroke) */
+  .text-outline {
+    -webkit-text-stroke: 2px #141414;
+    color: transparent;
+  }
+
+  .text-outline-orange {
+    -webkit-text-stroke: 2px #FF4D00;
+    color: transparent;
+  }
+
+  .text-outline-cream {
+    -webkit-text-stroke: 2px #FAF7EE;
+    color: transparent;
+  }
+
+  /* Neo-Brutalist Hard Shadows */
+  .brutal-shadow {
+    box-shadow: 5px 5px 0 0 #141414;
+  }
+  .brutal-shadow-sm {
+    box-shadow: 4px 4px 0 0 #141414;
+  }
+  .brutal-shadow-lg {
+    box-shadow: 7px 7px 0 0 #141414;
+  }
+  .brutal-shadow-orange {
+    box-shadow: 5px 5px 0 0 #FF4D00;
+  }
+  .brutal-shadow-yellow {
+    box-shadow: 5px 5px 0 0 #FFC72E;
   }
 
   /* Gradient Text Helpers (Crisp Black/Dark & Sky-Lavender accents) */
@@ -123,4 +137,34 @@
 .reveal-on-scroll.is-revealed {
   opacity: 1;
   transform: translateY(0);
+}
+
+@keyframes rot {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rot {
+  animation: rot 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
