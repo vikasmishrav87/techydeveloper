@@ -130,6 +130,10 @@ export default function App() {
           <Route path="/btc" element={<CryptoPaymentPage />} />
           <Route path="/bitcoin" element={<CryptoPaymentPage />} />
           <Route path="/pay/bitcoin" element={<CryptoPaymentPage />} />
+          <Route path="/pay/sol" element={<CryptoPaymentPage />} />
+          <Route path="/sol" element={<CryptoPaymentPage />} />
+          <Route path="/solana" element={<CryptoPaymentPage />} />
+          <Route path="/pay/solana" element={<CryptoPaymentPage />} />
           
           <Route path="/pay/card" element={<CardPaymentPage />} />
           <Route path="/card" element={<CardPaymentPage />} />

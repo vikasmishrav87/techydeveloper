@@ -7,6 +7,15 @@ import { logSecurityEvent } from '../services/storageService';
 import confetti from 'canvas-confetti';
 
 const CRYPTO_WALLETS = {
+  SOL: {
+    id: 'SOL',
+    name: 'Solana (SOL)',
+    network: 'Solana Network (SOL / SPL Only)',
+    address: '6VuZVB62JPNi3kKoyHSjdGJzeTysKNawi3VTdVqwLzcd',
+    token: 'Native SOL • USDT (SPL) • USDC (SPL)',
+    qrImage: '/images/sol_qr.png',
+    warning: 'CRITICAL: Send ONLY via the Solana Network (SPL). Sending via any other network will result in permanent asset loss.'
+  },
   BTC: {
     id: 'BTC',
     name: 'Bitcoin (BTC)',
@@ -571,41 +580,59 @@ export default function PaymentModal({
                     <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2">
                       Choose Blockchain Network:
                     </label>
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCrypto('SOL')}
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
+                          (selectedCrypto || 'SOL') === 'SOL'
+                            ? 'border-emerald-500 bg-emerald-50/80 ring-2 ring-emerald-500/30 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs font-bold text-slate-950">Solana</span>
+                          <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px]">
+                            ◎
+                          </span>
+                        </div>
+                        <div className="text-[9px] text-slate-500 font-mono">SOL / SPL</div>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('BTC')}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                           selectedCrypto === 'BTC'
                             ? 'border-amber-500 bg-amber-50/80 ring-2 ring-amber-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
-                        <div>
-                          <div className="text-xs font-bold text-slate-950">Bitcoin (BTC)</div>
-                          <div className="text-[10px] text-slate-500 font-mono">Native SegWit Only</div>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs font-bold text-slate-950">Bitcoin</span>
+                          <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-[10px]">
+                            ₿
+                          </span>
                         </div>
-                        <span className="w-7 h-7 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                          ₿
-                        </span>
+                        <div className="text-[9px] text-slate-500 font-mono">Native BTC</div>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setSelectedCrypto('ETH')}
-                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[68px] ${
                           selectedCrypto === 'ETH'
                             ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
                         }`}
                       >
-                        <div>
-                          <div className="text-xs font-bold text-slate-950">Ethereum (ETH)</div>
-                          <div className="text-[10px] text-slate-500 font-mono">ETH / USDT / USDC</div>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs font-bold text-slate-950">Ethereum</span>
+                          <span className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
+                            Ξ
+                          </span>
                         </div>
-                        <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                          Ξ
-                        </span>
+                        <div className="text-[9px] text-slate-500 font-mono">ERC-20</div>
                       </button>
                     </div>
                   </div>
