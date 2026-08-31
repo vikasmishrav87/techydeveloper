@@ -33,7 +33,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
   // Secondary tools in clean dropdown
   const extraTools = [
     { name: 'Executive Verification Portal', to: '/admin/verify', icon: ShieldCheck, desc: 'Review & approve client payments (Passkey required)' },
-    { name: 'Client Payment & Checkout', to: '/checkout', icon: CreditCard, desc: 'Pay via Razorpay, Stripe, or Web3 USDT' },
+    { name: 'Client Payment & Checkout', to: '/checkout', icon: CreditCard, desc: 'Pay via UPI, SBI Bank Wire, or Web3 USDT' },
     { name: 'Free SEO & Speed Audit', to: '/seo-audit', icon: Sparkles, desc: 'Real-time Core Web Vitals scanner' },
     { name: 'Worldwide 3D Network', to: '/worldwide', icon: Globe, desc: '1,000+ senior engineers worldwide' },
     { name: 'Legal Terms of Service', to: '/terms', icon: Shield, desc: 'GDPR / CCPA enterprise compliance' },

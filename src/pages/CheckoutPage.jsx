@@ -344,70 +344,54 @@ export default function CheckoutPage() {
                 <label className="block text-xs font-mono font-bold text-slate-900 uppercase tracking-wider mb-2.5">
                   Select Dedicated Payment Gateway:
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                   
                   {/* UPI QR Code Dedicated */}
                   <Link
                     to={`/pay/upi?amount=${amountUSD}&currency=${currencyMode}${serviceName ? `&service=${encodeURIComponent(serviceName)}` : ''}${clientName ? `&client=${encodeURIComponent(clientName)}` : ''}`}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] group ${
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] group ${
                       paymentMethod === 'upi'
                         ? 'border-sky-500 bg-sky-50/90 ring-2 ring-sky-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/60 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-slate-900 group-hover:text-emerald-950 leading-tight">UPI QR Code</span>
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-950 leading-tight">UPI QR Code</span>
                       <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-bold">Fast</span>
                     </div>
-                    <div className="text-[10px] text-slate-500 group-hover:text-slate-700 leading-tight">GPay, PhonePe, Paytm ↗</div>
+                    <div className="text-[11px] text-slate-500 group-hover:text-slate-700 leading-tight">GPay, PhonePe, Paytm ↗</div>
                   </Link>
 
                   {/* SBI Bank Transfer Dedicated */}
                   <Link
                     to={`/pay/bank?amount=${amountUSD}&currency=${currencyMode}${serviceName ? `&service=${encodeURIComponent(serviceName)}` : ''}${clientName ? `&client=${encodeURIComponent(clientName)}` : ''}`}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] group ${
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] group ${
                       paymentMethod === 'bank'
                         ? 'border-slate-800 bg-slate-100 ring-2 ring-slate-800/30 shadow-xs'
                         : 'border-slate-200 hover:border-slate-800 hover:bg-slate-100 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-slate-900 group-hover:text-slate-950 leading-tight">SBI Bank Wire</span>
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-slate-950 leading-tight">SBI Bank Wire</span>
                       <Building2 className="w-3.5 h-3.5 text-slate-700" />
                     </div>
-                    <div className="text-[10px] text-slate-500 group-hover:text-slate-700 leading-tight">RTGS, NEFT, IMPS ↗</div>
-                  </Link>
-
-                  {/* Cards / Stripe Dedicated */}
-                  <Link
-                    to={`/pay/card?amount=${amountUSD}&currency=${currencyMode}${serviceName ? `&service=${encodeURIComponent(serviceName)}` : ''}${clientName ? `&client=${encodeURIComponent(clientName)}` : ''}`}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] group ${
-                      paymentMethod === 'stripe'
-                        ? 'border-indigo-500 bg-indigo-50/80 ring-2 ring-indigo-500/30 shadow-xs'
-                        : 'border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/60 bg-slate-50/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-950 leading-tight">Cards & Stripe</span>
-                      <Globe className="w-3.5 h-3.5 text-indigo-600" />
-                    </div>
-                    <div className="text-[10px] text-slate-500 group-hover:text-slate-700 leading-tight">Global Visa / Master ↗</div>
+                    <div className="text-[11px] text-slate-500 group-hover:text-slate-700 leading-tight">RTGS, NEFT, IMPS ↗</div>
                   </Link>
 
                   {/* Web3 USDT Dedicated */}
                   <Link
                     to={`/pay/polygon?amount=${amountUSD}&currency=${currencyMode}${serviceName ? `&service=${encodeURIComponent(serviceName)}` : ''}${clientName ? `&client=${encodeURIComponent(clientName)}` : ''}`}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[72px] group ${
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[76px] group ${
                       paymentMethod === 'crypto'
                         ? 'border-purple-500 bg-purple-50/80 ring-2 ring-purple-500/30 shadow-xs'
                         : 'border-slate-200 hover:border-purple-400 hover:bg-purple-50/60 bg-slate-50/50'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-slate-900 group-hover:text-purple-950 leading-tight">Web3 USDT</span>
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-950 leading-tight">Web3 USDT</span>
                       <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 text-[10px] font-bold">Crypto</span>
                     </div>
-                    <div className="text-[10px] text-slate-500 group-hover:text-slate-700 leading-tight">Polygon, TRC20, ETH ↗</div>
+                    <div className="text-[11px] text-slate-500 group-hover:text-slate-700 leading-tight">Polygon, TRC20, ETH ↗</div>
                   </Link>
 
                 </div>
@@ -596,36 +580,7 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* METHOD 3 VIEW: CARDS & STRIPE */}
-              {paymentMethod === 'stripe' && (
-                <div className="space-y-4 pt-2">
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs">
-                    <span className="font-semibold text-indigo-950">💳 Want full screen Stripe checkout?</span>
-                    <Link
-                      to={`/pay/card?amount=${amountUSD}&currency=${currencyMode}`}
-                      className="inline-flex items-center gap-1 font-bold text-indigo-800 hover:text-indigo-950 bg-white px-3 py-1 rounded-xl border border-indigo-300 shadow-2xs hover:shadow-xs transition-all"
-                    >
-                      <span>Open Dedicated Card Page</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
 
-                  {/* Payment Proof Submission Form */}
-                  <div className="pt-2 border-t border-slate-100">
-                    <PaymentProofForm
-                      methodName="Stripe Global Cards"
-                      network="Visa / Mastercard / Amex"
-                      amountUSD={amountUSD}
-                      amountINR={amountINR}
-                      currencyMode={currencyMode}
-                      serviceName={serviceName}
-                      defaultUtrLabel="Stripe Payment Reference / Authorization ID"
-                      utrPlaceholder="e.g. ch_3N28492842948291"
-                      onSubmitted={(p) => setActiveLivePayment(p)}
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* METHOD 4 VIEW: WEB3 CRYPTO */}
               {paymentMethod === 'crypto' && (() => {
