@@ -25,12 +25,14 @@ export default function AdminVerifyPage() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (passcode === 'vikas87' || passcode === 'admin87' || passcode === 'vikasmishraji87' || passcode === '87') {
+    const cleanPass = (passcode || '').trim();
+    if (cleanPass === 'vikasmusickeytosuccess' || cleanPass === 'vikas87') {
       setIsAuthenticated(true);
       localStorage.setItem('ue_admin_auth_verified', 'true');
+      sessionStorage.setItem('ue_admin_auth_verified', 'true');
       setAuthError('');
     } else {
-      setAuthError('Invalid executive passkey.');
+      setAuthError('Invalid executive passkey. Access denied.');
     }
   };
 

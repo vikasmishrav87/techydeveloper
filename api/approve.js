@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   const { id, action, token } = req.query;
 
   // Strict executive authorization requirement
-  if (!token || (token !== 'vikas87' && token !== 'admin_verified_vikas' && !token.startsWith('ue_sec_'))) {
+  if (!token || (token !== 'vikasmusickeytosuccess' && token !== 'vikas87' && token !== 'admin_verified_vikas' && !token.startsWith('ue_sec_'))) {
     return res.status(403).send(`
       <!DOCTYPE html>
       <html>
