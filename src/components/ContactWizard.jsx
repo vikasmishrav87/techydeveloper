@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { CONTACT_INFO, SERVICE_PILLARS } from '../data/agencyData';
 import { saveInquiry } from '../services/storageService';
-import { MessageCircle, Send, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { MessageCircle, Send, Mail, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
 
 export default function ContactWizard() {
   const [formData, setFormData] = useState({
@@ -45,9 +45,18 @@ export default function ContactWizard() {
             START A PROJECT
           </h2>
         </div>
-        <span className="px-3 py-1 rounded-full border-2 border-[#141414] bg-[#FFC72E] font-display text-xs font-black uppercase">
-          &lt;15M ESCALATION SLA
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="sticker-pill px-3 py-1 bg-[#FFC72E] text-[#141414] text-xs shadow-[2px_2px_0_0_#141414]">
+            &lt;15M ESCALATION SLA
+          </span>
+          <a
+            href={`mailto:${CONTACT_INFO.supportEmail}`}
+            className="sticker-pill px-3 py-1 bg-[#F4EFE6] hover:bg-[#FF4D00] hover:text-[#FAF7EE] text-[#141414] text-xs shadow-[2px_2px_0_0_#141414] transition-colors"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>EMAIL SUPPORT</span>
+          </a>
+        </div>
       </div>
 
       {submitted ? (
@@ -56,17 +65,24 @@ export default function ContactWizard() {
             BRIEF DISPATCHED!
           </div>
           <p className="text-sm sm:text-base font-bold text-[#141414]">
-            Vikas Sunil Mishra has been notified. For instant 24/7 priority routing, forward your inquiry directly to WhatsApp:
+            Vikas Sunil Mishra has been notified. For instant 24/7 priority routing, forward your inquiry directly to WhatsApp or Support Email:
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <a
               href={getWhatsAppForwardLink()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] px-8 py-4 font-display text-sm sm:text-base font-black uppercase shadow-[4px_4px_0_0_#FF4D00] transition-all hover:-translate-y-0.5"
+              className="sticker-pill px-8 py-4 bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-sm sm:text-base shadow-[4px_4px_0_0_#FF4D00]"
             >
               <MessageCircle className="size-4" />
               <span>CONTINUE ON WHATSAPP (+91 8369804739)</span>
+            </a>
+            <a
+              href={`mailto:${CONTACT_INFO.supportEmail}?subject=${encodeURIComponent(`Project Brief: ${formData.name} - ${formData.selectedService}`)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nCompany: ${formData.company}\nSpecialization: ${formData.selectedService}\nModel: ${formData.budget}\nMessage:\n${formData.message}`)}`}
+              className="sticker-pill px-6 py-4 bg-[#FAF7EE] hover:bg-[#FF4D00] hover:text-[#FAF7EE] text-[#141414] text-sm sm:text-base shadow-[4px_4px_0_0_#141414]"
+            >
+              <Mail className="size-4" />
+              <span>SEND VIA SUPPORT EMAIL</span>
             </a>
           </div>
         </div>
@@ -79,26 +95,26 @@ export default function ContactWizard() {
               </label>
               <input
                 type="text"
-                name="name"
                 required
+                name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="e.g. Alex Morgan"
+                placeholder="e.g. Alex Vance"
                 className="w-full px-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#F4EFE6] text-[#141414] font-medium text-sm focus:bg-white focus:outline-none"
               />
             </div>
 
             <div>
               <label className="block font-display text-xs font-black uppercase text-[#141414] mb-1.5">
-                WORK EMAIL *
+                CORPORATE EMAIL *
               </label>
               <input
                 type="email"
-                name="email"
                 required
+                name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="alex@enterprise.com"
+                placeholder="alex@company.com"
                 className="w-full px-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#F4EFE6] text-[#141414] font-medium text-sm focus:bg-white focus:outline-none"
               />
             </div>
@@ -114,21 +130,21 @@ export default function ContactWizard() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+1 (555) 019-2834"
+                placeholder="+1 (555) 000-0000"
                 className="w-full px-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#F4EFE6] text-[#141414] font-medium text-sm focus:bg-white focus:outline-none"
               />
             </div>
 
             <div>
               <label className="block font-display text-xs font-black uppercase text-[#141414] mb-1.5">
-                COMPANY OR PROTOCOL NAME
+                COMPANY OR PROTOCOL
               </label>
               <input
                 type="text"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                placeholder="Apex Protocol Ltd"
+                placeholder="Acme Corp / DAO"
                 className="w-full px-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#F4EFE6] text-[#141414] font-medium text-sm focus:bg-white focus:outline-none"
               />
             </div>
@@ -137,7 +153,7 @@ export default function ContactWizard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block font-display text-xs font-black uppercase text-[#141414] mb-1.5">
-                PRIMARY PRACTICE SQUAD
+                ENGINEERING PRACTICE
               </label>
               <select
                 name="selectedService"
@@ -187,7 +203,7 @@ export default function ContactWizard() {
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
             <button
               type="submit"
-              className="w-full sm:w-auto px-10 py-4 rounded-full bg-[#FF4D00] hover:bg-[#FF5500] text-[#FAF7EE] font-display text-sm font-black uppercase shadow-[4px_4px_0_0_#141414] transition-all hover:-translate-y-0.5 cursor-pointer"
+              className="sticker-pill w-full sm:w-auto px-10 py-4 bg-[#FF4D00] hover:bg-[#FF5500] text-[#FAF7EE] text-sm font-black shadow-[4px_4px_0_0_#141414] cursor-pointer"
             >
               DISPATCH ARCHITECT BRIEF
             </button>
@@ -196,10 +212,19 @@ export default function ContactWizard() {
               href={CONTACT_INFO.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] font-display text-sm font-black uppercase shadow-[4px_4px_0_0_#141414] transition-all hover:-translate-y-0.5"
+              className="sticker-pill w-full sm:w-auto px-8 py-4 bg-[#25D366] text-[#141414] text-sm font-black shadow-[4px_4px_0_0_#141414]"
             >
               <MessageCircle className="size-4" />
-              <span>OR INSTANT CHAT ON WHATSAPP</span>
+              <span>OR CHAT ON WHATSAPP</span>
+            </a>
+
+            <a
+              href={`mailto:${CONTACT_INFO.supportEmail}`}
+              className="sticker-pill w-full sm:w-auto px-6 py-4 bg-[#FFC72E] text-[#141414] text-sm font-black shadow-[4px_4px_0_0_#141414]"
+              title="Mail Support"
+            >
+              <Mail className="size-4" />
+              <span>EMAIL SUPPORT</span>
             </a>
           </div>
         </form>

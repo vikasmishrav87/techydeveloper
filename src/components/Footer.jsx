@@ -1,12 +1,20 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO, SERVICE_PILLARS } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
-import { ShieldCheck, MessageCircle, Send, ArrowUp } from 'lucide-react';
+import { ShieldCheck, MessageCircle, Send, Mail, Check, ArrowUp } from 'lucide-react';
 
 export default function Footer({ onOpenTerminal }) {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(CONTACT_INFO.supportEmail);
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
   };
 
   return (
@@ -16,7 +24,7 @@ export default function Footer({ onOpenTerminal }) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-16 border-b-2 border-[#141414]/15">
           
-          {/* Col 1: Brand & Bio */}
+          {/* Col 1: Brand, Bio & Direct Contacts */}
           <div className="lg:col-span-4 space-y-4">
             <BrandLogo size="md" withText={true} linkTo="/" />
 
@@ -24,23 +32,32 @@ export default function Footer({ onOpenTerminal }) {
               Founded by Vikas Mishra. Global design & engineering studio delivering zero-breach Cyber Security, high-throughput Web3 protocols, production AI swarms, and high-converting tech architectures.
             </p>
 
-            {/* Direct Connect Buttons */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-2">
+            {/* Direct Connect Capsule Buttons */}
+            <div className="flex flex-col gap-2.5 pt-2">
               <a
                 href={CONTACT_INFO.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366] border-2 border-[#141414] text-[#141414] font-display text-xs font-black shadow-[3px_3px_0_0_#141414] hover:-translate-y-0.5 transition-transform"
+                className="sticker-pill w-max px-4 py-2 bg-[#25D366] text-[#141414] text-xs shadow-[3px_3px_0_0_#141414]"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp (+91 8369804739)</span>
+                <span>WhatsApp (+91 83698 04739)</span>
+              </a>
+
+              <a
+                href={`mailto:${CONTACT_INFO.supportEmail}`}
+                className="sticker-pill w-max px-4 py-2 bg-[#FFC72E] text-[#141414] text-xs shadow-[3px_3px_0_0_#141414]"
+                title="Send Support Email"
+              >
+                <Mail className="w-4 h-4 text-[#141414]" />
+                <span>{CONTACT_INFO.supportEmail}</span>
               </a>
 
               <a
                 href={CONTACT_INFO.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F4EFE6] border-2 border-[#141414] text-[#141414] font-display text-xs font-black shadow-[3px_3px_0_0_#141414] hover:-translate-y-0.5 transition-transform"
+                className="sticker-pill w-max px-4 py-2 bg-[#F4EFE6] text-[#141414] text-xs shadow-[3px_3px_0_0_#141414]"
               >
                 <Send className="w-4 h-4 text-[#0284C7]" />
                 <span>Telegram: @Yourstrulyvikasmishra</span>
@@ -89,7 +106,7 @@ export default function Footer({ onOpenTerminal }) {
             <div className="pt-2">
               <Link
                 to="/admin/verify"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] text-xs font-display font-black border-2 border-[#141414] shadow-[3px_3px_0_0_#141414] transition-transform hover:-translate-y-0.5"
+                className="sticker-pill px-3.5 py-2 bg-[#FFC72E] text-[#141414] text-xs shadow-[3px_3px_0_0_#141414]"
               >
                 <ShieldCheck className="w-4 h-4 text-[#141414]" />
                 <span>EXECUTIVE PORTAL</span>
@@ -104,6 +121,10 @@ export default function Footer({ onOpenTerminal }) {
           <div className="flex flex-wrap items-center gap-3">
             <span>© {new Date().getFullYear()} THE UNFILTERED ENGINEER. FOUNDED BY VIKAS SUNIL MISHRA.</span>
             <span>•</span>
+            <a href={`mailto:${CONTACT_INFO.supportEmail}`} className="text-[#FF4D00] hover:underline font-mono">
+              {CONTACT_INFO.supportEmail}
+            </a>
+            <span>•</span>
             <Link to="/terms" className="hover:text-[#FF4D00] underline transition-colors">TERMS OF SERVICE</Link>
             <span>•</span>
             <Link to="/privacy" className="hover:text-[#FF4D00] underline transition-colors">PRIVACY POLICY</Link>
@@ -112,7 +133,7 @@ export default function Footer({ onOpenTerminal }) {
           <div className="flex items-center gap-4">
             <button
               onClick={scrollToTop}
-              className="inline-flex items-center gap-1.5 p-2.5 rounded-full border-2 border-[#141414] bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414] transition-all cursor-pointer hover:-translate-y-0.5"
+              className="sticker-pill size-10 bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414] cursor-pointer"
               title="Back to Top"
             >
               <ArrowUp className="w-4 h-4" />

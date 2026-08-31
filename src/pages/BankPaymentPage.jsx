@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
   Building2, Copy, Check, CheckCircle2, ArrowLeft, ShieldCheck 
@@ -16,8 +16,8 @@ const BANK_DETAILS = {
   ifscCode: 'SBIN0001903',
   swiftCode: 'SBININBBXXX',
   upiId: 'vikasmishraji87-2@oksbi',
-  supportPhone: '+91 91375 07092',
-  supportEmail: 'vikasmishraoffice87@gmail.com'
+  supportPhone: '+91 83698 04739',
+  supportEmail: 'theunfilteredengineersupport@gmail.com'
 };
 
 export default function BankPaymentPage() {

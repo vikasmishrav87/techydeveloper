@@ -1,16 +1,16 @@
 ﻿export const CONTACT_INFO = {
   phone: "+918369804739",
-  phoneDisplay: "+91 91375 07092",
+  phoneDisplay: "+91 83698 04739",
   whatsappUrl: "https://wa.me/918369804739?text=Hello%20The%20Unfiltered%20Engineer,%20I%20want%20to%20discuss%20an%20engineering%20/%20marketing%20project.",
   telegramUser: "@Yourstrulyvikasmishra",
   telegramUrl: "https://t.me/Yourstrulyvikasmishra",
-  email: "vikas@theunfilteredengineer.com",
+  email: "theunfilteredengineersupport@gmail.com",
+  supportEmail: "theunfilteredengineersupport@gmail.com",
+  founderEmail: "vikasmishraoffice87@gmail.com",
   location: "Global Distributed Delivery • 1,000+ Senior Engineers Worldwide",
   securityStatus: "MILITARY-GRADE DEFENSE (SHA-256 ZERO-TRUST ACTIVE)",
   teamScale: "1,000+ Vetted Senior Engineers & Specialists"
-};
-
-export const GLOBAL_HUBS = [
+};export const GLOBAL_HUBS = [
   { id: "sfo", name: "San Francisco, USA", lat: 37.7749, lon: -122.4194, role: "AI Research & Vector Infra", ping: "14ms", clients: 28, status: "Active" },
   { id: "nyc", name: "New York, USA", lat: 40.7128, lon: -74.0060, role: "Hedge Fund Cyber Defense", ping: "18ms", clients: 34, status: "Active" },
   { id: "lon", name: "London, UK", lat: 51.5074, lon: -0.1278, role: "Fintech & Smart Contract Audits", ping: "22ms", clients: 22, status: "Active" },
@@ -667,3 +667,4 @@ export const SECURITY_FEATURES = [
     desc: "Military-grade Content-Security-Policy headers prevent unauthorized script execution and code injection."
   }
 ];
+

@@ -1,4 +1,4 @@
-﻿import { CONTACT_INFO, SERVICE_PILLARS, WORK_MODEL_ECOSYSTEM, GLOBAL_HUBS, PRICING_TIERS } from '../data/agencyData';
+import { CONTACT_INFO, SERVICE_PILLARS, WORK_MODEL_ECOSYSTEM, GLOBAL_HUBS, PRICING_TIERS } from '../data/agencyData';
 
 const OPENROUTER_API_KEY = import.meta.env?.VITE_OPENROUTER_API_KEY || (typeof process !== 'undefined' ? process.env?.VITE_OPENROUTER_API_KEY : '') || ['sk-or-v1', 'c502d89833850c47a96f2d2bbff014e4f32347d92b51d763fd536d265ddcd36b'].join('-');
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
@@ -12,7 +12,8 @@ COMPANY PROFILE & KNOWLEDGE BASE:
 - Official Contacts:
   - WhatsApp: +918369804739 (WhatsApp link: https://wa.me/918369804739)
   - Telegram: @Yourstrulyvikasmishra (Telegram link: https://t.me/Yourstrulyvikasmishra)
-  - Email: vikas@theunfilteredengineer.com
+  - Email: theunfilteredengineersupport@gmail.com
+  - Founder Direct Email: vikasmishraoffice87@gmail.com
   - HQ & NOC: Mumbai, India & San Francisco, USA (9 Global Hubs: SF, New York, London, Zurich, Dubai, Mumbai, Singapore, Tokyo, Sydney)
 - Team Scale: 1,000+ Vetted Senior Expert Engineers worldwide (Ex-FAANG, Web3 Core Devs, AI Researchers). ZERO junior hand-offs.
 - Core Value Proposition: We engineer, build, and secure mission-critical enterprise tech solutions and IT infrastructure with zero fluff, guaranteed 99.999% SLA, and military-grade zero-trust defense.

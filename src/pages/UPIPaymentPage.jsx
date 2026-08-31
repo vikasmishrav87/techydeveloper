@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
   Check, Copy, CheckCircle2, ArrowLeft, Building2, CreditCard, Zap, ShieldCheck 
@@ -14,8 +14,8 @@ const BANK_DETAILS = {
   accountNo: '42483253120',
   ifscCode: 'SBIN0001903',
   upiId: 'vikasmishraji87-2@oksbi',
-  supportPhone: '+91 91375 07092',
-  supportEmail: 'vikasmishraoffice87@gmail.com',
+  supportPhone: '+91 83698 04739',
+  supportEmail: 'theunfilteredengineersupport@gmail.com',
   qrImage: '/images/upi_qr.png'
 };
 

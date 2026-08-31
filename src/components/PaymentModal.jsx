@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   X, Check, ShieldCheck, CreditCard, QrCode, Globe, Building2, Copy, CheckCircle2, 
@@ -74,8 +74,8 @@ const BANK_DETAILS = {
   ifscCode: 'SBIN0001903',
   swiftCode: 'SBININBBXXX',
   upiId: 'vikasmishraji87-2@oksbi',
-  supportPhone: '+91 91375 07092',
-  supportEmail: 'vikasmishraoffice87@gmail.com',
+  supportPhone: '+91 83698 04739',
+  supportEmail: 'theunfilteredengineersupport@gmail.com',
   qrImage: '/images/upi_qr.png'
 };
 
