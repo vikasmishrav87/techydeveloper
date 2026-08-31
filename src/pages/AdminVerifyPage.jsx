@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
-  ShieldCheck, Check, X, Clock, RefreshCw, Eye, MessageCircle, 
+  ShieldCheck, Check, X, Clock, RefreshCw, Eye, EyeOff, Lock, Key, MessageCircle, 
   ExternalLink, ArrowLeft, Search, Filter, AlertCircle 
 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
@@ -10,11 +10,11 @@ export default function AdminVerifyPage() {
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get('id');
 
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('ue_admin_auth_verified') === 'true' || sessionStorage.getItem('ue_admin_auth_verified') === 'true';
-  });
+  // ALWAYS require password on page load - never auto-authenticate
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,13 +26,11 @@ export default function AdminVerifyPage() {
   const handleLogin = (e) => {
     e.preventDefault();
     const cleanPass = (passcode || '').trim();
-    if (cleanPass === 'vikasmusickeytosuccess' || cleanPass === 'vikas87') {
+    if (cleanPass === 'vikasmusickeytosuccess') {
       setIsAuthenticated(true);
-      localStorage.setItem('ue_admin_auth_verified', 'true');
-      sessionStorage.setItem('ue_admin_auth_verified', 'true');
       setAuthError('');
     } else {
-      setAuthError('Invalid executive passkey. Access denied.');
+      setAuthError('❌ Access Denied: Incorrect executive password. Access strictly forbidden.');
     }
   };
 
@@ -130,42 +128,75 @@ export default function AdminVerifyPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen pt-32 pb-20 bg-slate-950 text-white font-sans flex items-center justify-center p-4">
-        <div className="max-w-md w-full p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
-            <ShieldCheck className="w-8 h-8" />
+        <div className="max-w-md w-full p-8 sm:p-10 rounded-3xl bg-slate-900 border-2 border-slate-800 shadow-2xl text-center space-y-6 relative overflow-hidden">
+          
+          <div className="absolute -top-16 -right-16 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-sky-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+            <Lock className="w-8 h-8 text-emerald-400" />
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-white">Executive Verification Portal</h2>
-            <p className="text-slate-400 text-xs mt-1">
-              Restricted to Vikas Mishra. Enter your executive passkey to review and approve live client transactions.
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono font-bold mb-2">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Executive Security Gateway
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white">Executive Permission Required</h2>
+            <p className="text-slate-400 text-xs mt-1.5 leading-relaxed">
+              Restricted strictly to <strong>Vikas Mishra</strong>. You must enter the executive authorization password to unlock the payment ledger and review proofs.
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
             <div>
-              <input
-                type="password"
-                required
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter Executive Passkey..."
-                className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-center font-mono text-sm focus:border-sky-500 focus:outline-none tracking-widest"
-                autoFocus
-              />
+              <label className="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1.5">
+                Executive Authorization Password <span className="text-rose-400">*</span>
+              </label>
+              
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={passcode}
+                  onChange={(e) => {
+                    setPasscode(e.target.value);
+                    if (authError) setAuthError('');
+                  }}
+                  placeholder="Enter executive password..."
+                  className="w-full pl-4 pr-11 py-3.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none tracking-wider"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1 cursor-pointer"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+
               {authError && (
-                <div className="text-rose-400 text-xs font-semibold mt-1.5">{authError}</div>
+                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold mt-2.5 flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{authError}</span>
+                </div>
               )}
             </div>
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/20"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/20 active:scale-[0.99] transition-all"
             >
-              <span>Unlock Verification Ledger</span>
-              <Check className="w-4 h-4" />
+              <Key className="w-4 h-4" />
+              <span>Verify Password & Unlock Ledger</span>
             </button>
           </form>
+
+          <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-500 font-mono">
+            Zero Access Granted without Valid Executive Permission.
+          </div>
         </div>
       </div>
     );
