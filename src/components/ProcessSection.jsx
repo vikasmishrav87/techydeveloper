@@ -29,9 +29,9 @@ export default function ProcessSection() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {steps.map((step) => (
-            <div key={step.num} className="flex flex-col justify-between rounded-3xl border-2 border-[#141414] bg-[#F4EFE6] p-7 sm:p-8 shadow-[6px_6px_0_0_#141414] transition-transform duration-200 hover:-translate-y-1">
+            <div key={step.num} className="brutal-card flex flex-col justify-between rounded-3xl border-2 border-[#141414] bg-[#F4EFE6] p-7 sm:p-8 shadow-[6px_6px_0_0_#141414]">
               <div>
-                <div className="grid size-12 place-items-center rounded-full bg-[#FF4D00] font-display text-xl font-black text-[#FAF7EE] shadow-[3px_3px_0_0_#141414]">
+                <div className="grid size-12 place-items-center rounded-full bg-[#FF4D00] font-display text-xl font-black text-[#FAF7EE] shadow-[3px_3px_0_0_#141414] group-hover:scale-110 transition-transform">
                   {step.num}
                 </div>
                 <h3 className="mt-6 font-display text-xl sm:text-2xl font-black uppercase text-[#141414]">{step.title}</h3>

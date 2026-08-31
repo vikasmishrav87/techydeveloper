@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -13,8 +13,8 @@
 
   /* Custom Studio Sleek Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
   }
   ::-webkit-scrollbar-track {
     background: #FAF7EE;
@@ -62,7 +62,7 @@
     box-shadow: 5px 5px 0 0 #141414;
   }
   .brutal-shadow-sm {
-    box-shadow: 4px 4px 0 0 #141414;
+    box-shadow: 3px 3px 0 0 #141414;
   }
   .brutal-shadow-lg {
     box-shadow: 7px 7px 0 0 #141414;
@@ -74,55 +74,25 @@
     box-shadow: 5px 5px 0 0 #FFC72E;
   }
 
-  /* Gradient Text Helpers (Crisp Black/Dark & Sky-Lavender accents) */
-  .sky-lavender-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0F172A] via-[#0284C7] to-[#4F46E5];
+  /* Interactive Button Physics */
+  .brutal-btn {
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .brutal-btn:hover {
+    transform: translate(-2px, -2px);
+  }
+  .brutal-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 #141414 !important;
   }
 
-  .sky-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0369A1] via-[#0EA5E9] to-[#38BDF8];
+  /* Interactive Card Physics */
+  .brutal-card {
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-
-  .lavender-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#3730A3] via-[#6366F1] to-[#818CF8];
-  }
-
-  .dark-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#030712] via-[#0F172A] to-[#1E293B];
-  }
-
-  /* Humanized Glassmorphic Cards (Sky-Lavender Light Theme) */
-  .human-card {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(224, 231, 255, 0.9);
-    box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.08), 0 4px 12px -2px rgba(14, 165, 233, 0.05);
-  }
-
-  .human-card:hover {
-    box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.14), 0 8px 20px -4px rgba(14, 165, 233, 0.1);
-  }
-
-  .glass-card-light {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.07);
-  }
-
-  .glass-card-dark {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(186, 230, 253, 0.8);
-    box-shadow: 0 12px 35px -8px rgba(14, 165, 233, 0.08);
-  }
-
-  .glow-border-sky {
-    box-shadow: 0 0 30px -4px rgba(56, 189, 248, 0.2);
-  }
-
-  .glow-border-lavender {
-    box-shadow: 0 0 30px -4px rgba(129, 140, 248, 0.2);
+  .brutal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 8px 8px 0 0 #141414;
   }
 }
 
@@ -139,6 +109,60 @@
   transform: translateY(0);
 }
 
+/* Floating Animations for Hero Stickers */
+@keyframes float1 {
+  0%, 100% {
+    transform: rotate(-12deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(-10deg) translateY(-8px);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: rotate(14deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(16deg) translateY(-10px);
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: rotate(8deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(6deg) translateY(-8px);
+  }
+}
+
+@keyframes float4 {
+  0%, 100% {
+    transform: rotate(-10deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(-8deg) translateY(-10px);
+  }
+}
+
+.animate-float-1 {
+  animation: float1 4.5s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float2 5.2s ease-in-out infinite 0.5s;
+}
+
+.animate-float-3 {
+  animation: float3 4.8s ease-in-out infinite 1s;
+}
+
+.animate-float-4 {
+  animation: float4 5.5s ease-in-out infinite 1.5s;
+}
+
+/* Rotating Circular Stamp */
 @keyframes rot {
   from {
     transform: rotate(0deg);
@@ -152,6 +176,7 @@
   animation: rot 20s linear infinite;
 }
 
+/* Infinite Marquee Loop */
 @keyframes marquee {
   0% {
     transform: translateX(0%);
@@ -167,4 +192,36 @@
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Pop In Animation for Dynamic Filters */
+@keyframes cardPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-card-pop {
+  animation: cardPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Radar Pulse Animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
 }

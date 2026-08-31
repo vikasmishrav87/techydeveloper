@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CASE_STUDIES } from '../data/agencyData';
 import { ArrowUpRight, MessageCircle, ArrowRight } from 'lucide-react';
@@ -24,7 +24,7 @@ export default function CaseStudies() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header (aijugaad style) */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-16">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 sm:mb-12">
           <div>
             <p className="font-display text-xs sm:text-sm font-black tracking-[0.2em] text-[#FF4D00] uppercase">
               SELECTED WORK
@@ -45,7 +45,7 @@ export default function CaseStudies() {
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full font-display text-xs font-bold uppercase transition-all border-2 border-[#141414] cursor-pointer ${
+              className={`brutal-btn px-4 py-2 rounded-full font-display text-xs font-black uppercase transition-all border-2 border-[#141414] cursor-pointer ${
                 selectedCategory === cat
                   ? 'bg-[#FF4D00] text-[#FAF7EE] shadow-[3px_3px_0_0_#141414]'
                   : 'bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414]'
@@ -56,13 +56,13 @@ export default function CaseStudies() {
           ))}
         </div>
 
-        {/* Case Studies Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        {/* Case Studies Grid with Pop-in Response Animation */}
+        <div key={selectedCategory} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 animate-card-pop">
           {filteredStudies.map((study) => {
             return (
               <div
                 key={study.id}
-                className="group block overflow-hidden rounded-3xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[6px_6px_0_0_#141414] transition-transform duration-200 hover:-translate-y-1"
+                className="brutal-card group block overflow-hidden rounded-3xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[6px_6px_0_0_#141414]"
               >
                 {/* Image / Header Preview */}
                 <div className="relative aspect-[16/9] w-full overflow-hidden border-b-2 border-[#141414] bg-[#141414]">
@@ -117,7 +117,7 @@ export default function CaseStudies() {
                       href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to build a similar solution.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="grid size-9 place-items-center rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] shadow-[2px_2px_0_0_#141414] hover:scale-105 transition-transform"
+                      className="brutal-btn grid size-9 place-items-center rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] shadow-[2px_2px_0_0_#141414]"
                       title="Discuss via WhatsApp"
                     >
                       <MessageCircle className="size-4 text-[#141414]" />
@@ -135,7 +135,7 @@ export default function CaseStudies() {
         <div className="mt-14 text-center">
           <Link
             to="/case-studies"
-            className="inline-flex items-center gap-3 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FF4D00] px-8 py-4 sm:px-10 sm:py-5 font-display text-sm sm:text-base font-black text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] transition-all hover:shadow-[5px_5px_0_0_#141414] hover:-translate-y-1 cursor-pointer uppercase"
+            className="brutal-btn inline-flex items-center gap-3 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FF4D00] px-8 py-4 sm:px-10 sm:py-5 font-display text-sm sm:text-base font-black text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer uppercase"
           >
             <span>VIEW ALL CLIENT CASE STUDIES</span>
             <ArrowRight className="size-4" />

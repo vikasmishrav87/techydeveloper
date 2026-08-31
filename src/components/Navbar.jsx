@@ -116,7 +116,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* Executive Portal */}
           <Link
             to="/admin/verify"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] transition-transform hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
+            className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] whitespace-nowrap cursor-pointer"
             title="Executive Verification Portal (Passkey: vikasmusickeytosuccess)"
           >
             <ShieldCheck className="w-4 h-4 text-[#141414]" />
@@ -126,7 +126,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* AI Bot */}
           <button
             onClick={onOpenAIChat}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[3px_3px_0_0_#141414] transition-transform hover:-translate-y-0.5 cursor-pointer whitespace-nowrap"
+            className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[3px_3px_0_0_#141414] cursor-pointer whitespace-nowrap"
             title="Ask AI Principal"
           >
             <Bot className="w-4 h-4 text-[#FF4D00]" />
@@ -136,7 +136,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* START A PROJECT Big Button */}
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs xl:text-sm font-black tracking-wide uppercase transition-all shadow-[4px_4px_0_0_#FF4D00] hover:shadow-[4px_4px_0_0_#141414] hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
+            className="brutal-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs xl:text-sm font-black tracking-wide uppercase shadow-[4px_4px_0_0_#FF4D00] whitespace-nowrap cursor-pointer"
           >
             <span>START A PROJECT</span>
           </Link>
