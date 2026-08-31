@@ -49,7 +49,7 @@ export default function ProjectEstimator() {
   const getWhatsAppEstimateLink = () => {
     const selectedNames = selectedServices.map((id) => serviceOptions.find((o) => o.id === id)?.name).filter(Boolean).join(', ');
     const text = encodeURIComponent(`Hi Vikas, I created a custom scope estimate:\n• Practices: ${selectedNames}\n• Squad Scale: ${squadScale.toUpperCase()} (${squadInfo.headcount})\n• Timeline: ${squadInfo.weeks}\n\nLet's discuss onboarding.`);
-    return `https://wa.me/919137507092?text=${text}`;
+    return `https://wa.me/918369804739?text=${text}`;
   };
 
   return (

@@ -29,7 +29,7 @@ export default function ContactWizard() {
 
   const getWhatsAppForwardLink = () => {
     const text = encodeURIComponent(`Hi Vikas, I am submitting a project inquiry:\n• Name: ${formData.name}\n• Company: ${formData.company || 'N/A'}\n• Specialization: ${formData.selectedService}\n• Model: ${formData.budget}\n• Brief: ${formData.message || 'Ready to start.'}`);
-    return `https://wa.me/919137507092?text=${text}`;
+    return `https://wa.me/918369804739?text=${text}`;
   };
 
   return (
@@ -66,7 +66,7 @@ export default function ContactWizard() {
               className="inline-flex items-center gap-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] px-8 py-4 font-display text-sm sm:text-base font-black uppercase shadow-[4px_4px_0_0_#FF4D00] transition-all hover:-translate-y-0.5"
             >
               <MessageCircle className="size-4" />
-              <span>CONTINUE ON WHATSAPP (+91 9137507092)</span>
+              <span>CONTINUE ON WHATSAPP (+91 8369804739)</span>
             </a>
           </div>
         </div>

@@ -1,7 +1,7 @@
-export const CONTACT_INFO = {
-  phone: "+919137507092",
+﻿export const CONTACT_INFO = {
+  phone: "+918369804739",
   phoneDisplay: "+91 91375 07092",
-  whatsappUrl: "https://wa.me/919137507092?text=Hello%20The%20Unfiltered%20Engineer,%20I%20want%20to%20discuss%20an%20engineering%20/%20marketing%20project.",
+  whatsappUrl: "https://wa.me/918369804739?text=Hello%20The%20Unfiltered%20Engineer,%20I%20want%20to%20discuss%20an%20engineering%20/%20marketing%20project.",
   telegramUser: "@Yourstrulyvikasmishra",
   telegramUrl: "https://t.me/Yourstrulyvikasmishra",
   email: "vikas@theunfilteredengineer.com",

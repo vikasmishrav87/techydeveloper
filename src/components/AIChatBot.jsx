@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { sendAIChatMessage } from '../services/aiChatService';
 import { CONTACT_INFO } from '../data/agencyData';
 import { logSecurityEvent } from '../services/storageService';
@@ -79,7 +79,7 @@ export default function AIChatBot({ isOpen, onClose }) {
         {
           id: `bot-${Date.now()}`,
           role: 'assistant',
-          content: `I ran into an issue connecting to the AI brain. You can chat directly with **Vikas Mishra** on WhatsApp: [Chat on WhatsApp](https://wa.me/919137507092)`
+          content: `I ran into an issue connecting to the AI brain. You can chat directly with **Vikas Mishra** on WhatsApp: [Chat on WhatsApp](https://wa.me/918369804739)`
         }
       ]);
     } finally {

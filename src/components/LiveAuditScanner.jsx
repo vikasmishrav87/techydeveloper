@@ -196,7 +196,7 @@ export default function LiveAuditScanner() {
 
           <div className="mt-6 pt-4 border-t-2 border-[#141414]/20 flex flex-wrap items-center justify-between gap-3">
             <a
-              href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I just ran a Security Audit for ${auditResult.domain} on The Unfiltered Engineer (Score: ${auditResult.score}/100). Let's discuss fortifying our infrastructure.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I just ran a Security Audit for ${auditResult.domain} on The Unfiltered Engineer (Score: ${auditResult.score}/100). Let's discuss fortifying our infrastructure.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs font-black uppercase transition-all"

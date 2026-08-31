@@ -41,7 +41,7 @@ export default function CaseStudyDetailPage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
-              href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to discuss building a similar system.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to discuss building a similar system.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-[#FF4D00] hover:bg-[#FF5500] text-[#FAF7EE] px-8 py-4 font-display text-sm sm:text-base font-black uppercase shadow-[4px_4px_0_0_#FFC72E] transition-all hover:-translate-y-0.5"

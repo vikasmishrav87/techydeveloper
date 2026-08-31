@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+﻿import nodemailer from 'nodemailer';
 
 // In-memory OTP storage for serverless runtime
 global._ACTIVE_EMAIL_OTPS = global._ACTIVE_EMAIL_OTPS || new Map();
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
             <p style="font-size: 12px; color: #cbd5e1;">If you did not request this code, you can safely ignore this email.</p>
             <div class="footer">
               The Unfiltered Engineer • Founded by Vikas Mishra<br>
-              Direct Line: +919137507092 • Telegram: @Yourstrulyvikasmishra
+              Direct Line: +918369804739 • Telegram: @Yourstrulyvikasmishra
             </div>
           </div>
         </body>

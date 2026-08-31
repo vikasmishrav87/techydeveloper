@@ -41,7 +41,7 @@ export default function BigCtaBanner() {
           </a>
         </div>
         <p className="mt-8 font-display text-xs font-bold tracking-widest text-[#FAF7EE]/40 uppercase">
-          FOUNDER DIRECT LINE: VIKAS SUNIL MISHRA (+91 9137507092)
+          FOUNDER DIRECT LINE: VIKAS SUNIL MISHRA (+91 8369804739)
         </p>
       </div>
     </section>

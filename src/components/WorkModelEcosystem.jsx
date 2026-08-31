@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { WORK_MODEL_ECOSYSTEM, CONTACT_INFO } from '../data/agencyData';
 import { Users, Shield, Cpu, Zap, ArrowRight, MessageCircle, Send, CheckCircle2, Award, Clock, Layers, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -131,7 +131,7 @@ export default function WorkModelEcosystem() {
 
               <div className="mt-8 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
                 <a
-                  href={`https://wa.me/919137507092?text=Hi%20Vikas,%20I%20reviewed%20the%20${encodeURIComponent(WORK_MODEL_ECOSYSTEM.pillars[activeStep].phase)}%20phase%20and%20want%20to%20deploy%20a%20dedicated%20squad.`}
+                  href={`https://wa.me/918369804739?text=Hi%20Vikas,%20I%20reviewed%20the%20${encodeURIComponent(WORK_MODEL_ECOSYSTEM.pillars[activeStep].phase)}%20phase%20and%20want%20to%20deploy%20a%20dedicated%20squad.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-all shadow-xs"

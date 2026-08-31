@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { CONTACT_INFO, SERVICE_PILLARS, GLOBAL_HUBS } from '../data/agencyData';
 import { Terminal as TerminalIcon, X, Maximize2, Minimize2, ArrowRight, CornerDownLeft } from 'lucide-react';
 
@@ -42,7 +42,7 @@ export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
   globe             Display worldwide connected delivery hubs & latencies
   security          Show unhackable zero-trust military defense specs
   audit <domain>    Run instant security & exploit assessment
-  whatsapp          Launch WhatsApp direct channel (+919137507092)
+  whatsapp          Launch WhatsApp direct channel (+918369804739)
   telegram          Launch Telegram direct channel (@Yourstrulyvikasmishra)
   pricing           View transparent retainer and sprint tiers
   clear             Clear terminal screen

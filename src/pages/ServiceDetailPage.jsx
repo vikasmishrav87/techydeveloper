@@ -36,7 +36,7 @@ export default function ServiceDetailPage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
-              href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I want to book the ${service.title} squad for our upcoming project.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I want to book the ${service.title} squad for our upcoming project.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] px-8 py-4 font-display text-sm sm:text-base font-black uppercase shadow-[4px_4px_0_0_#FF4D00] transition-all hover:-translate-y-0.5"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { 
   CheckCircle2, XCircle, Clock, ShieldCheck, Download, RefreshCw, 
   MessageCircle, ExternalLink, ArrowRight, Copy, Check, Eye
@@ -133,7 +133,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
           </button>
           
           <a
-            href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, my payment of $${currentPayment.amountUSD} (Order: ${currentPayment.id}) is confirmed. Let's start the project scope.`)}`}
+            href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, my payment of $${currentPayment.amountUSD} (Order: ${currentPayment.id}) is confirmed. Let's start the project scope.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
@@ -183,7 +183,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
           </button>
 
           <a
-            href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, my payment verification for Order ${currentPayment.id} ($${currentPayment.amountUSD}) was denied. Here is my correct transaction details.`)}`}
+            href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, my payment verification for Order ${currentPayment.id} ($${currentPayment.amountUSD}) was denied. Here is my correct transaction details.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"

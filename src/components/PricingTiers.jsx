@@ -80,7 +80,7 @@ export default function PricingTiers() {
 
                 <div className="mt-8 pt-6 border-t-2 border-current/20 flex flex-col gap-2.5">
                   <a
-                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I am interested in The Unfiltered Engineer's "${tier.name}" plan. Let's discuss scope and contract.`)}`}
+                    href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I am interested in The Unfiltered Engineer's "${tier.name}" plan. Let's discuss scope and contract.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs sm:text-sm font-black uppercase text-center shadow-[4px_4px_0_0_#FF4D00] transition-all hover:-translate-y-0.5 cursor-pointer"

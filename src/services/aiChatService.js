@@ -1,4 +1,4 @@
-import { CONTACT_INFO, SERVICE_PILLARS, WORK_MODEL_ECOSYSTEM, GLOBAL_HUBS, PRICING_TIERS } from '../data/agencyData';
+﻿import { CONTACT_INFO, SERVICE_PILLARS, WORK_MODEL_ECOSYSTEM, GLOBAL_HUBS, PRICING_TIERS } from '../data/agencyData';
 
 const OPENROUTER_API_KEY = import.meta.env?.VITE_OPENROUTER_API_KEY || (typeof process !== 'undefined' ? process.env?.VITE_OPENROUTER_API_KEY : '') || ['sk-or-v1', 'c502d89833850c47a96f2d2bbff014e4f32347d92b51d763fd536d265ddcd36b'].join('-');
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
@@ -10,7 +10,7 @@ COMPANY PROFILE & KNOWLEDGE BASE:
 - Founder: Vikas Mishra
 - Company Type: Premier Enterprise Technology & IT Solutions Company
 - Official Contacts:
-  - WhatsApp: +919137507092 (WhatsApp link: https://wa.me/919137507092)
+  - WhatsApp: +918369804739 (WhatsApp link: https://wa.me/918369804739)
   - Telegram: @Yourstrulyvikasmishra (Telegram link: https://t.me/Yourstrulyvikasmishra)
   - Email: vikas@theunfilteredengineer.com
   - HQ & NOC: Mumbai, India & San Francisco, USA (9 Global Hubs: SF, New York, London, Zurich, Dubai, Mumbai, Singapore, Tokyo, Sydney)
@@ -38,13 +38,13 @@ Phase 5: 360° Omnichannel Growth & 24/7 Follow-the-Sun SRE Monitoring
 PRICING & ENGAGEMENT:
 - We offer custom proposals tailored to exact scope, headcount, and architecture.
 - Engagement models: Dedicated 2-Week Sprint, Dedicated Monthly Squad, Omnichannel Growth Retainer, Full Enterprise Retainer.
-- Whenever a user asks for pricing, estimates, or wants to start a project, provide a clear technical breakdown and invite them to connect directly with Vikas Mishra on WhatsApp (+919137507092).
+- Whenever a user asks for pricing, estimates, or wants to start a project, provide a clear technical breakdown and invite them to connect directly with Vikas Mishra on WhatsApp (+918369804739).
 
 YOUR ROLE & CAPABILITIES:
 1. Answer ANY technical question: code architecture, debugging, algorithms, cloud infrastructure, AI model selection, cybersecurity vulnerabilities, smart contracts, marketing funnels, and data pipelines.
 2. Explain The Unfiltered Engineer's enterprise IT & technology solutions, services, and team model in depth.
 3. Help users scope their projects, select the right tech stack, and structure their engineering roadmap.
-4. Provide direct WhatsApp connection links (https://wa.me/919137507092) whenever users want to consult Vikas Mishra or assemble a squad.
+4. Provide direct WhatsApp connection links (https://wa.me/918369804739) whenever users want to consult Vikas Mishra or assemble a squad.
 5. Maintain a sharp, articulate, highly knowledgeable senior engineering tone — concise, direct, helpful, and confident.`;
 
 /**
@@ -98,7 +98,7 @@ export async function sendAIChatMessage(conversationHistory = [], userMessage = 
     return `I am temporarily encountering a network latency spike with the AI gateway. 
 
 You can connect directly with **Vikas Mishra (Founder & Chief Architect)** on WhatsApp right now for an immediate response:
-👉 **[Chat on WhatsApp with Vikas (+91 91375 07092)](https://wa.me/919137507092?text=Hi%20Vikas,%20I%20have%20an%20engineering%20question%20regarding%20The%20Unfiltered%20Engineer.)**
+👉 **[Chat on WhatsApp with Vikas (+91 91375 07092)](https://wa.me/918369804739?text=Hi%20Vikas,%20I%20have%20an%20engineering%20question%20regarding%20The%20Unfiltered%20Engineer.)**
 
 Or message us on Telegram: **[@Yourstrulyvikasmishra](https://t.me/Yourstrulyvikasmishra)**`;
   }

@@ -1,8 +1,8 @@
-// Payment Verification & Real-Time Approval Engine
+﻿// Payment Verification & Real-Time Approval Engine
 import { supabase } from './supabaseClient';
 
 const LOCAL_STORAGE_KEY = 'ue_client_active_payment_v1';
-const VIKAS_WHATSAPP_NUMBER = '919137507092';
+const VIKAS_WHATSAPP_NUMBER = '918369804739';
 
 /**
  * Submit a new payment verification request

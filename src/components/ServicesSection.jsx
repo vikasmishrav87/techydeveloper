@@ -113,7 +113,7 @@ export default function ServicesSection() {
                   </Link>
 
                   <a
-                    href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I want to discuss hiring the ${service.title} engineering squad.`)}`}
+                    href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I want to discuss hiring the ${service.title} engineering squad.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"

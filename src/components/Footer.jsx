@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO, SERVICE_PILLARS } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
@@ -33,7 +33,7 @@ export default function Footer({ onOpenTerminal }) {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366] border-2 border-[#141414] text-[#141414] font-display text-xs font-black shadow-[3px_3px_0_0_#141414] hover:-translate-y-0.5 transition-transform"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp (+91 9137507092)</span>
+                <span>WhatsApp (+91 8369804739)</span>
               </a>
 
               <a

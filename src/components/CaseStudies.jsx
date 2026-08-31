@@ -114,7 +114,7 @@ export default function CaseStudies() {
                     </Link>
 
                     <a
-                      href={`https://wa.me/919137507092?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to build a similar solution.`)}`}
+                      href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to build a similar solution.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"
