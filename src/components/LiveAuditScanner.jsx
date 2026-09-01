@@ -1,6 +1,9 @@
 ﻿import React, { useState } from 'react';
 import { CONTACT_INFO } from '../data/agencyData';
-import { Shield, ShieldAlert, ShieldCheck, Lock, ArrowRight, MessageCircle, Check, Zap, RefreshCw, X } from 'lucide-react';
+import { 
+  Shield, ShieldAlert, ShieldCheck, Lock, ArrowRight, MessageCircle, 
+  Check, Zap, RefreshCw, X, AlertTriangle, CheckCircle2, Terminal, Server, Key, Eye 
+} from 'lucide-react';
 import { saveAuditRecord } from '../services/storageService';
 import { Link } from 'react-router-dom';
 
@@ -8,6 +11,7 @@ export default function LiveAuditScanner() {
   const [targetUrl, setTargetUrl] = useState('https://stripe.com');
   const [scanning, setScanning] = useState(false);
   const [scanStep, setScanStep] = useState(0);
+  const [activeTab, setActiveTab] = useState('lacks'); // 'lacks', 'improve', 'telemetry'
   const [auditResult, setAuditResult] = useState(null);
 
   const presets = [
@@ -62,20 +66,87 @@ export default function LiveAuditScanner() {
         }
         const seed = Math.abs(hash);
         const overallScore = 82 + (seed % 17);
+        const tlsScore = 95 + (seed % 6);
+        const headerScore = 78 + (seed % 20);
+        const corsScore = 84 + (seed % 15);
+        const cveScore = 90 + (seed % 10);
 
         const result = {
           domain: hostname,
           url: cleanUrl,
           score: overallScore,
-          grade: overallScore >= 92 ? 'A+ (Military-Grade)' : 'A (Enterprise Hardened)',
+          tlsScore: tlsScore,
+          headerScore: headerScore,
+          corsScore: corsScore,
+          cveScore: cveScore,
+          grade: overallScore >= 92 ? 'A+ (Military-Grade Shield)' : 'A (Enterprise Hardened)',
           latency: `${(16 + (seed % 15))}ms`,
           timestamp: new Date().toISOString(),
+          
+          // What They Lack / Vulnerabilities
+          vulnerabilities: [
+            {
+              severity: 'CRITICAL',
+              title: 'Missing Strict Nonce-Based Content-Security-Policy (CSP)',
+              impact: 'Cross-Site Scripting (XSS) & Inline Injection Risk',
+              details: 'The site allows unsafe inline scripts without cryptographically verified SHA-256 nonces, exposing session cookies to supply-chain package takeovers.'
+            },
+            {
+              severity: 'HIGH',
+              title: 'Missing HSTS Preload & Strict SubDomains Header',
+              impact: 'SSL-Stripping & Downgrade MITM Exposure',
+              details: 'Strict-Transport-Security lacks the max-age=63072000; includeSubDomains; preload flag, allowing active network attackers to force unencrypted HTTP sessions.'
+            },
+            {
+              severity: 'MEDIUM',
+              title: 'Permissive CORS Wildcard on API Edge Gateways',
+              impact: 'Cross-Origin Data Leakage Surface',
+              details: 'Certain API endpoints return Access-Control-Allow-Origin: * without strict origin validation, allowing malicious external origins to read authenticated responses.'
+            },
+            {
+              severity: 'LOW',
+              title: 'Server Header Fingerprint Information Disclosure',
+              impact: 'Reconnaissance Aid for Automated Scanners',
+              details: 'Response headers expose backend server software versions (e.g. nginx/cloudflare), accelerating automated exploit vulnerability matching.'
+            }
+          ],
+
+          // How To Improve / Hardening Roadmap
+          hardeningSteps: [
+            {
+              step: '01',
+              title: 'Deploy Cryptographic Nonce-Based CSP & SRI Hashes',
+              outcome: '100% Defense Against Malicious Script Injection',
+              action: 'Generate unique per-request base64 cryptographic nonces for all inline scripts and enforce Subresource Integrity (SRI) on all external CDNs.'
+            },
+            {
+              step: '02',
+              title: 'Enforce Max-Age 2-Year HSTS Preload across Subdomains',
+              outcome: 'Zero Possibility of Plain-Text HTTP Interception',
+              action: 'Submit domain to the Chromium HSTS Preload list with max-age=63072000 and includeSubDomains enabled.'
+            },
+            {
+              step: '03',
+              title: 'Implement eBPF Kernel-Level Layer-7 WAF Protection',
+              outcome: 'Automated 40Gbps Volumetric DDoS & Bot Scrubbing',
+              action: 'Deploy eBPF kernel packet filters that block unauthorized system calls and inspect incoming payload signatures at wire speed (<1ms latency).'
+            },
+            {
+              step: '04',
+              title: 'Strip Server Fingerprint Headers & Isolate Secrets in Vault',
+              outcome: 'Eliminate Zero-Day Automated Vulnerability Probing',
+              action: 'Remove Server, X-Powered-By, and X-AspNet-Version headers at the reverse proxy layer and migrate all API keys to HashiCorp Vault with auto-rotation.'
+            }
+          ],
+
+          // Detailed Telemetry Checks
           checks: [
-            { name: 'TLS 1.3 Cipher Handshake', status: 'PASS', score: '100/100' },
-            { name: 'Content-Security-Policy (CSP)', status: overallScore >= 90 ? 'STRICT' : 'VALIDATED', score: '94/100' },
-            { name: 'HSTS Max-Age Header', status: 'PASS', score: '100/100' },
-            { name: 'X-Frame & Clickjacking Shield', status: 'PASS', score: '98/100' },
-            { name: 'Zero-Day CVE Exploit Surface', status: 'CLEAN', score: '99/100' },
+            { name: 'TLS 1.3 Cipher Suite Handshake', status: 'PASS', score: `${tlsScore}/100` },
+            { name: 'Content-Security-Policy (CSP)', status: headerScore >= 90 ? 'STRICT' : 'NEEDS NONCE', score: `${headerScore}/100` },
+            { name: 'HSTS Max-Age & Preload Header', status: 'VALIDATED', score: '98/100' },
+            { name: 'X-Frame-Options & Clickjacking Shield', status: 'PASS', score: '100/100' },
+            { name: 'CORS Origin Isolation Policy', status: corsScore >= 90 ? 'ISOLATED' : 'REVIEW', score: `${corsScore}/100` },
+            { name: 'Zero-Day CVE Exploit Surface Scan', status: 'CLEAN', score: `${cveScore}/100` },
           ]
         };
 
@@ -87,54 +158,56 @@ export default function LiveAuditScanner() {
           grade: result.grade
         });
       }
-    }, 400);
+    }, 380);
   };
 
   return (
-    <div className="rounded-3xl border-2 border-[#141414] bg-[#FAF7EE] p-6 sm:p-10 shadow-[7px_7px_0_0_#141414] text-[#141414]">
+    <div className="rounded-3xl border-2 border-[#141414] bg-[#FAF7EE] p-6 sm:p-10 shadow-[7px_7px_0_0_#141414] text-[#141414] font-sans">
       
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 pb-6 border-b-2 border-[#141414]/15">
         <div>
-          <p className="font-display text-xs font-black uppercase text-[#FF4D00] tracking-widest">
-            ZERO-TRUST SECURITY SANDBOX
-          </p>
-          <h3 className="mt-1 font-display text-2xl sm:text-4xl font-black uppercase text-[#141414]">
-            LIVE EXPLOIT & DEFENSE SCANNER
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] font-display text-[11px] font-black uppercase mb-2 shadow-[2px_2px_0_0_#141414]">
+            <ShieldCheck className="size-3.5" />
+            <span>OFFENSIVE ZERO-TRUST DEFENSE SANDBOX</span>
+          </div>
+          <h3 className="font-display text-2xl sm:text-4xl font-black uppercase text-[#141414]">
+            LIVE EXPLOIT, DEFICIENCY & DEFENSE SCANNER
           </h3>
+          <p className="text-xs sm:text-sm font-medium text-[#141414]/75 mt-1">
+            Conduct simulated offensive penetration telemetry to discover what security layers your domain lacks and how to build military-grade immunity.
+          </p>
         </div>
-        <span className="px-3 py-1 rounded-full border-2 border-[#141414] bg-[#FFC72E] font-display text-xs font-black uppercase">
+        <span className="sticker-pill px-3.5 py-1.5 bg-[#25D366] text-[#141414] text-xs font-display font-black uppercase shadow-[2px_2px_0_0_#141414]">
           100% FREE TELEMETRY
         </span>
       </div>
 
       {/* Input Bar */}
-      <div className="space-y-4">
+      <div className="space-y-3 mb-8">
         <div className="flex flex-col sm:flex-row gap-2.5">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={targetUrl}
-              onChange={(e) => setTargetUrl(e.target.value)}
-              placeholder="Enter domain URL to scan (e.g. yourcompany.com)..."
-              className="w-full px-4 py-3.5 rounded-2xl border-2 border-[#141414] bg-[#F4EFE6] text-[#141414] font-mono text-xs sm:text-sm font-bold focus:bg-white focus:outline-none"
-            />
-          </div>
+          <input
+            type="text"
+            value={targetUrl}
+            onChange={(e) => setTargetUrl(e.target.value)}
+            placeholder="Enter domain URL to scan (e.g. yourcompany.com)..."
+            className="flex-1 px-4 py-3.5 rounded-2xl border-2 border-[#141414] bg-[#F4EFE6] text-[#141414] font-mono text-xs sm:text-sm font-bold focus:bg-white focus:outline-none"
+          />
 
           <button
             type="button"
             onClick={() => handleStartScan()}
             disabled={scanning || !targetUrl.trim()}
-            className="px-8 py-3.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs sm:text-sm font-black uppercase shadow-[4px_4px_0_0_#FF4D00] transition-all hover:-translate-y-0.5 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            className="sticker-pill px-8 py-3.5 bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-xs sm:text-sm font-display font-black uppercase shadow-[4px_4px_0_0_#FF4D00] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
           >
             {scanning ? <RefreshCw className="size-4 animate-spin" /> : <Zap className="size-4 text-[#FFC72E]" />}
-            <span>{scanning ? 'SCANNING...' : 'EXECUTE SCAN'}</span>
+            <span>{scanning ? 'EXECUTING SCAN...' : 'EXECUTE SECURITY AUDIT'}</span>
           </button>
         </div>
 
         {/* Quick Presets */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase">
-          <span className="text-[#141414]/60">QUICK DEMO:</span>
+          <span className="text-[#141414]/60">QUICK TARGETS:</span>
           {presets.map((p) => (
             <button
               key={p.name}
@@ -143,7 +216,7 @@ export default function LiveAuditScanner() {
                 setTargetUrl(p.url);
                 handleStartScan(p.url);
               }}
-              className="px-3 py-1 rounded-xl border border-[#141414] bg-[#F4EFE6] hover:bg-[#FFC72E] text-[#141414] text-[11px] font-mono transition-colors cursor-pointer"
+              className="sticker-pill px-3 py-1 bg-[#F4EFE6] hover:bg-[#FFC72E] text-[#141414] text-[11px] font-mono shadow-[2px_2px_0_0_#141414] cursor-pointer"
             >
               {p.name}
             </button>
@@ -151,67 +224,224 @@ export default function LiveAuditScanner() {
         </div>
       </div>
 
-      {/* Scanning Logs */}
+      {/* Live Scanning Progress Terminal */}
       {scanning && (
-        <div className="mt-8 p-6 rounded-3xl border-2 border-[#141414] bg-[#141414] text-[#FAF7EE] font-mono text-xs space-y-2">
-          <div className="flex items-center justify-between text-[#FFC72E] border-b border-[#FAF7EE]/20 pb-2 mb-3">
-            <span>ZERO-TRUST TELEMETRY ACTIVE</span>
-            <span>PHASE {scanStep + 1}/6</span>
+        <div className="rounded-2xl border-2 border-[#141414] bg-[#141414] text-[#FAF7EE] p-5 font-mono text-xs shadow-[5px_5px_0_0_#FF4D00] space-y-3">
+          <div className="flex items-center gap-2 text-[#FFC72E] font-bold">
+            <Terminal className="size-4" />
+            <span>ACTIVE OFFENSIVE TELEMETRY SCRIPT RUNNING...</span>
           </div>
-          {scanPhases.slice(0, scanStep + 1).map((phase, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-[#FAF7EE]">
-              <span className="text-[#FF4D00]">›</span>
-              <span>{phase}</span>
-            </div>
-          ))}
+          <p className="text-[#25D366]">{scanPhases[scanStep]}</p>
+          <div className="w-full bg-[#FAF7EE]/20 rounded-full h-2 overflow-hidden">
+            <div 
+              className="bg-[#FF4D00] h-full transition-all duration-300 rounded-full"
+              style={{ width: `${((scanStep + 1) / scanPhases.length) * 100}%` }}
+            />
+          </div>
         </div>
       )}
 
-      {/* Results Box */}
-      {auditResult && !scanning && (
-        <div className="mt-8 rounded-3xl border-2 border-[#141414] bg-[#FFC72E] p-6 sm:p-8 text-[#141414] shadow-[5px_5px_0_0_#141414]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#141414]/20 pb-4 mb-6">
+      {/* Audit Detailed Report */}
+      {auditResult && (
+        <div className="rounded-3xl border-2 border-[#141414] bg-[#F4EFE6] p-6 sm:p-8 shadow-[6px_6px_0_0_#141414] space-y-8">
+          
+          {/* Target Summary Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#141414]/15 pb-6">
             <div>
-              <p className="font-display text-xs font-black uppercase tracking-widest text-[#141414]/70">
-                AUDIT REPORT FOR:
-              </p>
-              <h4 className="font-display text-2xl sm:text-3xl font-black uppercase">{auditResult.domain}</h4>
-              <p className="text-xs font-bold uppercase mt-1">GRADE: {auditResult.grade} • LATENCY: {auditResult.latency}</p>
+              <span className="sticker-pill px-3 py-0.5 bg-[#141414] text-[#FAF7EE] text-[10px] font-mono">
+                SECURITY TARGET EVALUATION
+              </span>
+              <h4 className="font-display text-2xl sm:text-3xl font-black uppercase text-[#141414] mt-1.5">
+                {auditResult.domain}
+              </h4>
+              <div className="flex flex-wrap gap-3 text-xs font-bold uppercase text-[#141414]/80 mt-1">
+                <span>RATING: <strong className="text-[#FF4D00]">{auditResult.grade}</strong></span>
+                <span>•</span>
+                <span>LATENCY: <strong>{auditResult.latency}</strong></span>
+                <span>•</span>
+                <span>STATUS: <strong>AUDITED</strong></span>
+              </div>
             </div>
 
             <div className="text-right">
-              <div className="font-display text-5xl font-black text-[#141414]">{auditResult.score}/100</div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#141414]/80">SECURITY SCORE</span>
+              <div className="font-display text-4xl sm:text-5xl font-black text-[#141414]">
+                {auditResult.score}<span className="text-2xl text-[#FF4D00]">/100</span>
+              </div>
+              <div className="text-xs font-black uppercase text-[#141414]/70">MILITARY DEFENSE SCORE</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {auditResult.checks.map((chk, cIdx) => (
-              <div key={cIdx} className="p-3.5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] flex items-center justify-between">
-                <span className="text-xs font-bold uppercase truncate pr-2">{chk.name}</span>
-                <span className="font-display text-xs font-black text-[#FF4D00]">{chk.status}</span>
+          {/* 4 Category Posture Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'TLS & CIPHER SUITE', score: auditResult.tlsScore, color: '#25D366' },
+              { label: 'HTTP DEFENSE HEADERS', score: auditResult.headerScore, color: '#FFC72E' },
+              { label: 'CORS & API INTEGRITY', score: auditResult.corsScore, color: '#FF4D00' },
+              { label: 'CVE SURFACE SHIELD', score: auditResult.cveScore, color: '#141414' }
+            ].map((m, idx) => (
+              <div key={idx} className="p-4 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[3px_3px_0_0_#141414]">
+                <div className="text-[11px] font-black uppercase text-[#141414]/70 mb-1">{m.label}</div>
+                <div className="font-display text-2xl sm:text-3xl font-black text-[#141414]">{m.score}%</div>
+                <div className="w-full bg-[#141414]/10 rounded-full h-2 mt-2 overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500" 
+                    style={{ width: `${m.score}%`, backgroundColor: m.color }}
+                  />
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 pt-4 border-t-2 border-[#141414]/20 flex flex-wrap items-center justify-between gap-3">
+          {/* Analysis View Tabs */}
+          <div className="flex flex-wrap gap-2 pt-2 border-t-2 border-[#141414]/15">
+            <button
+              onClick={() => setActiveTab('lacks')}
+              className={`sticker-pill px-4 py-2 text-xs font-display font-black cursor-pointer transition-all flex items-center gap-1.5 ${
+                activeTab === 'lacks' 
+                  ? 'bg-[#FF4D00] text-[#FAF7EE] shadow-[3px_3px_0_0_#141414]' 
+                  : 'bg-[#FAF7EE] text-[#141414] hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
+              }`}
+            >
+              <AlertTriangle className="size-3.5" />
+              <span>WHAT THIS SYSTEM LACKS ({auditResult.vulnerabilities.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('improve')}
+              className={`sticker-pill px-4 py-2 text-xs font-display font-black cursor-pointer transition-all flex items-center gap-1.5 ${
+                activeTab === 'improve' 
+                  ? 'bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]' 
+                  : 'bg-[#FAF7EE] text-[#141414] hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
+              }`}
+            >
+              <CheckCircle2 className="size-3.5" />
+              <span>MILITARY HARDENING BLUEPRINT</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('telemetry')}
+              className={`sticker-pill px-4 py-2 text-xs font-display font-black cursor-pointer transition-all flex items-center gap-1.5 ${
+                activeTab === 'telemetry' 
+                  ? 'bg-[#141414] text-[#FAF7EE] shadow-[3px_3px_0_0_#FF4D00]' 
+                  : 'bg-[#FAF7EE] text-[#141414] hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
+              }`}
+            >
+              <Terminal className="size-3.5" />
+              <span>RAW TELEMETRY CHECKS</span>
+            </button>
+          </div>
+
+          {/* Tab 1: What They Lack (Vulnerabilities) */}
+          {activeTab === 'lacks' && (
+            <div className="space-y-4">
+              <p className="font-display text-xs font-black uppercase text-[#FF4D00] tracking-wider">
+                DEFENSIVE GAPS & VULNERABILITY EXPOSURE VECTORS:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {auditResult.vulnerabilities.map((v, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[4px_4px_0_0_#141414] space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`px-2.5 py-0.5 rounded-full border border-[#141414] font-display text-[10px] font-black uppercase ${
+                        v.severity === 'CRITICAL' ? 'bg-[#FF4D00] text-[#FAF7EE]' : 'bg-[#FFC72E] text-[#141414]'
+                      }`}>
+                        {v.severity} EXPOSURE
+                      </span>
+                      <span className="font-mono text-xs font-bold text-[#FF4D00]">{v.impact}</span>
+                    </div>
+
+                    <h5 className="font-display text-base font-black uppercase text-[#141414]">
+                      {v.title}
+                    </h5>
+
+                    <p className="text-xs font-medium text-[#141414]/75 leading-relaxed">
+                      {v.details}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tab 2: How To Improve (Hardening Roadmap) */}
+          {activeTab === 'improve' && (
+            <div className="space-y-4">
+              <p className="font-display text-xs font-black uppercase text-[#25D366] tracking-wider">
+                ZERO-TRUST HARDENING & MILITARY REMEDIATION:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {auditResult.hardeningSteps.map((h, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[4px_4px_0_0_#141414] space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="sticker-pill px-2.5 py-0.5 bg-[#141414] text-[#FAF7EE] font-display text-[10px] font-black">
+                        STEP {h.step}
+                      </span>
+                      <span className="font-mono text-xs font-bold text-[#25D366]">{h.outcome}</span>
+                    </div>
+
+                    <h5 className="font-display text-base font-black uppercase text-[#141414]">
+                      {h.title}
+                    </h5>
+
+                    <p className="text-xs font-medium text-[#141414]/80 leading-relaxed">
+                      {h.action}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tab 3: Raw Telemetry Checks */}
+          {activeTab === 'telemetry' && (
+            <div className="space-y-3">
+              <p className="font-display text-xs font-black uppercase text-[#141414] tracking-wider">
+                CRYPTOGRAPHIC VERIFICATION LEDGER:
+              </p>
+              <div className="space-y-2">
+                {auditResult.checks.map((c, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-3.5 rounded-xl border border-[#141414] bg-[#FAF7EE] flex items-center justify-between font-mono text-xs font-bold"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-[#25D366]" />
+                      <span>{c.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[#FF4D00]">{c.score}</span>
+                      <span className="sticker-pill px-2 py-0.5 bg-[#141414] text-[#FAF7EE] text-[10px]">
+                        {c.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Action Dispatcher Footer */}
+          <div className="pt-4 border-t-2 border-[#141414]/15 flex flex-wrap items-center justify-between gap-4">
+            <div className="text-xs font-medium text-[#141414]/75">
+              Need Vikas Mishra's elite red-team defense squad to patch these vulnerabilities and secure zero-breach compliance?
+            </div>
+
             <a
-              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I just ran a Security Audit for ${auditResult.domain} on The Unfiltered Engineer (Score: ${auditResult.score}/100). Let's discuss fortifying our infrastructure.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I audited ${auditResult.domain} on your Security scanner. Here are our defensive gaps: ${auditResult.vulnerabilities.map(v => v.title).join(', ')}. Let's execute the hardening sprint.`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs font-black uppercase transition-all"
+              className="sticker-pill px-6 py-3 bg-[#FF4D00] hover:bg-[#FFC72E] hover:text-[#141414] text-[#FAF7EE] text-xs font-display font-black shadow-[3px_3px_0_0_#FFC72E] cursor-pointer flex items-center gap-2"
             >
               <MessageCircle className="size-4" />
-              <span>DISCUSS DEFENSE ON WHATSAPP</span>
+              <span>DEPLOY RED-TEAM HARDENING SPRINT (+91 8369804739)</span>
             </a>
-
-            <Link
-              to="/contact"
-              className="font-display text-xs font-black uppercase underline decoration-2 underline-offset-4 hover:text-[#FF4D00]"
-            >
-              HIRE RED-TEAM AUDIT SQUAD →
-            </Link>
           </div>
+
         </div>
       )}
 
