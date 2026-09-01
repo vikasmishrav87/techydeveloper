@@ -1,4 +1,4 @@
-﻿export const CONTACT_INFO = {
+export const CONTACT_INFO = {
   phone: "+918369804739",
   phoneDisplay: "+91 83698 04739",
   whatsappUrl: "https://wa.me/918369804739?text=Hello%20The%20Unfiltered%20Engineer,%20I%20want%20to%20discuss%20an%20engineering%20/%20marketing%20project.",
@@ -203,7 +203,7 @@ export const SERVICE_PILLARS = [
     tagline: "High-throughput Layer-1/2 rollups, DeFi liquidity AMMs, cross-chain bridges, and battle-tested smart contracts.",
     badge: "$1.2B+ TVL Secured",
     accentColor: "lavender",
-    image: "/assets/blockchain-cubes.jpg",
+    image: "/assets/web3-blockchain-hub.png",
     squadName: "Core Protocol & Cryptography Squad",
     squadHeadcount: "Senior Protocol Developers & Cryptographers",
     keyStats: [
@@ -467,7 +467,7 @@ export const CASE_STUDIES = [
     title: "Securing a High-Frequency Web3 Liquidity Protocol",
     client: "DeFiX Global Capital",
     tag: "Cyber Security & Blockchain",
-    image: "/assets/blockchain-cubes.jpg",
+    image: "/assets/web3-blockchain-hub.png",
     timeline: "6-Week Elite Security Sprint",
     results: [
       { label: "Zero-Day Exploits Mitigated", value: "3 Critical" },
