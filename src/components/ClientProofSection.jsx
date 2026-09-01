@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Star } from 'lucide-react';
 
 export default function ClientProofSection() {
@@ -59,7 +59,7 @@ export default function ClientProofSection() {
                   <div className="font-display text-xs font-black uppercase text-[#141414]">{rev.author}</div>
                   <div className="text-[11px] font-bold text-[#FF4D00] uppercase">{rev.role}</div>
                 </div>
-                <span className="text-xs font-mono font-bold text-[#141414]/50 underline">{rev.domain}</span>
+                <span className="sticker-pill px-2.5 py-0.5 text-[10px] font-mono font-bold bg-[#FAF7EE] text-[#141414] shadow-[2px_2px_0_0_#141414]">{rev.domain}</span>
               </div>
             </article>
           ))}

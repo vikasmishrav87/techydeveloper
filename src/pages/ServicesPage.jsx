@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SERVICE_PILLARS, CONTACT_INFO } from '../data/agencyData';
 import { ArrowUpRight, MessageCircle, ArrowRight, ShieldCheck, Flame, Zap } from 'lucide-react';
@@ -102,20 +102,20 @@ export default function ServicesPage() {
                   </ul>
                 </div>
 
-                <div className="mt-8 pt-5 border-t-2 border-current/20 flex items-center justify-between gap-3">
+                <div className="mt-8 pt-5 border-t-2 border-current/20 flex flex-wrap items-center justify-between gap-3">
                   <Link
                     to={`/services/${service.id}`}
-                    className="inline-flex items-center gap-1.5 font-display text-xs sm:text-sm font-black uppercase underline decoration-2 underline-offset-4 hover:text-[#FF4D00] transition-colors"
+                    className="sticker-pill px-4 py-2 bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-xs font-display font-black shadow-[3px_3px_0_0_#FF4D00] hover:shadow-[4px_4px_0_0_#141414] cursor-pointer"
                   >
                     <span>VIEW SQUAD DOSSIER</span>
-                    <ArrowUpRight className="size-4" />
+                    <ArrowUpRight className="size-3.5" />
                   </Link>
 
                   <a
                     href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I want to discuss hiring the ${service.title} engineering squad.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="grid size-9 place-items-center rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] shadow-[2px_2px_0_0_#141414] hover:scale-105 transition-transform"
+                    className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"
                     title="Chat on WhatsApp"
                   >
                     <MessageCircle className="size-4 text-[#141414]" />

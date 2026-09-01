@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CASE_STUDIES } from '../data/agencyData';
 import { ArrowUpRight, MessageCircle, ArrowRight } from 'lucide-react';
@@ -104,13 +104,13 @@ export default function CaseStudies() {
                   </div>
 
                   {/* Bottom Link Button */}
-                  <div className="mt-6 pt-4 border-t-2 border-[#141414]/10 flex items-center justify-between">
+                  <div className="mt-6 pt-4 border-t-2 border-[#141414]/10 flex flex-wrap items-center justify-between gap-3">
                     <Link
                       to={`/case-studies/${study.id}`}
-                      className="inline-flex items-center gap-2 font-display text-xs sm:text-sm font-black uppercase underline decoration-2 underline-offset-4 hover:text-[#FF4D00]"
+                      className="sticker-pill px-4 py-2 sm:px-5 sm:py-2.5 bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-xs font-display font-black shadow-[3px_3px_0_0_#FF4D00] hover:shadow-[4px_4px_0_0_#141414] cursor-pointer"
                     >
                       <span>READ ARCHITECTURE DOSSIER</span>
-                      <ArrowUpRight className="size-4" />
+                      <ArrowUpRight className="size-3.5" />
                     </Link>
 
                     <a
