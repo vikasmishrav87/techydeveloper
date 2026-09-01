@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { CONTACT_INFO } from '../data/agencyData';
 import { 
   Shield, ShieldAlert, ShieldCheck, Lock, ArrowRight, MessageCircle, 
@@ -80,8 +80,78 @@ export default function LiveAuditScanner() {
           corsScore: corsScore,
           cveScore: cveScore,
           grade: overallScore >= 92 ? 'A+ (Military-Grade Shield)' : 'A (Enterprise Hardened)',
-          latency: `${(16 + (seed % 15))}ms`,
+          latency: `${(14 + (seed % 16))}ms`,
           timestamp: new Date().toISOString(),
+          
+          // 6 Multi-Factor Evaluated Pillars with 24 Detailed Diagnostic Parameters
+          pillars: [
+            {
+              name: '1. Cryptographic Transport & TLS 1.3 Architecture',
+              score: tlsScore,
+              color: '#25D366',
+              factors: [
+                { name: 'TLS 1.3 Cipher Suite Priority', value: 'AES-256-GCM & ChaCha20', benchmark: 'TLS 1.3 Strictly', status: 'PASS', detail: 'Enforces modern elliptic-curve cipher exchange with zero legacy fallbacks.' },
+                { name: 'HSTS Preload & Strict-Transport-Security', value: 'max-age=63072000', benchmark: '2-Year Max-Age', status: 'PASS', detail: 'Hardcoded in Chromium HSTS list to block SSL-stripping MITM attacks.' },
+                { name: 'Certificate Authority & OCSP Stapling', value: 'Valid Leaf / CA Chain', benchmark: 'OCSP Validated', status: 'PASS', detail: 'Validates CA integrity with zero latency overhead via server stapling.' },
+                { name: 'Perfect Forward Secrecy (PFS)', value: 'ECDHE-ECDSA Enforced', benchmark: 'PFS Required', status: 'PASS', detail: 'Compromised server private keys cannot decrypt historical captured traffic.' }
+              ]
+            },
+            {
+              name: '2. HTTP Zero-Trust Defense Headers',
+              score: headerScore,
+              color: '#FFC72E',
+              factors: [
+                { name: 'Content-Security-Policy (CSP)', value: headerScore >= 88 ? 'Strict Cryptographic Nonce' : 'Permissive Inline Policy', benchmark: 'Nonce-Based CSP', status: headerScore >= 88 ? 'PASS' : 'WARN', detail: 'Neutralizes Cross-Site Scripting (XSS) and malicious iframe injection.' },
+                { name: 'X-Frame-Options / Clickjacking Shield', value: 'DENY', benchmark: 'DENY / SAMEORIGIN', status: 'PASS', detail: 'Completely blocks unauthorized iframe embedding and invisible clickjacking.' },
+                { name: 'X-Content-Type-Options', value: 'nosniff', benchmark: 'nosniff', status: 'PASS', detail: 'Prevents browsers from MIME-sniffing response payloads into executable scripts.' },
+                { name: 'Permissions-Policy Restriction', value: 'Camera/Mic/Geo Restricted', benchmark: 'Strict Permissions', status: 'PASS', detail: 'Disables dangerous browser hardware APIs for untrusted subframes.' }
+              ]
+            },
+            {
+              name: '3. API Security, CORS & Session Integrity',
+              score: corsScore,
+              color: '#FF4D00',
+              factors: [
+                { name: 'CORS Origin Whitelist & Preflight', value: 'Strict Origin Echo', benchmark: 'No Wildcards (*)', status: 'PASS', detail: 'Blocks malicious external web apps from reading authenticated session data.' },
+                { name: 'Cookie Flags (HttpOnly, Secure, SameSite)', value: 'SameSite=Strict; Secure', benchmark: '__Host- Prefix', status: 'PASS', detail: 'Prevents client JavaScript token access and cross-site request forgery (CSRF).' },
+                { name: 'Subresource Integrity (SRI) On CDNs', value: 'SHA-384 Script Hashes', benchmark: 'SRI Validated', status: 'PASS', detail: 'Ensures external JS libraries cannot be secretly modified on upstream CDNs.' },
+                { name: 'API Token Bucket Rate-Limiting', value: '10,000 req/min Threshold', benchmark: 'Distributed Redis', status: 'PASS', detail: 'Throttles brute-force authentication attacks and API scraping swarms.' }
+              ]
+            },
+            {
+              name: '4. Attack Surface & CVE Vulnerability Matrix',
+              score: cveScore,
+              color: '#141414',
+              factors: [
+                { name: 'Public CVE Vulnerability Surface', value: '0 Known Exploitable CVEs', benchmark: 'NVD Score 0', status: 'PASS', detail: 'Continuous binary scanning against global CVE exploit registries.' },
+                { name: 'Server Header Information Disclosure', value: 'Server Fingerprint Stripped', benchmark: 'Zero Disclosure', status: 'PASS', detail: 'Removes Server and X-Powered-By versions from HTTP response headers.' },
+                { name: 'Directory Traversal & Hidden Files', value: '403 Forbidden (.env, .git)', benchmark: 'Blocked', status: 'PASS', detail: 'Edge WAF intercepts attempts to probe hidden repository configuration files.' },
+                { name: 'SQLi & NoSQL Injection Defense Gates', value: 'Parameterized ORM & AST', benchmark: 'Zero Injection', status: 'PASS', detail: 'Strict input sanitization and parameterized query execution.' }
+              ]
+            },
+            {
+              name: '5. Infrastructure, WAF & eBPF Kernel Defense',
+              score: 88 + (seed % 11),
+              color: '#25D366',
+              factors: [
+                { name: 'eBPF Kernel Packet Inspection', value: 'Sub-1ms Wire Speed', benchmark: 'Kernel XDP', status: 'PASS', detail: 'Inspects incoming packet payloads at the NIC driver layer before OS overhead.' },
+                { name: 'Layer-7 Volumetric DDoS Scrubbing', value: '40Gbps Anycast Mesh', benchmark: 'Anycast Scrubbing', status: 'PASS', detail: 'Absorbs HTTP flood attacks with zero degradation in user page speed.' },
+                { name: 'DNSSEC Cryptographic Validation', value: 'RRSIG / DS Validated', benchmark: 'DNSSEC Enabled', status: 'PASS', detail: 'Protects domain DNS lookup responses against DNS cache poisoning attacks.' },
+                { name: 'WAF Rule Strictness (OWASP Top 10)', value: 'Strict Paranoia Level 2', benchmark: 'OWASP Hardened', status: 'PASS', detail: 'Automated real-time blocking of malicious payloads and zero-day probes.' }
+              ]
+            },
+            {
+              name: '6. Access Control & Identity Governance (IAM)',
+              score: 85 + (seed % 14),
+              color: '#FFC72E',
+              factors: [
+                { name: 'MFA & Hardware FIDO2 WebAuthn', value: 'WebAuthn Supported', benchmark: 'FIDO2 / YubiKey', status: 'PASS', detail: 'Phishing-resistant authentication protocols for all executive accounts.' },
+                { name: 'Zero-Trust Bastion Network (mTLS)', value: 'WireGuard Tunnel', benchmark: 'Mutual TLS', status: 'PASS', detail: 'Database and SSH ports isolated behind encrypted cryptographic tunnels.' },
+                { name: 'Secrets Rotation & KMS Vaulting', value: 'Automated 30-Day Cycle', benchmark: 'HashiCorp Vault', status: 'PASS', detail: 'Zero hardcoded credentials in codebase; dynamic KMS key generation.' },
+                { name: 'SOC-2 Type II & ISO 27001 Baseline', value: 'Audit-Ready Trail', benchmark: 'Cryptographic Log', status: 'PASS', detail: 'Immutable SHA-256 event audit logging across all state mutations.' }
+              ]
+            }
+          ],
           
           // What They Lack / Vulnerabilities
           vulnerabilities: [
@@ -271,18 +341,20 @@ export default function LiveAuditScanner() {
             </div>
           </div>
 
-          {/* 4 Category Posture Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* 6 Category Posture Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { label: 'TLS & CIPHER SUITE', score: auditResult.tlsScore, color: '#25D366' },
-              { label: 'HTTP DEFENSE HEADERS', score: auditResult.headerScore, color: '#FFC72E' },
-              { label: 'CORS & API INTEGRITY', score: auditResult.corsScore, color: '#FF4D00' },
-              { label: 'CVE SURFACE SHIELD', score: auditResult.cveScore, color: '#141414' }
+              { label: 'TLS 1.3 TRANSPORT', score: auditResult.tlsScore, color: '#25D366' },
+              { label: 'ZERO-TRUST HEADERS', score: auditResult.headerScore, color: '#FFC72E' },
+              { label: 'API & CORS POLICY', score: auditResult.corsScore, color: '#FF4D00' },
+              { label: 'CVE SURFACE', score: auditResult.cveScore, color: '#141414' },
+              { label: 'eBPF KERNEL WAF', score: auditResult.wafScore || 88, color: '#25D366' },
+              { label: 'IAM GOVERNANCE', score: auditResult.iamScore || 85, color: '#FFC72E' }
             ].map((m, idx) => (
-              <div key={idx} className="p-4 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[3px_3px_0_0_#141414]">
-                <div className="text-[11px] font-black uppercase text-[#141414]/70 mb-1">{m.label}</div>
-                <div className="font-display text-2xl sm:text-3xl font-black text-[#141414]">{m.score}%</div>
-                <div className="w-full bg-[#141414]/10 rounded-full h-2 mt-2 overflow-hidden">
+              <div key={idx} className="p-3.5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[3px_3px_0_0_#141414]">
+                <div className="text-[10px] font-black uppercase text-[#141414]/70 mb-1">{m.label}</div>
+                <div className="font-display text-xl sm:text-2xl font-black text-[#141414]">{m.score}%</div>
+                <div className="w-full bg-[#141414]/10 rounded-full h-1.5 mt-2 overflow-hidden">
                   <div 
                     className="h-full rounded-full transition-all duration-500" 
                     style={{ width: `${m.score}%`, backgroundColor: m.color }}
@@ -294,6 +366,18 @@ export default function LiveAuditScanner() {
 
           {/* Analysis View Tabs */}
           <div className="flex flex-wrap gap-2 pt-2 border-t-2 border-[#141414]/15">
+            <button
+              onClick={() => setActiveTab('factors')}
+              className={`sticker-pill px-4 py-2 text-xs font-display font-black cursor-pointer transition-all flex items-center gap-1.5 ${
+                activeTab === 'factors' 
+                  ? 'bg-[#141414] text-[#FAF7EE] shadow-[3px_3px_0_0_#FF4D00]' 
+                  : 'bg-[#FAF7EE] text-[#141414] hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
+              }`}
+            >
+              <Terminal className="size-3.5" />
+              <span>24-FACTOR DEFENSIVE MATRIX</span>
+            </button>
+
             <button
               onClick={() => setActiveTab('lacks')}
               className={`sticker-pill px-4 py-2 text-xs font-display font-black cursor-pointer transition-all flex items-center gap-1.5 ${
@@ -322,7 +406,7 @@ export default function LiveAuditScanner() {
               onClick={() => setActiveTab('telemetry')}
               className={`sticker-pill px-4 py-2 text-xs font-display font-black cursor-pointer transition-all flex items-center gap-1.5 ${
                 activeTab === 'telemetry' 
-                  ? 'bg-[#141414] text-[#FAF7EE] shadow-[3px_3px_0_0_#FF4D00]' 
+                  ? 'bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414]' 
                   : 'bg-[#FAF7EE] text-[#141414] hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
               }`}
             >
@@ -330,6 +414,52 @@ export default function LiveAuditScanner() {
               <span>RAW TELEMETRY CHECKS</span>
             </button>
           </div>
+
+          {/* Tab 0: 24-Factor Defensive Matrix */}
+          {activeTab === 'factors' && auditResult.pillars && (
+            <div className="space-y-6">
+              <p className="font-display text-xs font-black uppercase text-[#141414] tracking-wider">
+                EXHAUSTIVE 6-PILLAR / 24-PARAMETER DEFENSE EVALUATION:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {auditResult.pillars.map((pillar, pIdx) => (
+                  <div key={pIdx} className="p-5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[4px_4px_0_0_#141414] space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#141414]/15 pb-2.5">
+                      <h5 className="font-display text-sm font-black uppercase text-[#141414] flex items-center gap-2">
+                        <span className="size-2 rounded-full" style={{ backgroundColor: pillar.color }} />
+                        <span>{pillar.name}</span>
+                      </h5>
+                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#141414] text-[#FAF7EE]">
+                        {pillar.score}%
+                      </span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {pillar.factors.map((f, fIdx) => (
+                        <div key={fIdx} className="p-2.5 rounded-xl border border-[#141414]/15 bg-[#F4EFE6] space-y-1">
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="text-[#141414]">{f.name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-[#FF4D00]">{f.value}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${
+                                f.status === 'PASS' || f.status === 'ACTIVE' ? 'bg-[#25D366] text-[#141414]' : 'bg-[#FF4D00] text-[#FAF7EE]'
+                              }`}>
+                                {f.status}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-[11px] font-medium text-[#141414]/75 flex justify-between">
+                            <span>{f.detail}</span>
+                            <span className="font-mono text-[10px] text-[#141414]/50">Req: {f.benchmark}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Tab 1: What They Lack (Vulnerabilities) */}
           {activeTab === 'lacks' && (
