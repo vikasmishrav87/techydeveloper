@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { CASE_STUDIES } from '../data/agencyData';
-import { ArrowUpRight, MessageCircle, ArrowRight } from 'lucide-react';
+import { ArrowUpRight, MessageCircle, ArrowRight, Zap } from 'lucide-react';
 
 export default function CaseStudies() {
+  const location = useLocation();
+  const isCaseStudiesPage = location.pathname === '/case-studies';
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const categories = ['All', 'Cyber Security', 'AI & ML', 'Web3 & Blockchain', 'SaaS', '360° Growth'];
@@ -131,15 +133,39 @@ export default function CaseStudies() {
           })}
         </div>
 
-        {/* Bottom CTA */}
-        <div className="mt-14 text-center">
-          <Link
-            to="/case-studies"
-            className="sticker-pill px-8 py-4 sm:px-10 sm:py-5 text-sm sm:text-base bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer"
-          >
-            <span>VIEW ALL CLIENT CASE STUDIES</span>
-            <ArrowRight className="size-4" />
-          </Link>
+        {/* Bottom Responsive Action CTA */}
+        <div className="mt-14 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+          {isCaseStudiesPage ? (
+            <>
+              <Link
+                to="/contact"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+                className="sticker-pill px-8 py-4 sm:px-10 sm:py-5 text-sm sm:text-base bg-[#FF4D00] hover:bg-[#FFC72E] hover:text-[#141414] text-[#FAF7EE] shadow-[5px_5px_0_0_#141414] cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Zap className="size-4" />
+                <span>START YOUR CUSTOM ARCHITECTURE SPRINT</span>
+                <ArrowRight className="size-4" />
+              </Link>
+              <a
+                href="https://wa.me/918369804739?text=Hi%20Vikas%2C%20I%20reviewed%20your%20case%20studies%20and%20want%20to%20discuss%20building%20a%20similar%20enterprise%20solution."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sticker-pill px-6 py-4 text-sm bg-[#25D366] text-[#141414] shadow-[4px_4px_0_0_#141414] cursor-pointer flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="size-4" />
+                <span>WHATSAPP (+91 8369804739)</span>
+              </a>
+            </>
+          ) : (
+            <Link
+              to="/case-studies"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+              className="sticker-pill px-8 py-4 sm:px-10 sm:py-5 text-sm sm:text-base bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[5px_5px_0_0_#FF4D00] cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>VIEW ALL CLIENT CASE STUDIES</span>
+              <ArrowRight className="size-4" />
+            </Link>
+          )}
         </div>
 
       </div>
