@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO, SERVICE_PILLARS } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
@@ -85,6 +85,7 @@ export default function Footer({ onOpenTerminal }) {
             <ul className="space-y-2 text-xs sm:text-sm font-bold uppercase text-[#141414]">
               <li><Link to="/seo-audit" className="hover:text-[#FF4D00] transition-colors">⚡ Free Technical SEO Audit</Link></li>
               <li><Link to="/security-audit" className="hover:text-[#FF4D00] transition-colors">🛡️ Zero-Trust Security Sandbox</Link></li>
+              <li><Link to="/worldwide" className="hover:text-[#FF4D00] transition-colors">🌐 Worldwide 3D Network (9 Hubs)</Link></li>
               <li><Link to="/estimator" className="hover:text-[#FF4D00] transition-colors">🧮 Interactive Scope Estimator</Link></li>
               <li><Link to="/checkout" className="hover:text-[#FF4D00] transition-colors font-black text-[#FF4D00]">💳 Client Payment Gateway</Link></li>
               <li><button onClick={onOpenTerminal} className="hover:text-[#FF4D00] transition-colors text-left uppercase">💻 Interactive CLI Terminal</button></li>
