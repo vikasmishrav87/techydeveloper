@@ -268,7 +268,7 @@ export const SERVICE_PILLARS = [
     tagline: "Custom autonomous AI agents, multi-agent collaborative swarms, self-hosted n8n automation pipelines, tool-calling execution bots, and end-to-end intelligent workflow enhancement.",
     badge: "24/7 Autonomous Ops",
     accentColor: "lavender",
-    image: "/assets/ai-neural-mesh.jpg",
+    image: "/assets/ai-agents-architecture.png",
     squadName: "Autonomous Agent Engineering & Workflow Squad",
     squadHeadcount: "Principal Agent Architects, n8n Automation Specialists & Tool-Calling Engineers",
     keyStats: [
@@ -536,7 +536,7 @@ export const CASE_STUDIES = [
     title: "Enterprise n8n & Multi-Agent Supply Chain Automation",
     client: "LogistiCore Global",
     tag: "AI Agents & Workflow Automation",
-    image: "/assets/saas-dashboard-mesh.jpg",
+    image: "/assets/ai-agents-architecture.png",
     timeline: "5-Week Autonomous Agent Sprint",
     results: [
       { label: "Workflow Time Saved", value: "88%" },
