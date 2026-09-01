@@ -104,7 +104,7 @@ export const SERVICE_PILLARS = [
     tagline: "Unhackable zero-trust architectures, red-team offensive penetration testing, and smart contract formal audits.",
     badge: "Zero Breach SLA",
     accentColor: "sky",
-    image: "/assets/cyber-security-shield.jpg",
+    image: "/assets/cyber-security-redteam.png",
     squadName: "Elite Red/Blue Defense Squad",
     squadHeadcount: "Principal Security Engineers & Offensive Hackers",
     keyStats: [
@@ -582,7 +582,7 @@ export const CASE_STUDIES = [
     title: "Sovereign Infrastructure Offensive Red-Team Audit",
     client: "SecureCloud Infrastructure",
     tag: "Cyber Security & Military Defense",
-    image: "/assets/cyber-security-shield.jpg",
+    image: "/assets/cyber-security-redteam.png",
     timeline: "3-Week Intensive Black-Box Pentest",
     results: [
       { label: "Zero-Day CVEs Uncovered", value: "4 Critical" },
