@@ -335,7 +335,7 @@ export const SERVICE_PILLARS = [
     tagline: "Data-engineered Meta ads CAPI, Google PMax smart bidding, programmatic SEO dominance, and high-impact offline marketing.",
     badge: "4.6x Blended ROAS",
     accentColor: "sky",
-    image: "/assets/earth-space-network.jpg",
+    image: "/assets/digital-marketing-360.png",
     squadName: "Growth Engineering & Media Buying Squad",
     squadHeadcount: "Senior Media Buyers, SEO Leads & Creative Animators",
     keyStats: [
@@ -513,7 +513,7 @@ export const CASE_STUDIES = [
     title: "Scale to $25M ARR via 360° Omnichannel Engine",
     client: "Apex SaaS Technologies",
     tag: "360° Growth & Full-Stack",
-    image: "/assets/earth-space-network.jpg",
+    image: "/assets/digital-marketing-360.png",
     timeline: "Ongoing Dedicated Growth Squad",
     results: [
       { label: "Blended ROAS", value: "5.4x" },
