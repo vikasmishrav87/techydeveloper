@@ -117,7 +117,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           <Link
             to="/admin/verify"
             className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] whitespace-nowrap cursor-pointer"
-            title="Executive Verification Portal (Passkey: vikasmusickeytosuccess)"
+            title="Executive Verification Portal"
           >
             <ShieldCheck className="w-4 h-4 text-[#141414]" />
             <span>PORTAL</span>

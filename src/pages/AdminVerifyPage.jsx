@@ -155,15 +155,20 @@ export default function AdminVerifyPage() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoFocus
+                  autoComplete="new-password"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="Enter executive passkey..."
-                  className="w-full pl-4 pr-11 py-3.5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] font-mono text-sm font-bold focus:bg-white focus:outline-none"
+                  placeholder="••••••••••••••••"
+                  className="w-full pl-4 pr-11 py-3.5 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] font-mono text-sm font-bold tracking-widest focus:bg-white focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#141414]/60 hover:text-[#141414] transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#141414]/60 hover:text-[#141414] transition-colors cursor-pointer"
+                  title={showPassword ? 'Hide passkey' : 'Show passkey'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
