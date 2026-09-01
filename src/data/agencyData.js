@@ -559,7 +559,7 @@ export const CASE_STUDIES = [
     title: "High-Throughput Multi-Tenant Core Banking Platform",
     client: "AuraPay Financial",
     tag: "SaaS & Enterprise Systems",
-    image: "/assets/wave-lavender-blue.jpg",
+    image: "/assets/saas-core-banking.png",
     timeline: "12-Week Core Infrastructure Build",
     results: [
       { label: "Peak RPS Handled", value: "120,000/s" },
