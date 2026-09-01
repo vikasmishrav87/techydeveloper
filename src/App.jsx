@@ -30,6 +30,8 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminVerifyPage from './pages/AdminVerifyPage';
 import CookieConsentBanner from './components/CookieConsentBanner';
+import Interactive3DScene from './components/Interactive3DScene';
+import MagneticCursor from './components/MagneticCursor';
 
 // Scroll to top and log real telemetry on route navigation
 function ScrollToTop() {
@@ -74,8 +76,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-sky-lavender-mesh text-slate-900 selection:bg-sky-500/20 selection:text-sky-900 font-sans antialiased">
+    <div className="min-h-screen bg-sky-lavender-mesh text-slate-900 selection:bg-sky-500/20 selection:text-sky-900 font-sans antialiased relative">
       
+      {/* 3D WebGL Background Scene */}
+      <Interactive3DScene />
+
+      {/* Smooth Magnetic Cursor */}
+      <MagneticCursor />
+
       <ScrollToTop />
 
       {/* Global Navigation Bar */}
@@ -164,7 +172,9 @@ export default function App() {
 
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/terms-of-service" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/admin/verify" element={<AdminVerifyPage />} />
           <Route path="/verify" element={<AdminVerifyPage />} />
           <Route path="/verify-payments" element={<AdminVerifyPage />} />

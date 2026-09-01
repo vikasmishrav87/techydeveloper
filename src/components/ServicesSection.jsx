@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SERVICE_PILLARS } from '../data/agencyData';
 import { ArrowRight, MessageCircle, ArrowUpRight, Zap } from 'lucide-react';
+import TiltCard from './TiltCard';
 
 export default function ServicesSection() {
   const location = useLocation();
@@ -62,7 +63,7 @@ export default function ServicesSection() {
         <div key={activeCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 animate-card-pop">
           {filteredServices.map((service) => {
             return (
-              <div
+              <TiltCard
                 key={service.id}
                 className="brutal-card group flex flex-col justify-between overflow-hidden rounded-3xl border-2 border-[#141414] bg-[#F4EFE6] shadow-[6px_6px_0_0_#141414]"
               >
@@ -136,7 +137,7 @@ export default function ServicesSection() {
                   </a>
                 </div>
 
-              </div>
+              </TiltCard>
             );
           })}
         </div>

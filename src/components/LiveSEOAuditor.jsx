@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { CONTACT_INFO } from '../data/agencyData';
 import { 
   Globe, ArrowRight, MessageCircle, RefreshCw, Zap, CheckCircle2, 
@@ -6,6 +6,7 @@ import {
   FileCode2, Sparkles, Sliders, Check, ShieldAlert, Cpu, Activity, Database
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 
 export default function LiveSEOAuditor() {
   const [url, setUrl] = useState('https://vercel.com');
@@ -48,6 +49,16 @@ export default function LiveSEOAuditor() {
 
     setTimeout(() => {
       setAnalyzing(false);
+      try {
+        confetti({
+          particleCount: 65,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FFC72E', '#FF4D00', '#25D366']
+        });
+      } catch {
+        // Fallback
+      }
       setResult({
         domain: domain,
         url: cleanUrl,

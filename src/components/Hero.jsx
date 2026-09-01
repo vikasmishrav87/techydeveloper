@@ -1,9 +1,23 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
-import { MessageCircle, Flame } from 'lucide-react';
+import { MessageCircle, Flame, Sparkles, Terminal, Shield, Zap } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
+  const triggerConfetti = () => {
+    try {
+      confetti({
+        particleCount: 75,
+        spread: 80,
+        origin: { y: 0.65 },
+        colors: ['#FF4D00', '#FFC72E', '#25D366', '#141414']
+      });
+    } catch {
+      // Fallback if canvas is unavailable
+    }
+  };
+
   const marqueeItems = [
     'CYBER SECURITY',
     'BLOCKCHAIN & WEB3',
@@ -175,23 +189,25 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
               <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3.5">
                 <Link
                   to="/contact"
-                  className="sticker-pill px-7 py-4 sm:px-9 sm:py-4.5 text-sm sm:text-base bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[4px_4px_0_0_#141414]"
+                  onClick={triggerConfetti}
+                  className="sticker-pill px-7 py-4 sm:px-9 sm:py-4.5 text-sm sm:text-base bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[4px_4px_0_0_#FF4D00] hover:shadow-[6px_6px_0_0_#141414] cursor-pointer active:scale-95 transition-all"
                 >
-                  START A PROJECT
+                  <Zap className="size-4 text-[#FFC72E]" />
+                  <span>START A PROJECT</span>
                 </Link>
 
                 <Link
                   to="/services"
-                  className="sticker-pill px-7 py-4 sm:px-9 sm:py-4.5 text-sm sm:text-base bg-[#F4EFE6] hover:bg-[#FFC72E] text-[#141414] shadow-[4px_4px_0_0_#141414]"
+                  className="sticker-pill px-7 py-4 sm:px-9 sm:py-4.5 text-sm sm:text-base bg-[#F4EFE6] hover:bg-[#FFC72E] text-[#141414] shadow-[4px_4px_0_0_#141414] cursor-pointer active:scale-95 transition-all"
                 >
-                  SEE CAPABILITIES
+                  <span>SEE CAPABILITIES</span>
                 </Link>
 
                 <a
                   href={CONTACT_INFO.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sticker-pill px-5 py-4 text-sm bg-[#25D366] text-[#141414] shadow-[4px_4px_0_0_#141414]"
+                  className="sticker-pill px-5 py-4 text-sm bg-[#25D366] text-[#141414] shadow-[4px_4px_0_0_#141414] cursor-pointer active:scale-95 transition-all"
                 >
                   <MessageCircle className="size-4 text-[#141414]" />
                   <span>WHATSAPP</span>
@@ -201,7 +217,10 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
 
             {/* Circular Spinning Stamp Badge with Click Bounce */}
             <div className="hidden sm:block shrink-0">
-              <div className="group relative grid size-32 sm:size-36 place-items-center cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95">
+              <div 
+                onClick={triggerConfetti}
+                className="group relative grid size-32 sm:size-36 place-items-center cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-90"
+              >
                 <svg viewBox="0 0 120 120" className="absolute inset-0 animate-rot size-full pointer-events-none select-none">
                   <defs>
                     <path id="badge-circle" d="M60,60 m-47,0 a47,47 0 1,1 94,0 a47,47 0 1,1 -94,0"></path>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CASE_STUDIES } from '../data/agencyData';
 import { ArrowUpRight, MessageCircle, ArrowRight, Zap } from 'lucide-react';
+import TiltCard from './TiltCard';
 
 export default function CaseStudies() {
   const location = useLocation();
@@ -62,7 +63,7 @@ export default function CaseStudies() {
         <div key={selectedCategory} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 animate-card-pop">
           {filteredStudies.map((study) => {
             return (
-              <div
+              <TiltCard
                 key={study.id}
                 className="brutal-card group block overflow-hidden rounded-3xl border-2 border-[#141414] bg-[#FAF7EE] shadow-[6px_6px_0_0_#141414]"
               >
@@ -128,7 +129,7 @@ export default function CaseStudies() {
 
                 </div>
 
-              </div>
+              </TiltCard>
             );
           })}
         </div>

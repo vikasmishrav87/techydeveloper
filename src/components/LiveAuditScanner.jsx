@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { saveAuditRecord } from '../services/storageService';
 import { Link } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 
 export default function LiveAuditScanner() {
   const [targetUrl, setTargetUrl] = useState('https://stripe.com');
@@ -58,6 +59,16 @@ export default function LiveAuditScanner() {
       } else {
         clearInterval(interval);
         setScanning(false);
+        try {
+          confetti({
+            particleCount: 70,
+            spread: 75,
+            origin: { y: 0.6 },
+            colors: ['#25D366', '#FF4D00', '#FFC72E']
+          });
+        } catch {
+          // Fallback
+        }
 
         let hash = 0;
         for (let i = 0; i < hostname.length; i++) {
