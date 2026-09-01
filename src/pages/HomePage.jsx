@@ -2,7 +2,6 @@ import React from 'react';
 import Hero from '../components/Hero';
 import StatsStrip from '../components/StatsStrip';
 import ServicesSection from '../components/ServicesSection';
-import CaseStudies from '../components/CaseStudies';
 import ClientProofSection from '../components/ClientProofSection';
 import ProcessSection from '../components/ProcessSection';
 import ProjectEstimator from '../components/ProjectEstimator';
@@ -34,10 +33,7 @@ export default function HomePage({ onOpenTerminal, onOpenAIChat }) {
       {/* 3. Services Section */}
       <ServicesSection />
 
-      {/* 4. Selected Work / Case Studies */}
-      <CaseStudies />
-
-      {/* 5. Client DM Proofs & Reviews */}
+      {/* 4. Client DM Proofs & Reviews */}
       <ClientProofSection />
 
       {/* 6. Process / How It Works */}
