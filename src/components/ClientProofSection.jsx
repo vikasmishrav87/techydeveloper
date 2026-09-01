@@ -34,8 +34,7 @@ export default function ClientProofSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-16">
           <div>
-            <p className="font-display text-xs sm:text-sm font-black tracking-[0.2em] text-[#FF4D00] uppercase">SCREENSHOTS DON’T LIE</p>
-            <h2 className="mt-2 font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#141414]">STRAIGHT FROM THE DMS.</h2>
+            <h2 className="font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#141414]">STRAIGHT FROM THE DMS.</h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-medium text-[#141414]/70">Real enterprise founders, real messages — exactly as they landed.</p>
         </div>
