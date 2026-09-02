@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CONTACT_INFO, SERVICE_PILLARS, GLOBAL_HUBS } from '../data/agencyData';
 import { Terminal as TerminalIcon, X, Maximize2, Minimize2, ArrowRight, CornerDownLeft } from 'lucide-react';
 
@@ -175,7 +175,10 @@ export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
             <span className="w-3 h-3 rounded-full bg-red-500/80 cursor-pointer" onClick={onClose} />
             <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
             <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-            <span className="ml-3 text-slate-400 font-sans text-xs">unfiltered-engineer-cli (bash)</span>
+            <div className="ml-3 flex items-center gap-2">
+              <img src="/assets/brand-logo.png" alt="Logo" className="size-4 rounded-xs object-contain" />
+              <span className="text-slate-200 font-sans text-xs font-bold uppercase">THE UNFILTERED ENGINEER CLI (bash)</span>
+            </div>
           </div>
           
           <div className="flex items-center gap-3 text-slate-400">

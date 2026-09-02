@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { 
   Shield, Lock, CreditCard, Sparkles, CheckCircle2, ArrowRight, DollarSign, 
@@ -210,6 +210,9 @@ export default function CheckoutPage() {
         
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
+          <div className="size-16 rounded-2xl overflow-hidden bg-[#141414] border-2 border-[#141414] shadow-[4px_4px_0_0_#FF4D00] p-1.5 mx-auto mb-4 hover:scale-105 transition-transform">
+            <img src="/assets/brand-logo.png" alt="The Unfiltered Engineer Official Brand Logo" className="w-full h-full object-contain rounded-xl" />
+          </div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] text-xs font-display font-black uppercase tracking-wider mb-3 shadow-[3px_3px_0_0_#141414]">
             <Lock className="w-3.5 h-3.5 text-[#141414]" />
             OFFICIAL CLIENT SETTLEMENT PORTAL

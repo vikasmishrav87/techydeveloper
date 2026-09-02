@@ -143,7 +143,12 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
           
           {/* Eyebrow Tag + Rotation Dots */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <div className="sticker-pill px-3.5 py-1 text-xs bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414]">
+            <div className="sticker-pill px-3.5 py-1 text-xs bg-[#FFC72E] text-[#141414] shadow-[3px_3px_0_0_#141414] flex items-center gap-2">
+              <img 
+                src="/assets/brand-logo.png" 
+                alt="Brand Logo" 
+                className="size-5 rounded-md border border-[#141414] bg-[#141414] object-contain flex-shrink-0"
+              />
               <Flame className="size-3.5 text-[#FF4D00] fill-[#FF4D00] animate-pulse" />
               <span>GLOBAL ARCHITECTURE & AI COLLECTIVE</span>
             </div>
@@ -229,14 +234,12 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
                     <textPath href="#badge-circle">ENGINEER • SECURE • DEPLOY • SCALE • REPEAT •</textPath>
                   </text>
                 </svg>
-                <span className="grid size-14 place-items-center rounded-full bg-[#FF4D00] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414] group-hover:bg-[#FFC72E] group-hover:text-[#141414] transition-colors">
-                  <svg viewBox="0 0 64 64" className="size-7 text-[#FAF7EE] group-hover:text-[#141414] transition-colors" aria-hidden="true">
-                    <g stroke="currentColor" strokeWidth="9" strokeLinecap="round">
-                      <line x1="32" y1="10" x2="32" y2="54"></line>
-                      <line x1="12.9" y1="21" x2="51.1" y2="43"></line>
-                      <line x1="12.9" y1="43" x2="51.1" y2="21"></line>
-                    </g>
-                  </svg>
+                <span className="grid size-14 sm:size-16 place-items-center rounded-2xl overflow-hidden bg-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#FF4D00] group-hover:scale-110 transition-transform p-1">
+                  <img
+                    src="/assets/brand-logo.png"
+                    alt="The Unfiltered Engineer Logo"
+                    className="w-full h-full object-contain rounded-xl"
+                  />
                 </span>
               </div>
             </div>

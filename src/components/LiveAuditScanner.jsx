@@ -247,17 +247,22 @@ export default function LiveAuditScanner() {
       
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 pb-6 border-b-2 border-[#141414]/15">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] font-display text-[11px] font-black uppercase mb-2 shadow-[2px_2px_0_0_#141414]">
-            <ShieldCheck className="size-3.5" />
-            <span>OFFENSIVE ZERO-TRUST DEFENSE SANDBOX</span>
+        <div className="flex items-start gap-4">
+          <div className="size-14 sm:size-16 rounded-2xl bg-[#141414] overflow-hidden border-2 border-[#141414] shadow-[3px_3px_0_0_#FF4D00] p-1.5 flex-shrink-0">
+            <img src="/assets/brand-logo.png" alt="The Unfiltered Engineer Official Brand Logo" className="w-full h-full object-contain rounded-xl" />
           </div>
-          <h3 className="font-display text-2xl sm:text-4xl font-black uppercase text-[#141414]">
-            LIVE EXPLOIT, DEFICIENCY & DEFENSE SCANNER
-          </h3>
-          <p className="text-xs sm:text-sm font-medium text-[#141414]/75 mt-1">
-            Conduct simulated offensive penetration telemetry to discover what security layers your domain lacks and how to build military-grade immunity.
-          </p>
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] font-display text-[11px] font-black uppercase mb-2 shadow-[2px_2px_0_0_#141414]">
+              <ShieldCheck className="size-3.5" />
+              <span>OFFENSIVE ZERO-TRUST DEFENSE SANDBOX</span>
+            </div>
+            <h3 className="font-display text-2xl sm:text-4xl font-black uppercase text-[#141414]">
+              LIVE EXPLOIT, DEFICIENCY & DEFENSE SCANNER
+            </h3>
+            <p className="text-xs sm:text-sm font-medium text-[#141414]/75 mt-1">
+              Conduct simulated offensive penetration telemetry to discover what security layers your domain lacks and how to build military-grade immunity.
+            </p>
+          </div>
         </div>
         <span className="sticker-pill px-3.5 py-1.5 bg-[#25D366] text-[#141414] text-xs font-display font-black uppercase shadow-[2px_2px_0_0_#141414]">
           100% FREE TELEMETRY

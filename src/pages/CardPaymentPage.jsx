@@ -40,6 +40,9 @@ export default function CardPaymentPage() {
 
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
+          <div className="size-16 rounded-2xl overflow-hidden bg-[#141414] border-2 border-[#141414] shadow-[4px_4px_0_0_#FF4D00] p-1.5 mx-auto mb-4 hover:scale-105 transition-transform">
+            <img src="/assets/brand-logo.png" alt="The Unfiltered Engineer Official Brand Logo" className="w-full h-full object-contain rounded-xl" />
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
             Card & <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-sky-600">Stripe Gateway</span>
           </h1>

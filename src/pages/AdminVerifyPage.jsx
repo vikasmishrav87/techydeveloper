@@ -130,8 +130,8 @@ export default function AdminVerifyPage() {
       <div className="min-h-screen pt-28 pb-20 bg-[#FAF7EE] text-[#141414] font-sans flex items-center justify-center p-4">
         <div className="max-w-md w-full p-8 sm:p-10 rounded-3xl bg-[#F4EFE6] border-2 border-[#141414] shadow-[7px_7px_0_0_#141414] text-center space-y-6 relative overflow-hidden text-[#141414]">
           
-          <div className="w-16 h-16 rounded-2xl bg-[#FF4D00] text-[#FAF7EE] flex items-center justify-center mx-auto border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]">
-            <Lock className="w-8 h-8 text-[#FAF7EE]" />
+          <div className="size-16 rounded-2xl bg-[#141414] overflow-hidden flex items-center justify-center mx-auto border-2 border-[#141414] shadow-[4px_4px_0_0_#FF4D00] p-1.5 hover:scale-105 transition-transform">
+            <img src="/assets/brand-logo.png" alt="The Unfiltered Engineer Official Brand Logo" className="w-full h-full object-contain rounded-xl" />
           </div>
 
           <div>
@@ -205,15 +205,20 @@ export default function AdminVerifyPage() {
         
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold mb-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              Executive Verification Ledger
+          <div className="flex items-center gap-4">
+            <div className="size-12 rounded-xl bg-[#141414] overflow-hidden border border-emerald-500/50 p-1 flex-shrink-0">
+              <img src="/assets/brand-logo.png" alt="Logo" className="w-full h-full object-contain rounded-lg" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Payment Verification & Approvals</h1>
-            <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-              Real-time ledger for Vikas Mishra. Approving or denying instantly syncs to the client's screen.
-            </p>
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold mb-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                Executive Verification Ledger
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Payment Verification & Approvals</h1>
+              <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                Real-time ledger for Vikas Mishra. Approving or denying instantly syncs to the client's screen.
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

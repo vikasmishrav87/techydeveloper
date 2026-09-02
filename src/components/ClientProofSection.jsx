@@ -33,8 +33,14 @@ export default function ClientProofSection() {
     <section className="relative py-16 sm:py-28 bg-[#FAF7EE] text-[#141414] border-b-2 border-[#141414] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-16">
-          <div>
-            <h2 className="font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#141414]">STRAIGHT FROM THE DMS.</h2>
+          <div className="flex items-center gap-4">
+            <div className="size-12 sm:size-14 rounded-2xl border-2 border-[#141414] bg-[#141414] shadow-[3px_3px_0_0_#FF4D00] p-1 flex-shrink-0">
+              <img src="/assets/brand-logo.png" alt="Brand Logo" className="w-full h-full object-contain rounded-xl" />
+            </div>
+            <div>
+              <p className="font-display text-xs font-black uppercase text-[#FF4D00] tracking-[0.18em]">VERIFIED CLIENT TESTIMONIALS</p>
+              <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-[#141414]">STRAIGHT FROM THE DMS.</h2>
+            </div>
           </div>
           <p className="max-w-md text-sm sm:text-base font-medium text-[#141414]/70">Real enterprise founders, real messages — exactly as they landed.</p>
         </div>

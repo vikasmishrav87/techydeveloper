@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
 import { MessageCircle, Send, ShieldCheck, X, Bot, Plus } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
             className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#141414] text-[#FAF7EE] text-xs font-display font-black uppercase shadow-[3px_3px_0_0_#FF4D00] border-2 border-[#141414] hover:-translate-y-0.5 transition-transform cursor-pointer"
           >
             <span>ASK AI ARCHITECT</span>
-            <Bot className="size-4 text-[#FF4D00]" />
+            <img src="/assets/brand-logo.png" alt="AI" className="size-4 rounded-xs object-contain" />
           </button>
 
           {/* Telegram Channel */}
@@ -55,10 +55,10 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
         {/* Toggle Hub Button */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="size-12 rounded-full border-2 border-[#141414] bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] shadow-[4px_4px_0_0_#141414] flex items-center justify-center transition-transform hover:-translate-y-0.5 cursor-pointer"
-          title="Quick Actions Menu"
+          className="size-12 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FFC72E] text-[#141414] shadow-[4px_4px_0_0_#141414] flex items-center justify-center transition-transform hover:-translate-y-0.5 cursor-pointer p-1"
+          title="The Unfiltered Engineer Menu"
         >
-          {expanded ? <X className="size-5 text-[#141414]" /> : <Plus className="size-5 text-[#141414]" />}
+          {expanded ? <X className="size-5 text-[#FAF7EE]" /> : <img src="/assets/brand-logo.png" alt="Brand Logo" className="size-8 object-contain rounded-md" />}
         </button>
 
         {/* Primary WhatsApp Direct Contact Floating Button */}

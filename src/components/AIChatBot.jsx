@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { sendAIChatMessage } from '../services/aiChatService';
 import { CONTACT_INFO } from '../data/agencyData';
 import { logSecurityEvent } from '../services/storageService';
@@ -182,8 +182,8 @@ export default function AIChatBot({ isOpen, onClose }) {
         <div className="p-4 bg-[#141414] text-[#FAF7EE] flex items-center justify-between border-b-2 border-[#141414]">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-2xl bg-[#FF4D00] flex items-center justify-center border border-[#FAF7EE]">
-                <Bot className="w-5 h-5 text-[#FAF7EE]" />
+              <div className="w-10 h-10 rounded-2xl bg-[#141414] overflow-hidden flex items-center justify-center border-2 border-[#141414] shadow-[2px_2px_0_0_#FF4D00] p-0.5">
+                <img src="/assets/brand-logo.png" alt="Brand Logo" className="w-full h-full object-contain rounded-xl" />
               </div>
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#25D366] border-2 border-[#141414] animate-pulse" />
             </div>
@@ -245,8 +245,8 @@ export default function AIChatBot({ isOpen, onClose }) {
                 className={`flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
               >
                 {!isUser && (
-                  <div className="w-7 h-7 rounded-xl bg-slate-900 text-sky-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Bot className="w-4 h-4" />
+                  <div className="size-8 rounded-xl bg-[#141414] overflow-hidden border border-[#141414] shadow-[1px_1px_0_0_#FF4D00] flex items-center justify-center flex-shrink-0 mt-0.5 p-0.5">
+                    <img src="/assets/brand-logo.png" alt="AI" className="w-full h-full object-contain rounded-lg" />
                   </div>
                 )}
 
