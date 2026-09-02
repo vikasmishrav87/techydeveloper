@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
-import { Terminal, Shield, ShieldCheck, MessageCircle, Send, Menu, X, Globe, Sparkles, UserCheck, Bot, ChevronDown, CreditCard } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Terminal, Shield, ShieldCheck, MessageCircle, Send, Menu, X, Globe, Sparkles, UserCheck, Bot, ChevronDown, CreditCard, User, LogIn, LogOut } from 'lucide-react';
 
 export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -133,6 +135,34 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             <span>AI BOT</span>
           </button>
 
+          {/* Client Authentication Login / Profile */}
+          {!isAuthenticated ? (
+            <Link
+              to="/login"
+              className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] whitespace-nowrap cursor-pointer"
+              title="Client Login & Access"
+            >
+              <LogIn className="w-3.5 h-3.5 text-[#FF4D00]" />
+              <span>LOGIN</span>
+            </Link>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414]">
+              <div className="size-5 rounded-full bg-[#FF4D00] text-[#FAF7EE] flex items-center justify-center text-[10px] uppercase font-black">
+                {user.name?.[0] || user.userId?.[0] || 'U'}
+              </div>
+              <span className="max-w-[85px] truncate text-[#141414] uppercase">
+                {user.name || user.userId}
+              </span>
+              <button
+                onClick={logout}
+                title="Log Out of Account"
+                className="text-[#141414]/60 hover:text-red-600 transition-colors p-0.5 cursor-pointer ml-0.5"
+              >
+                <LogOut className="size-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* START A PROJECT Big Button */}
           <Link
             to="/contact"
@@ -179,6 +209,35 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           ))}
           
           <div className="pt-3 mt-3 border-t-2 border-[#141414]/15 space-y-2.5">
+            {!isAuthenticated ? (
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="brutal-btn flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FAF7EE] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#FF4D00]"
+              >
+                <div className="flex items-center gap-2">
+                  <LogIn className="w-4 h-4 text-[#FF4D00]" />
+                  <span>CLIENT LOGIN / REGISTER</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-[#FF4D00] text-[#FAF7EE] text-[10px]">ACCESS</span>
+              </Link>
+            ) : (
+              <div className="flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FAF7EE] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]">
+                <div className="flex items-center gap-2">
+                  <div className="size-6 rounded-full bg-[#FF4D00] text-white flex items-center justify-center text-[10px]">
+                    {user.name?.[0] || user.userId?.[0] || 'U'}
+                  </div>
+                  <span className="truncate max-w-[140px]">{user.name || user.userId}</span>
+                </div>
+                <button
+                  onClick={() => { logout(); setMobileMenuOpen(false); }}
+                  className="px-2.5 py-1 rounded-full bg-red-100 text-red-700 border border-red-300 text-[10px] font-black cursor-pointer"
+                >
+                  LOGOUT
+                </button>
+              </div>
+            )}
+
             <Link
               to="/admin/verify"
               onClick={() => setMobileMenuOpen(false)}

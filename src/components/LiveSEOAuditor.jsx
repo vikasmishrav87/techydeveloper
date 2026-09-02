@@ -5,10 +5,14 @@ import {
   AlertTriangle, XCircle, ArrowUpRight, Search, BarChart3, Layers, 
   FileCode2, Sparkles, Sliders, Check, ShieldAlert, Cpu, Activity, Database
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import confetti from 'canvas-confetti';
 
 export default function LiveSEOAuditor() {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [url, setUrl] = useState('https://vercel.com');
   const [analyzing, setAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState('factors'); // 'factors', 'lacks', 'improve', 'overview'
@@ -22,6 +26,11 @@ export default function LiveSEOAuditor() {
   ];
 
   const handleRunAudit = (overrideUrl) => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
     const target = overrideUrl || url;
     if (!target.trim()) return;
     setAnalyzing(true);

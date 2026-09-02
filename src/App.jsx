@@ -29,6 +29,8 @@ import CardPaymentPage from './pages/CardPaymentPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AdminVerifyPage from './pages/AdminVerifyPage';
+import AuthPage from './pages/AuthPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import Interactive3DScene from './components/Interactive3DScene';
 import MagneticCursor from './components/MagneticCursor';
@@ -109,8 +111,25 @@ export default function App() {
           <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
           <Route path="/marketing" element={<MarketingPage />} />
           <Route path="/worldwide" element={<WorldwidePage />} />
-          <Route path="/security-audit" element={<SecurityAuditPage />} />
-          <Route path="/seo-audit" element={<SEOAuditPage />} />
+          
+          {/* Protected Client Diagnostic & Audit Engines */}
+          <Route 
+            path="/security-audit" 
+            element={
+              <ProtectedRoute toolName="Offensive Security Sandbox">
+                <SecurityAuditPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/seo-audit" 
+            element={
+              <ProtectedRoute toolName="Technical SEO Auditor">
+                <SEOAuditPage />
+              </ProtectedRoute>
+            } 
+          />
+
           <Route path="/case-studies" element={<CaseStudiesPage />} />
           <Route path="/case-studies/:studyId" element={<CaseStudyDetailPage />} />
           <Route path="/estimator" element={<EstimatorPage />} />
@@ -177,7 +196,14 @@ export default function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/admin/verify" element={<AdminVerifyPage />} />
           <Route path="/verify" element={<AdminVerifyPage />} />
-          <Route path="/verify-payments" element={<AdminVerifyPage />} />
+          {/* Client Authentication Gateway */}
+          <Route path="/login" element={<AuthPage initialMode="login" />} />
+          <Route path="/signin" element={<AuthPage initialMode="login" />} />
+          <Route path="/signup" element={<AuthPage initialMode="signup" />} />
+          <Route path="/register" element={<AuthPage initialMode="signup" />} />
+          <Route path="/forgot-password" element={<AuthPage initialMode="reset" />} />
+          <Route path="/reset-password" element={<AuthPage initialMode="reset" />} />
+
           {/* Catch-all fallback so no URL ever shows a blank page */}
           <Route path="*" element={<Navigate to="/checkout" replace />} />
         </Routes>

@@ -5,10 +5,14 @@ import {
   Check, Zap, RefreshCw, X, AlertTriangle, CheckCircle2, Terminal, Server, Key, Eye 
 } from 'lucide-react';
 import { saveAuditRecord } from '../services/storageService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import confetti from 'canvas-confetti';
 
 export default function LiveAuditScanner() {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [targetUrl, setTargetUrl] = useState('https://stripe.com');
   const [scanning, setScanning] = useState(false);
   const [scanStep, setScanStep] = useState(0);
@@ -32,6 +36,11 @@ export default function LiveAuditScanner() {
   ];
 
   const handleStartScan = (overrideUrl) => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
     const urlToScan = overrideUrl || targetUrl;
     if (!urlToScan.trim()) return;
 
