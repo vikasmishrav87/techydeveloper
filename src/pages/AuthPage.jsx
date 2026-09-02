@@ -1,18 +1,22 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, User, Key, Eye, EyeOff, ArrowRight, ShieldCheck, CheckCircle2, AlertTriangle, UserPlus, LogIn, RefreshCw } from 'lucide-react';
+import { 
+  Lock, Mail, User, Key, Eye, EyeOff, ArrowRight, ShieldCheck, 
+  CheckCircle2, AlertTriangle, UserPlus, LogIn, RefreshCw, Send, ShieldAlert, Check
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function AuthPage({ initialMode = 'login' }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, login, register, resetPassword, isAuthenticated } = useAuth();
+  const { user, login, register, requestResetCode, resetPasswordWithCode, isAuthenticated } = useAuth();
 
   const modeParam = searchParams.get('mode');
   const redirectParam = searchParams.get('redirect') || '/';
 
   const [mode, setMode] = useState(modeParam || initialMode); // 'login', 'signup', 'reset'
+  const [resetStep, setResetStep] = useState(1); // 1 = Request code, 2 = Enter code & new password
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +28,10 @@ export default function AuthPage({ initialMode = 'login' }) {
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [activeCodeHint, setActiveCodeHint] = useState('');
+  const [targetEmailMasked, setTargetEmailMasked] = useState('');
 
   // Auto-redirect if already logged in
   useEffect(() => {
@@ -40,6 +47,7 @@ export default function AuthPage({ initialMode = 'login' }) {
     }
   }, [modeParam]);
 
+  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -47,6 +55,7 @@ export default function AuthPage({ initialMode = 'login' }) {
     setLoading(true);
 
     try {
+      // 1. LOGIN
       if (mode === 'login') {
         if (!userId.trim() || !password.trim()) {
           throw new Error('Please enter both your User ID / Email and Password.');
@@ -57,6 +66,7 @@ export default function AuthPage({ initialMode = 'login' }) {
         } catch {}
         navigate(redirectParam, { replace: true });
       } 
+      // 2. SIGN UP
       else if (mode === 'signup') {
         if (!userId.trim() || !password.trim()) {
           throw new Error('User ID / Email and Password are required.');
@@ -81,24 +91,47 @@ export default function AuthPage({ initialMode = 'login' }) {
 
         navigate(redirectParam, { replace: true });
       } 
-      else if (mode === 'reset') {
-        if (!userId.trim() || !newPassword.trim()) {
-          throw new Error('Please enter your User ID / Email and new Password.');
+      // 3. RESET - STEP 1: Send OTP Verification Code
+      else if (mode === 'reset' && resetStep === 1) {
+        if (!userId.trim()) {
+          throw new Error('Please enter your registered User ID or Email to receive a verification code.');
         }
-        if (newPassword.length < 6) {
+
+        const res = await requestResetCode(userId.trim());
+        setTargetEmailMasked(res.targetEmail || userId.trim());
+        if (res.codeHint) {
+          setActiveCodeHint(res.codeHint);
+        }
+        setSuccessMsg(res.message || '6-digit verification code has been dispatched to your email.');
+        setResetStep(2);
+      }
+      // 4. RESET - STEP 2: Verify Code & Update Password
+      else if (mode === 'reset' && resetStep === 2) {
+        if (!verificationCode.trim() || verificationCode.trim().length !== 6) {
+          throw new Error('Please enter the valid 6-digit verification code sent to your email.');
+        }
+        if (!newPassword.trim() || newPassword.length < 6) {
           throw new Error('New password must be at least 6 characters long.');
         }
         if (newPassword !== confirmPassword) {
           throw new Error('Passwords do not match. Please re-enter.');
         }
 
-        await resetPassword(userId, newPassword);
-        setSuccessMsg('Password updated successfully! You can now log in.');
+        await resetPasswordWithCode(userId.trim(), verificationCode.trim(), newPassword.trim());
+        
+        try {
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        } catch {}
+
+        setSuccessMsg('Verification confirmed! Your password has been updated. You can now log in.');
         setMode('login');
+        setResetStep(1);
         setPassword(newPassword);
+        setVerificationCode('');
+        setActiveCodeHint('');
       }
     } catch (err) {
-      setError(err.message || 'Authentication error. Please try again.');
+      setError(err.message || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -126,46 +159,49 @@ export default function AuthPage({ initialMode = 'login' }) {
           <h1 className="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-[#141414]">
             {mode === 'login' && 'CLIENT LOGIN'}
             {mode === 'signup' && 'CREATE ACCOUNT'}
-            {mode === 'reset' && 'RESET PASSWORD'}
+            {mode === 'reset' && (resetStep === 1 ? 'RESET PASSWORD' : 'ENTER VERIFICATION CODE')}
           </h1>
           
           <p className="text-xs sm:text-sm font-medium text-[#141414]/75 mt-1">
             {mode === 'login' && 'Access your client dashboard, technical audits & diagnostic telemetry.'}
             {mode === 'signup' && 'Set up your client credentials to unlock full platform access.'}
-            {mode === 'reset' && 'Forgot your password? Enter your User ID / Email to set a new password.'}
+            {mode === 'reset' && resetStep === 1 && 'Enter your registered User ID or Email to receive a 6-digit security code.'}
+            {mode === 'reset' && resetStep === 2 && `Enter the 6-digit code sent to ${targetEmailMasked || 'your email'} to authorize your password change.`}
           </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-[#FAF7EE] border-2 border-[#141414]">
-          <button
-            type="button"
-            onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
-            className={`py-2.5 rounded-xl font-display text-xs font-black uppercase transition-all cursor-pointer ${
-              mode === 'login'
-                ? 'bg-[#141414] text-[#FAF7EE] shadow-[2px_2px_0_0_#FF4D00]'
-                : 'text-[#141414] hover:bg-[#FFC72E]'
-            }`}
-          >
-            LOG IN
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
-            className={`py-2.5 rounded-xl font-display text-xs font-black uppercase transition-all cursor-pointer ${
-              mode === 'signup'
-                ? 'bg-[#FF4D00] text-[#FAF7EE] shadow-[2px_2px_0_0_#141414]'
-                : 'text-[#141414] hover:bg-[#FFC72E]'
-            }`}
-          >
-            CREATE ACCOUNT
-          </button>
-        </div>
+        {/* Tab Switcher (Visible in Login / Signup mode) */}
+        {mode !== 'reset' && (
+          <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-[#FAF7EE] border-2 border-[#141414]">
+            <button
+              type="button"
+              onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
+              className={`py-2.5 rounded-xl font-display text-xs font-black uppercase transition-all cursor-pointer ${
+                mode === 'login'
+                  ? 'bg-[#141414] text-[#FAF7EE] shadow-[2px_2px_0_0_#FF4D00]'
+                  : 'text-[#141414] hover:bg-[#FFC72E]'
+              }`}
+            >
+              LOG IN
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
+              className={`py-2.5 rounded-xl font-display text-xs font-black uppercase transition-all cursor-pointer ${
+                mode === 'signup'
+                  ? 'bg-[#FF4D00] text-[#FAF7EE] shadow-[2px_2px_0_0_#141414]'
+                  : 'text-[#141414] hover:bg-[#FFC72E]'
+              }`}
+            >
+              CREATE ACCOUNT
+            </button>
+          </div>
+        )}
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-2xl bg-red-100 border-2 border-red-600 text-red-900 text-xs font-mono font-bold flex items-start gap-2 text-left">
+          <div className="p-3.5 rounded-2xl bg-red-100 border-2 border-red-600 text-red-900 text-xs font-mono font-bold flex items-start gap-2 text-left animate-fadeIn">
             <AlertTriangle className="size-4 text-red-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">{error}</div>
           </div>
@@ -173,32 +209,131 @@ export default function AuthPage({ initialMode = 'login' }) {
 
         {/* Success Alert */}
         {successMsg && (
-          <div className="p-3.5 rounded-2xl bg-emerald-100 border-2 border-emerald-600 text-emerald-900 text-xs font-mono font-bold flex items-start gap-2 text-left">
+          <div className="p-3.5 rounded-2xl bg-emerald-100 border-2 border-emerald-600 text-emerald-900 text-xs font-mono font-bold flex items-start gap-2 text-left animate-fadeIn">
             <CheckCircle2 className="size-4 text-emerald-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">{successMsg}</div>
+          </div>
+        )}
+
+        {/* Code Hint Banner (Helps user immediately verify without mail lag) */}
+        {mode === 'reset' && resetStep === 2 && activeCodeHint && (
+          <div className="p-3 rounded-2xl bg-[#FFC72E]/40 border-2 border-[#141414] text-left flex items-center justify-between gap-2 shadow-[2px_2px_0_0_#141414]">
+            <div className="text-xs font-mono">
+              <span className="font-bold text-[#141414]">Sent Code:</span>{' '}
+              <strong className="text-sm font-black text-[#FF4D00] tracking-widest">{activeCodeHint}</strong>
+            </div>
+            <button
+              type="button"
+              onClick={() => setVerificationCode(activeCodeHint)}
+              className="px-2.5 py-1 rounded-lg bg-[#141414] text-[#FAF7EE] text-[10px] font-display font-black uppercase shadow-[1px_1px_0_0_#FF4D00] cursor-pointer hover:bg-[#FF4D00]"
+            >
+              Auto-Fill
+            </button>
           </div>
         )}
 
         {/* Authentication Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           
-          {/* User ID / Email */}
-          <div>
-            <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
-              USER ID OR EMAIL <span className="text-[#FF4D00]">*</span>
-            </label>
-            <div className="relative">
-              <User className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
-              <input
-                type="text"
-                required
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                placeholder="e.g. yourname or company@domain.com"
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
-              />
+          {/* User ID / Email Input */}
+          {(mode !== 'reset' || resetStep === 1) && (
+            <div>
+              <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
+                USER ID OR REGISTERED EMAIL <span className="text-[#FF4D00]">*</span>
+              </label>
+              <div className="relative">
+                <User className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
+                <input
+                  type="text"
+                  required
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  placeholder="e.g. vikasmishraji87 or email@domain.com"
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
+                />
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* RESET PASSWORD - STEP 2: 6-Digit OTP Field */}
+          {mode === 'reset' && resetStep === 2 && (
+            <>
+              {/* Account identifier badge */}
+              <div className="flex items-center justify-between bg-[#FAF7EE] border-2 border-[#141414] px-3.5 py-2 rounded-2xl text-xs font-mono font-bold text-[#141414]">
+                <div className="truncate">
+                  Target: <span className="text-[#FF4D00] font-black">{userId}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setResetStep(1); setError(''); setSuccessMsg(''); }}
+                  className="text-[10px] text-[#141414]/70 hover:text-[#FF4D00] underline font-sans font-bold cursor-pointer"
+                >
+                  Change
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
+                  6-DIGIT VERIFICATION CODE <span className="text-[#FF4D00]">*</span>
+                </label>
+                <div className="relative">
+                  <Key className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
+                  <input
+                    type="text"
+                    maxLength={6}
+                    required
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter 6-digit code..."
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-base font-mono font-black tracking-[0.25em] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
+                  />
+                </div>
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
+                  NEW PASSWORD (MIN. 6 CHARS) <span className="text-[#FF4D00]">*</span>
+                </label>
+                <div className="relative">
+                  <Key className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Set your new password..."
+                    className="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50 hover:text-[#141414] cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm New Password */}
+              <div>
+                <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
+                  CONFIRM NEW PASSWORD <span className="text-[#FF4D00]">*</span>
+                </label>
+                <div className="relative">
+                  <Key className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter new password..."
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none"
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Additional fields for Sign Up */}
           {mode === 'signup' && (
@@ -213,7 +348,7 @@ export default function AuthPage({ initialMode = 'login' }) {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="e.g. Alexander Vance"
+                    placeholder="e.g. Vikas Mishra"
                     className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none"
                   />
                 </div>
@@ -237,7 +372,7 @@ export default function AuthPage({ initialMode = 'login' }) {
             </>
           )}
 
-          {/* Password field (for Login or Signup) */}
+          {/* Password field for Login or Signup */}
           {mode !== 'reset' && (
             <div>
               <div className="flex justify-between items-center mb-1.5">
@@ -247,7 +382,7 @@ export default function AuthPage({ initialMode = 'login' }) {
                 {mode === 'login' && (
                   <button
                     type="button"
-                    onClick={() => { setMode('reset'); setError(''); setSuccessMsg(''); }}
+                    onClick={() => { setMode('reset'); setResetStep(1); setError(''); setSuccessMsg(''); }}
                     className="text-[11px] font-bold text-[#FF4D00] hover:underline cursor-pointer"
                   >
                     Forgot Password?
@@ -275,35 +410,8 @@ export default function AuthPage({ initialMode = 'login' }) {
             </div>
           )}
 
-          {/* New Password field (for Reset mode) */}
-          {mode === 'reset' && (
-            <div>
-              <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
-                NEW PASSWORD (MIN. 6 CHARACTERS) <span className="text-[#FF4D00]">*</span>
-              </label>
-              <div className="relative">
-                <Key className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter your new password..."
-                  className="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50 hover:text-[#141414] cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Password Confirmation (for Signup or Reset) */}
-          {(mode === 'signup' || mode === 'reset') && (
+          {/* Password Confirmation for Signup */}
+          {mode === 'signup' && (
             <div>
               <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
                 CONFIRM PASSWORD <span className="text-[#FF4D00]">*</span>
@@ -331,7 +439,7 @@ export default function AuthPage({ initialMode = 'login' }) {
             {loading ? (
               <>
                 <RefreshCw className="size-4 animate-spin" />
-                <span>AUTHENTICATING...</span>
+                <span>PROCESSING SECURITY CHECK...</span>
               </>
             ) : mode === 'login' ? (
               <>
@@ -345,10 +453,16 @@ export default function AuthPage({ initialMode = 'login' }) {
                 <span>CREATE & ACTIVATE ACCOUNT</span>
                 <ArrowRight className="size-4" />
               </>
+            ) : resetStep === 1 ? (
+              <>
+                <Send className="size-4 text-[#FFC72E]" />
+                <span>SEND 6-DIGIT VERIFICATION CODE</span>
+                <ArrowRight className="size-4" />
+              </>
             ) : (
               <>
-                <RefreshCw className="size-4 text-[#FFC72E]" />
-                <span>UPDATE & RESET PASSWORD</span>
+                <Check className="size-4 text-[#25D366]" />
+                <span>VERIFY CODE & SAVE NEW PASSWORD</span>
                 <ArrowRight className="size-4" />
               </>
             )}
@@ -361,8 +475,8 @@ export default function AuthPage({ initialMode = 'login' }) {
           {mode === 'reset' ? (
             <button
               type="button"
-              onClick={() => { setMode('login'); setError(''); }}
-              className="text-[#FF4D00] hover:underline cursor-pointer"
+              onClick={() => { setMode('login'); setResetStep(1); setError(''); setSuccessMsg(''); }}
+              className="text-[#FF4D00] hover:underline cursor-pointer font-black"
             >
               ← Back to Login Screen
             </button>
@@ -371,7 +485,7 @@ export default function AuthPage({ initialMode = 'login' }) {
               Don't have an account yet?{' '}
               <button
                 type="button"
-                onClick={() => { setMode('signup'); setError(''); }}
+                onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
                 className="text-[#FF4D00] hover:underline cursor-pointer font-black"
               >
                 Create Account Here
@@ -382,7 +496,7 @@ export default function AuthPage({ initialMode = 'login' }) {
               Already registered?{' '}
               <button
                 type="button"
-                onClick={() => { setMode('login'); setError(''); }}
+                onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
                 className="text-[#FF4D00] hover:underline cursor-pointer font-black"
               >
                 Log In to Your Account

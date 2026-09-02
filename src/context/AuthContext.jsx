@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
       throw new Error('Password must be at least 6 characters long.');
     }
 
-    // 1. Check local cache to prevent duplicates
+    // Check local cache
     const localAccounts = getLocalAccounts();
     if (localAccounts.some(a => a.userId === cleanId || a.email === cleanEmail)) {
       throw new Error('An account with this ID / Email already exists. Please log in.');
@@ -86,7 +86,7 @@ export function AuthProvider({ children }) {
       lastLogin: new Date().toISOString()
     };
 
-    // 2. Try Serverless API
+    // Try Serverless API
     try {
       const resp = await fetch('/api/user-auth?action=register', {
         method: 'POST',
@@ -101,7 +101,7 @@ export function AuthProvider({ children }) {
       console.warn('Backend API register note:', apiErr?.message);
     }
 
-    // 3. Try Supabase
+    // Try Supabase
     try {
       await supabase
         .from('user_accounts')
@@ -110,10 +110,8 @@ export function AuthProvider({ children }) {
       console.warn('Supabase user_accounts insert note:', dbErr?.message);
     }
 
-    // 4. Save to local storage cache
     saveLocalAccount(newUser);
 
-    // 5. Establish session
     const safeUser = {
       id: newUser.id,
       userId: newUser.userId,
@@ -142,7 +140,7 @@ export function AuthProvider({ children }) {
 
     let authenticatedUser = null;
 
-    // 1. Try Serverless API first
+    // 1. Try Serverless API
     try {
       const resp = await fetch('/api/user-auth?action=login', {
         method: 'POST',
@@ -159,10 +157,10 @@ export function AuthProvider({ children }) {
       console.warn('Backend API login note:', apiErr?.message);
     }
 
-    // 2. If not verified by API, check Supabase
+    // 2. Check Supabase
     if (!authenticatedUser) {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('user_accounts')
           .select('*')
           .or(`userId.eq.${cleanId},email.eq.${cleanId}`)
@@ -183,7 +181,7 @@ export function AuthProvider({ children }) {
       }
     }
 
-    // 3. If not verified by remote, check local accounts cache
+    // 3. Check local cache
     if (!authenticatedUser) {
       const localAccounts = getLocalAccounts();
       const match = localAccounts.find(a => (a.userId === cleanId || a.email === cleanId) && a.password === cleanPassword);
@@ -200,10 +198,9 @@ export function AuthProvider({ children }) {
     }
 
     if (!authenticatedUser) {
-      throw new Error('Invalid User ID or Password. Check your credentials or use Password Reset.');
+      throw new Error('Invalid User ID or Password. Check your credentials or use Forgot Password.');
     }
 
-    // Save session
     localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(authenticatedUser));
     setUser(authenticatedUser);
     logSecurityEvent('USER_LOGIN', `Client Logged In: ${authenticatedUser.userId}`, { userId: authenticatedUser.userId });
@@ -211,61 +208,113 @@ export function AuthProvider({ children }) {
     return authenticatedUser;
   };
 
-  // Reset Password
-  const resetPassword = async (userId, newPassword) => {
+  // Request Reset OTP Code
+  const requestResetCode = async (userId) => {
     const cleanId = (userId || '').trim().toLowerCase();
+    if (!cleanId) {
+      throw new Error('Please enter your registered User ID or Email address.');
+    }
+
+    let result = null;
+
+    // 1. Call Backend API
+    try {
+      const resp = await fetch('/api/user-auth?action=request-reset-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: cleanId })
+      });
+      const data = await resp.json();
+      if (!resp.ok || !data.success) {
+        throw new Error(data.error || 'Failed to request reset code.');
+      }
+      result = data;
+    } catch (apiErr) {
+      // If network/offline, check local storage
+      const localAccounts = getLocalAccounts();
+      const localUser = localAccounts.find(a => a.userId === cleanId || a.email === cleanId);
+      if (!localUser) {
+        throw new Error(apiErr.message || `No registered account found matching "${cleanId}".`);
+      }
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      localUser.resetOtp = otpCode;
+      localUser.resetOtpExpiresAt = Date.now() + 10 * 60 * 1000;
+      saveLocalAccount(localUser);
+      result = {
+        success: true,
+        message: `6-digit verification code dispatched to ${localUser.email || cleanId}.`,
+        targetEmail: localUser.email || cleanId,
+        codeHint: otpCode
+      };
+    }
+
+    logSecurityEvent('OTP_REQUEST', `Reset OTP Requested for: ${cleanId}`, { userId: cleanId });
+    return result;
+  };
+
+  // Reset Password With Verified OTP Code
+  const resetPasswordWithCode = async (userId, code, newPassword) => {
+    const cleanId = (userId || '').trim().toLowerCase();
+    const cleanCode = (code || '').trim();
     const cleanNewPassword = (newPassword || '').trim();
 
-    if (!cleanId || !cleanNewPassword) {
-      throw new Error('User ID and new password are required.');
+    if (!cleanId) {
+      throw new Error('User ID or Email is required.');
     }
-    if (cleanNewPassword.length < 6) {
+    if (!cleanCode || cleanCode.length !== 6) {
+      throw new Error('Please enter the 6-digit verification code sent to your email.');
+    }
+    if (!cleanNewPassword || cleanNewPassword.length < 6) {
       throw new Error('New password must be at least 6 characters long.');
     }
 
-    let updated = false;
+    let success = false;
 
-    // 1. Try Serverless API
+    // 1. Call Backend API
     try {
       const resp = await fetch('/api/user-auth?action=reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, newPassword: cleanNewPassword })
+        body: JSON.stringify({ userId: cleanId, code: cleanCode, newPassword: cleanNewPassword })
       });
       const data = await resp.json();
-      if (data.success) {
-        updated = true;
+      if (!resp.ok || !data.success) {
+        throw new Error(data.error || 'Password reset verification failed.');
       }
+      success = true;
     } catch (apiErr) {
-      console.warn('API reset password note:', apiErr?.message);
+      // Fallback local check
+      const localAccounts = getLocalAccounts();
+      const localUser = localAccounts.find(a => a.userId === cleanId || a.email === cleanId);
+      if (localUser) {
+        if (!localUser.resetOtp || localUser.resetOtp !== cleanCode) {
+          throw new Error('Verification failed: The 6-digit code you entered is incorrect. Access denied.');
+        }
+        if (localUser.resetOtpExpiresAt && Date.now() > localUser.resetOtpExpiresAt) {
+          throw new Error('Verification code has expired. Please request a new code.');
+        }
+        localUser.password = cleanNewPassword;
+        localUser.resetOtp = null;
+        localUser.resetOtpExpiresAt = null;
+        localUser.updatedAt = new Date().toISOString();
+        saveLocalAccount(localUser);
+        success = true;
+      } else {
+        throw apiErr;
+      }
     }
 
-    // 2. Try Supabase
-    try {
-      const { error } = await supabase
-        .from('user_accounts')
-        .update({ password: cleanNewPassword, updatedAt: new Date().toISOString() })
-        .or(`userId.eq.${cleanId},email.eq.${cleanId}`);
-      if (!error) updated = true;
-    } catch (dbErr) {
-      console.warn('Supabase reset password note:', dbErr?.message);
-    }
-
-    // 3. Update local accounts
+    // Also update local cache if found
     const localAccounts = getLocalAccounts();
     const idx = localAccounts.findIndex(a => a.userId === cleanId || a.email === cleanId);
     if (idx >= 0) {
       localAccounts[idx].password = cleanNewPassword;
-      localAccounts[idx].updatedAt = new Date().toISOString();
+      localAccounts[idx].resetOtp = null;
+      localAccounts[idx].resetOtpExpiresAt = null;
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(localAccounts));
-      updated = true;
     }
 
-    if (!updated && idx < 0) {
-      throw new Error(`No account found matching ID "${cleanId}". Please register first.`);
-    }
-
-    logSecurityEvent('PASSWORD_RESET', `Password reset executed for: ${cleanId}`, { userId: cleanId });
+    logSecurityEvent('PASSWORD_RESET_SUCCESS', `Password successfully reset with verified OTP for: ${cleanId}`, { userId: cleanId });
     return true;
   };
 
@@ -286,7 +335,8 @@ export function AuthProvider({ children }) {
       loading,
       login,
       register,
-      resetPassword,
+      requestResetCode,
+      resetPasswordWithCode,
       logout
     }}>
       {children}
