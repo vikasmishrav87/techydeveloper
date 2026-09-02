@@ -2,7 +2,6 @@ import React from 'react';
 import Hero from '../components/Hero';
 import StatsStrip from '../components/StatsStrip';
 import ServicesSection from '../components/ServicesSection';
-import ClientProofSection from '../components/ClientProofSection';
 import ProcessSection from '../components/ProcessSection';
 import ProjectEstimator from '../components/ProjectEstimator';
 import LiveAuditScanner from '../components/LiveAuditScanner';
@@ -33,10 +32,7 @@ export default function HomePage({ onOpenTerminal, onOpenAIChat }) {
       {/* 3. Services Section */}
       <ServicesSection />
 
-      {/* 4. Client DM Proofs & Reviews */}
-      <ClientProofSection />
-
-      {/* 6. Process / How It Works */}
+      {/* 4. Process / How It Works */}
       <ProcessSection />
 
       {/* 7. Interactive Estimator & Audit Scanner */}
