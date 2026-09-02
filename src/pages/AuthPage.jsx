@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -30,7 +30,6 @@ export default function AuthPage({ initialMode = 'login' }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [activeCodeHint, setActiveCodeHint] = useState('');
   const [targetEmailMasked, setTargetEmailMasked] = useState('');
 
   // Auto-redirect if already logged in
@@ -78,9 +77,13 @@ export default function AuthPage({ initialMode = 'login' }) {
           throw new Error('Passwords do not match. Please re-enter.');
         }
 
+        if (!email.trim() || !email.includes('@')) {
+          throw new Error('A valid email address is required to register so you can receive verification codes.');
+        }
+
         await register({
           userId: userId.trim(),
-          email: email.trim() || userId.trim(),
+          email: email.trim(),
           name: fullName.trim(),
           password: password.trim()
         });
@@ -99,16 +102,13 @@ export default function AuthPage({ initialMode = 'login' }) {
 
         const res = await requestResetCode(userId.trim());
         setTargetEmailMasked(res.targetEmail || userId.trim());
-        if (res.codeHint) {
-          setActiveCodeHint(res.codeHint);
-        }
         setSuccessMsg(res.message || '6-digit verification code has been dispatched to your email.');
         setResetStep(2);
       }
       // 4. RESET - STEP 2: Verify Code & Update Password
       else if (mode === 'reset' && resetStep === 2) {
         if (!verificationCode.trim() || verificationCode.trim().length !== 6) {
-          throw new Error('Please enter the valid 6-digit verification code sent to your email.');
+          throw new Error('Please enter the 6-digit verification code sent to your email.');
         }
         if (!newPassword.trim() || newPassword.length < 6) {
           throw new Error('New password must be at least 6 characters long.');
@@ -128,7 +128,6 @@ export default function AuthPage({ initialMode = 'login' }) {
         setResetStep(1);
         setPassword(newPassword);
         setVerificationCode('');
-        setActiveCodeHint('');
       }
     } catch (err) {
       setError(err.message || 'An error occurred. Please try again.');
@@ -212,23 +211,6 @@ export default function AuthPage({ initialMode = 'login' }) {
           <div className="p-3.5 rounded-2xl bg-emerald-100 border-2 border-emerald-600 text-emerald-900 text-xs font-mono font-bold flex items-start gap-2 text-left animate-fadeIn">
             <CheckCircle2 className="size-4 text-emerald-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">{successMsg}</div>
-          </div>
-        )}
-
-        {/* Code Hint Banner (Helps user immediately verify without mail lag) */}
-        {mode === 'reset' && resetStep === 2 && activeCodeHint && (
-          <div className="p-3 rounded-2xl bg-[#FFC72E]/40 border-2 border-[#141414] text-left flex items-center justify-between gap-2 shadow-[2px_2px_0_0_#141414]">
-            <div className="text-xs font-mono">
-              <span className="font-bold text-[#141414]">Sent Code:</span>{' '}
-              <strong className="text-sm font-black text-[#FF4D00] tracking-widest">{activeCodeHint}</strong>
-            </div>
-            <button
-              type="button"
-              onClick={() => setVerificationCode(activeCodeHint)}
-              className="px-2.5 py-1 rounded-lg bg-[#141414] text-[#FAF7EE] text-[10px] font-display font-black uppercase shadow-[1px_1px_0_0_#FF4D00] cursor-pointer hover:bg-[#FF4D00]"
-            >
-              Auto-Fill
-            </button>
           </div>
         )}
 
@@ -356,16 +338,17 @@ export default function AuthPage({ initialMode = 'login' }) {
 
               <div>
                 <label className="block text-xs font-display font-black uppercase text-[#141414] mb-1.5">
-                  OFFICIAL WORK EMAIL (OPTIONAL)
+                  EMAIL ADDRESS (FOR SECURITY &amp; OTP CODES) <span className="text-[#FF4D00]">*</span>
                 </label>
                 <div className="relative">
                   <Mail className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141414]/50" />
                   <input
                     type="email"
+                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none"
+                    placeholder="e.g. yourname@gmail.com"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
                   />
                 </div>
               </div>

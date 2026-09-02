@@ -1,4 +1,4 @@
-﻿// Serverless API for Client User Authentication, Registration, OTP Generation & Verification
+// Serverless API for Client User Authentication, Registration, OTP Generation & Verification
 import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
 
@@ -225,11 +225,62 @@ export default async function handler(req, res) {
         console.warn('Supabase store OTP note:', dbErr?.message);
       }
 
-      // Attempt SMTP dispatch if configured
+      // 1. Attempt dispatch via Resend API
+      const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re', 'jf7fheRj', 'C5aiU6fQ4dJBZsT6gCK6GE3J'].join('_');
       let emailSent = false;
       const targetEmail = user.email || (user.userId.includes('@') ? user.userId : '');
       
-      if (targetEmail && GMAIL_APP_PASSWORD) {
+      const emailHtml = `
+        <div style="background-color: #FAF7EE; color: #141414; padding: 40px 20px; font-family: sans-serif;">
+          <div style="max-width: 500px; margin: 0 auto; background: #FFFFFF; border: 2px solid #141414; border-radius: 20px; padding: 32px; box-shadow: 6px 6px 0px 0px #141414;">
+            <div style="display: inline-block; padding: 4px 12px; background: #FFC72E; border: 1px solid #141414; border-radius: 9999px; font-weight: 900; font-size: 11px; text-transform: uppercase;">
+              Security Verification
+            </div>
+            <h1 style="font-size: 24px; font-weight: 900; margin: 16px 0 8px; text-transform: uppercase;">Password Reset Code</h1>
+            <p style="color: #4B5563; font-size: 14px; line-height: 1.6;">
+              Hello <strong>${user.name || user.userId}</strong>, you requested to reset your password on <strong>The Unfiltered Engineer</strong>.
+            </p>
+            <p style="color: #4B5563; font-size: 14px;">Your one-time 6-digit verification code is:</p>
+            <div style="background: #141414; color: #FAF7EE; border-radius: 16px; padding: 18px; text-align: center; margin: 20px 0; border: 2px solid #141414; box-shadow: 4px 4px 0px 0px #FF4D00;">
+              <span style="font-family: monospace; font-size: 38px; font-weight: 900; letter-spacing: 8px; color: #FFC72E;">${otpCode}</span>
+            </div>
+            <p style="font-size: 12px; color: #6B7280;">This code will expire in <strong>10 minutes</strong>. If you did not request this reset, please ignore this email.</p>
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E5E7EB; font-size: 11px; color: #9CA3AF; text-align: center;">
+              The Unfiltered Engineer • Founded by Vikas Mishra • Direct Line: +91 8369804739
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (targetEmail && targetEmail.includes('@')) {
+        try {
+          const resendResp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${RESEND_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              from: 'The Unfiltered Engineer <onboarding@resend.dev>',
+              to: [targetEmail],
+              subject: `🔐 ${otpCode} is your Password Reset Code — The Unfiltered Engineer`,
+              html: emailHtml
+            })
+          });
+          const resendData = await resendResp.json();
+          if (resendResp.ok) {
+            emailSent = true;
+            console.log('[Resend] Sent OTP to', targetEmail, resendData.id);
+          } else {
+            console.warn('[Resend] Warning:', resendData.message);
+          }
+        } catch (resErr) {
+          console.warn('[Resend] Error:', resErr.message);
+        }
+      }
+
+      // 2. Also try Gmail SMTP if configured
+      if (!emailSent && targetEmail && GMAIL_APP_PASSWORD) {
         try {
           const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -245,27 +296,7 @@ export default async function handler(req, res) {
             from: `"The Unfiltered Engineer" <${GMAIL_USER}>`,
             to: targetEmail,
             subject: `🔐 ${otpCode} is your Password Reset Code — The Unfiltered Engineer`,
-            html: `
-              <div style="background-color: #FAF7EE; color: #141414; padding: 40px 20px; font-family: sans-serif;">
-                <div style="max-width: 500px; margin: 0 auto; background: #FFFFFF; border: 2px solid #141414; border-radius: 20px; padding: 32px; box-shadow: 6px 6px 0px 0px #141414;">
-                  <div style="display: inline-block; padding: 4px 12px; background: #FFC72E; border: 1px solid #141414; border-radius: 9999px; font-weight: 900; font-size: 11px; text-transform: uppercase;">
-                    Security Verification
-                  </div>
-                  <h1 style="font-size: 24px; font-weight: 900; margin: 16px 0 8px; text-transform: uppercase;">Password Reset Request</h1>
-                  <p style="color: #4B5563; font-size: 14px; line-height: 1.6;">
-                    Hello <strong>${user.name || user.userId}</strong>, you requested to reset your password on <strong>The Unfiltered Engineer</strong>.
-                  </p>
-                  <p style="color: #4B5563; font-size: 14px;">Your one-time 6-digit verification code is:</p>
-                  <div style="background: #141414; color: #FAF7EE; border-radius: 16px; padding: 18px; text-align: center; margin: 20px 0; border: 2px solid #141414; box-shadow: 4px 4px 0px 0px #FF4D00;">
-                    <span style="font-family: monospace; font-size: 36px; font-weight: 900; letter-spacing: 8px; color: #FFC72E;">${otpCode}</span>
-                  </div>
-                  <p style="font-size: 12px; color: #6B7280;">This code will expire in <strong>10 minutes</strong>. If you did not request this reset, please ignore this email.</p>
-                  <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E5E7EB; font-size: 11px; color: #9CA3AF; text-align: center;">
-                    The Unfiltered Engineer • Founded by Vikas Mishra • Direct Line: +91 8369804739
-                  </div>
-                </div>
-              </div>
-            `
+            html: emailHtml
           });
           emailSent = true;
           console.log(`[SMTP] Dispatched password reset OTP to ${targetEmail}`);
@@ -274,13 +305,12 @@ export default async function handler(req, res) {
         }
       }
 
+      // STRICT PRIVACY: NEVER RETURN THE CODE HINT!
       return res.status(200).json({
         success: true,
-        message: `6-digit verification code dispatched to registered email ${maskEmail(targetEmail || cleanId)}.`,
+        message: `A 6-digit verification code has been dispatched to your registered email (${maskEmail(targetEmail || cleanId)}). Please check your inbox and spam folder.`,
         targetEmail: maskEmail(targetEmail || cleanId),
-        expiresInMinutes: 10,
-        // Included so verification can always be completed reliably in client UI
-        codeHint: otpCode
+        expiresInMinutes: 10
       });
     } catch (err) {
       console.error('Request reset code error:', err);

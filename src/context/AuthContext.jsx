@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { logSecurityEvent } from '../services/storageService';
 
@@ -243,8 +243,7 @@ export function AuthProvider({ children }) {
       result = {
         success: true,
         message: `6-digit verification code dispatched to ${localUser.email || cleanId}.`,
-        targetEmail: localUser.email || cleanId,
-        codeHint: otpCode
+        targetEmail: localUser.email || cleanId
       };
     }
 
