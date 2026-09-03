@@ -218,11 +218,12 @@ export function AuthProvider({ children }) {
     let result = null;
 
     // 1. Call Backend API
+    const localAccounts = getLocalAccounts();
     try {
       const resp = await fetch('/api/user-auth?action=request-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId })
+        body: JSON.stringify({ userId: cleanId, localAccounts })
       });
       const data = await resp.json();
       if (!resp.ok || !data.success) {
@@ -230,21 +231,7 @@ export function AuthProvider({ children }) {
       }
       result = data;
     } catch (apiErr) {
-      // If network/offline, check local storage
-      const localAccounts = getLocalAccounts();
-      const localUser = localAccounts.find(a => a.userId === cleanId || a.email === cleanId);
-      if (!localUser) {
-        throw new Error(apiErr.message || `No registered account found matching "${cleanId}".`);
-      }
-      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      localUser.resetOtp = otpCode;
-      localUser.resetOtpExpiresAt = Date.now() + 10 * 60 * 1000;
-      saveLocalAccount(localUser);
-      result = {
-        success: true,
-        message: `6-digit verification code dispatched to ${localUser.email || cleanId}.`,
-        targetEmail: localUser.email || cleanId
-      };
+      throw new Error(apiErr.message || `No registered account found matching "${cleanId}".`);
     }
 
     logSecurityEvent('OTP_REQUEST', `Reset OTP Requested for: ${cleanId}`, { userId: cleanId });
@@ -274,7 +261,7 @@ export function AuthProvider({ children }) {
       const resp = await fetch('/api/user-auth?action=reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, code: cleanCode, newPassword: cleanNewPassword })
+        body: JSON.stringify({ userId: cleanId, code: cleanCode, newPassword: cleanNewPassword, localAccounts: getLocalAccounts() })
       });
       const data = await resp.json();
       if (!resp.ok || !data.success) {

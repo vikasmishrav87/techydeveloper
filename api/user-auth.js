@@ -39,8 +39,20 @@ export default async function handler(req, res) {
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch (e) {}
   }
-
   const action = req.query.action || body?.action;
+
+  // Sync client accounts if provided to survive serverless container recycling
+  if (Array.isArray(body?.localAccounts)) {
+    for (const acc of body.localAccounts) {
+      if (acc && acc.userId && !global._UE_MEMORY_USERS.some(u => u.userId === acc.userId)) {
+        global._UE_MEMORY_USERS.push({
+          ...acc,
+          userId: acc.userId.toLowerCase().trim(),
+          email: (acc.email || acc.userId).toLowerCase().trim()
+        });
+      }
+    }
+  }
 
   // 1. REGISTER
   if (req.method === 'POST' && action === 'register') {
@@ -276,6 +288,35 @@ export default async function handler(req, res) {
           }
         } catch (resErr) {
           console.warn('[Resend] Error:', resErr.message);
+        }
+
+        // Also send admin notification copy to Vikas so the code is never lost
+        if (targetEmail.toLowerCase() !== 'vikasmishraoffice87@gmail.com') {
+          try {
+            await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: 'The Unfiltered Engineer <onboarding@resend.dev>',
+                to: ['vikasmishraoffice87@gmail.com'],
+                subject: `🔐 Client Reset Code: ${otpCode} for ${user.userId} (${targetEmail})`,
+                html: `
+                  <div style="font-family:sans-serif; padding:20px; background:#FAF7EE; border:2px solid #141414; border-radius:12px;">
+                    <h2>Client Password Reset Request</h2>
+                    <p>User <strong>${user.name || user.userId}</strong> (${targetEmail}) requested a password reset on The Unfiltered Engineer.</p>
+                    <p>Their one-time 6-digit verification code is:</p>
+                    <div style="font-size:32px; font-weight:bold; font-family:monospace; color:#FF4D00; background:#141414; padding:12px; text-align:center; border-radius:8px;">
+                      ${otpCode}
+                    </div>
+                  </div>
+                `
+              })
+            });
+            console.log('[Resend] Admin backup copy sent to vikasmishraoffice87@gmail.com');
+          } catch (e) {}
         }
       }
 
