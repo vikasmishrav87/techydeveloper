@@ -270,6 +270,25 @@ export default function AuthPage({ initialMode = 'login' }) {
                     className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-base font-mono font-black tracking-[0.25em] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
                   />
                 </div>
+                <div className="flex items-center justify-between text-[11px] font-bold text-[#141414]/70 pt-1">
+                  <span>Check Inbox &amp; Spam / Junk folder</span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setError('');
+                      setSuccessMsg('Requesting fresh verification code...');
+                      try {
+                        const res = await requestResetCode(userId.trim());
+                        setSuccessMsg(res.message || 'Fresh verification code dispatched to your email.');
+                      } catch (e) {
+                        setError(e.message);
+                      }
+                    }}
+                    className="text-[#FF4D00] hover:underline cursor-pointer font-black uppercase"
+                  >
+                    Resend Code ↻
+                  </button>
+                </div>
               </div>
 
               {/* New Password */}
@@ -450,6 +469,20 @@ export default function AuthPage({ initialMode = 'login' }) {
               </>
             )}
           </button>
+
+          {mode === 'reset' && resetStep === 2 && (
+            <div className="p-3 rounded-2xl bg-[#FAF7EE] border-2 border-[#141414] text-center text-xs font-mono">
+              <span className="text-[#141414]/70">Mail delay or need urgent recovery?</span>{' '}
+              <a
+                href={`https://wa.me/918369804739?text=Hi%20Vikas%2C%20I%20need%20assistance%20verifying%20my%20account%20on%20The%20Unfiltered%20Engineer%3A%20${encodeURIComponent(userId)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#25D366] font-black underline hover:text-[#128C7E] inline-flex items-center gap-1"
+              >
+                WhatsApp Founder Vikas (+91 8369804739)
+              </a>
+            </div>
+          )}
 
         </form>
 

