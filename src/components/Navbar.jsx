@@ -49,22 +49,22 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           : 'bg-[#FAF7EE]/90 backdrop-blur-sm py-4'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
         
         {/* Left: Brand Logo */}
         <div className="flex-shrink-0">
           <BrandLogo size="md" withText={true} linkTo="/" />
         </div>
 
-        {/* Center: Desktop Nav Links (aijugaad style) */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+        {/* Center: Desktop Nav Links (Cleanly spaced for xl+ screens) */}
+        <nav className="hidden xl:flex items-center gap-5 2xl:gap-7">
           {primaryNavLinks.map((link) => {
             const isActive = location.pathname === link.to;
             return (
               <Link
                 key={link.name}
                 to={link.to}
-                className={`font-display text-xs xl:text-sm font-bold tracking-wide uppercase transition-colors ${
+                className={`font-display text-xs 2xl:text-sm font-bold tracking-wide uppercase transition-colors whitespace-nowrap ${
                   isActive 
                     ? "text-[#FF4D00] underline decoration-[#141414] decoration-2 underline-offset-4" 
                     : "text-[#141414] hover:text-[#FF4D00]"
@@ -80,7 +80,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             <button
               onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
               onBlur={() => setTimeout(() => setMoreDropdownOpen(false), 250)}
-              className="inline-flex items-center gap-1 font-display text-xs xl:text-sm font-bold tracking-wide uppercase text-[#141414] hover:text-[#FF4D00] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 font-display text-xs 2xl:text-sm font-bold tracking-wide uppercase text-[#141414] hover:text-[#FF4D00] transition-colors cursor-pointer whitespace-nowrap"
             >
               <span>MORE</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-[#FF4D00]' : 'text-[#141414]'}`} />
@@ -112,13 +112,13 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           </div>
         </nav>
 
-        {/* Right: Studio Action Buttons */}
-        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+        {/* Right: Desktop Action Buttons (xl+ screens) */}
+        <div className="hidden xl:flex items-center gap-2.5 2xl:gap-3 flex-shrink-0">
           
           {/* Executive Portal */}
           <Link
             to="/admin/verify"
-            className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] whitespace-nowrap cursor-pointer"
+            className="brutal-btn inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[2px_2px_0_0_#141414] whitespace-nowrap cursor-pointer"
             title="Executive Verification Portal"
           >
             <ShieldCheck className="w-4 h-4 text-[#141414]" />
@@ -128,7 +128,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* AI Bot */}
           <button
             onClick={onOpenAIChat}
-            className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[3px_3px_0_0_#141414] cursor-pointer whitespace-nowrap"
+            className="brutal-btn inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[2px_2px_0_0_#141414] cursor-pointer whitespace-nowrap"
             title="Ask AI Principal"
           >
             <Bot className="w-4 h-4 text-[#FF4D00]" />
@@ -139,14 +139,14 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {!isAuthenticated ? (
             <Link
               to="/login"
-              className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] whitespace-nowrap cursor-pointer"
+              className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[2px_2px_0_0_#141414] whitespace-nowrap cursor-pointer"
               title="Client Login & Access"
             >
               <LogIn className="w-3.5 h-3.5 text-[#FF4D00]" />
               <span>LOGIN</span>
             </Link>
           ) : (
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414]">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-xs font-display font-black shadow-[2px_2px_0_0_#141414]">
               <div className="size-5 rounded-full bg-[#FF4D00] text-[#FAF7EE] flex items-center justify-center text-[10px] uppercase font-black">
                 {user.name?.[0] || user.userId?.[0] || 'U'}
               </div>
@@ -166,29 +166,62 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* START A PROJECT Big Button */}
           <Link
             to="/contact"
-            className="brutal-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs xl:text-sm font-black tracking-wide uppercase shadow-[4px_4px_0_0_#FF4D00] whitespace-nowrap cursor-pointer"
+            className="brutal-btn inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs 2xl:text-sm font-black tracking-wide uppercase shadow-[4px_4px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
           >
             <span>START A PROJECT</span>
           </Link>
 
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex lg:hidden items-center gap-2">
+        {/* Mobile & Tablet Action Bar (< xl screens): Never cut off or clipped */}
+        <div className="flex xl:hidden items-center gap-2 flex-shrink-0">
+          
+          {/* Client Authentication Login / Profile */}
+          {!isAuthenticated ? (
+            <Link
+              to="/login"
+              className="brutal-btn inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-[11px] sm:text-xs font-display font-black shadow-[2px_2px_0_0_#141414] whitespace-nowrap cursor-pointer"
+              title="Client Login"
+            >
+              <LogIn className="w-3 h-3 text-[#FF4D00]" />
+              <span>LOGIN</span>
+            </Link>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-[11px] font-display font-black shadow-[2px_2px_0_0_#141414]">
+              <div className="size-4 rounded-full bg-[#FF4D00] text-[#FAF7EE] flex items-center justify-center text-[9px] uppercase font-black">
+                {user.name?.[0] || user.userId?.[0] || 'U'}
+              </div>
+              <span className="max-w-[65px] truncate text-[#141414] uppercase">
+                {user.name || user.userId}
+              </span>
+            </div>
+          )}
+
+          {/* START A PROJECT: cleanly styled and 100% visible on mobile and tablet */}
+          <Link
+            to="/contact"
+            className="brutal-btn inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[11px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
+          >
+            <span>START A PROJECT</span>
+          </Link>
+
+          {/* AI Bot Quick Button */}
           <button
             onClick={onOpenAIChat}
-            className="brutal-btn flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#141414] text-[#FAF7EE] text-xs font-display font-black border-2 border-[#141414] shadow-[2px_2px_0_0_#FF4D00]"
+            className="brutal-btn flex items-center justify-center size-8 sm:size-9 rounded-full bg-[#FFC72E] text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer"
+            title="Ask AI Principal"
+            aria-label="Ask AI Principal"
           >
-            <Bot className="w-3.5 h-3.5 text-[#FF4D00]" />
-            <span>AI</span>
+            <Bot className="size-4 text-[#141414]" />
           </button>
           
+          {/* Mobile Drawer Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="brutal-btn p-2 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-[#141414] shadow-[3px_3px_0_0_#141414] cursor-pointer"
+            className="brutal-btn flex items-center justify-center size-8 sm:size-9 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer"
             aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
           </button>
         </div>
 
@@ -196,7 +229,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden px-4 pt-4 pb-6 bg-[#FAF7EE] border-b-2 border-[#141414] shadow-[0_6px_0_0_#141414] space-y-2 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
+        <div className="xl:hidden px-4 pt-4 pb-6 bg-[#FAF7EE] border-b-2 border-[#141414] shadow-[0_6px_0_0_#141414] space-y-2 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
           {primaryNavLinks.map((link) => (
             <Link
               key={link.name}
