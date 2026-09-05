@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../services/supabaseClient';
 import { logSecurityEvent } from '../services/storageService';
 
 const AuthContext = createContext(null);
@@ -54,7 +53,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Register
+  // 1. REGISTER: creates account and generates unique 12-digit recovery key
   const register = async ({ userId, email, password, name, phone }) => {
     const cleanId = (userId || email || '').trim().toLowerCase();
     const cleanEmail = (email || userId || '').trim().toLowerCase();
@@ -68,25 +67,19 @@ export function AuthProvider({ children }) {
       throw new Error('Password must be at least 6 characters long.');
     }
 
-    // Check local cache
-    const localAccounts = getLocalAccounts();
-    if (localAccounts.some(a => a.userId === cleanId || a.email === cleanEmail)) {
-      throw new Error('An account with this ID / Email already exists. Please log in.');
-    }
-
     let newUser = {
       id: 'usr_' + Date.now(),
       userId: cleanId,
       email: cleanEmail,
-      password: cleanPassword,
       name: cleanName,
       phone: phone || '',
       role: 'Verified Client',
       createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString()
     };
+    let recoveryKey = '';
 
-    // Try Serverless API
+    // Call Backend Vault API
     try {
       const resp = await fetch('/api/user-auth?action=register', {
         method: 'POST',
@@ -94,23 +87,19 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ userId: cleanId, email: cleanEmail, password: cleanPassword, name: cleanName, phone })
       });
       const data = await resp.json();
-      if (data.success && data.user) {
+      if (!resp.ok || !data.success) {
+        throw new Error(data.error || 'Registration failed.');
+      }
+      if (data.user) {
         newUser = { ...newUser, ...data.user, token: data.token };
       }
+      recoveryKey = data.recoveryKey || '';
     } catch (apiErr) {
-      console.warn('Backend API register note:', apiErr?.message);
+      throw new Error(apiErr.message || 'Registration service error.');
     }
 
-    // Try Supabase
-    try {
-      await supabase
-        .from('user_accounts')
-        .insert([newUser]);
-    } catch (dbErr) {
-      console.warn('Supabase user_accounts insert note:', dbErr?.message);
-    }
-
-    saveLocalAccount(newUser);
+    newUser.recoveryKey = recoveryKey;
+    saveLocalAccount({ ...newUser, password: cleanPassword });
 
     const safeUser = {
       id: newUser.id,
@@ -118,6 +107,7 @@ export function AuthProvider({ children }) {
       email: newUser.email,
       name: newUser.name,
       role: newUser.role,
+      recoveryKey: newUser.recoveryKey,
       createdAt: newUser.createdAt,
       lastLogin: newUser.lastLogin
     };
@@ -126,10 +116,10 @@ export function AuthProvider({ children }) {
     setUser(safeUser);
     logSecurityEvent('USER_REGISTER', `New Client Registered: ${safeUser.userId}`, { userId: safeUser.userId });
 
-    return safeUser;
+    return { user: safeUser, recoveryKey };
   };
 
-  // Login
+  // 2. LOGIN
   const login = async (userId, password) => {
     const cleanId = (userId || '').trim().toLowerCase();
     const cleanPassword = (password || '').trim();
@@ -140,49 +130,21 @@ export function AuthProvider({ children }) {
 
     let authenticatedUser = null;
 
-    // 1. Try Serverless API
+    // Call Backend Vault API
     try {
       const resp = await fetch('/api/user-auth?action=login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: cleanId, password: cleanPassword })
       });
-      if (resp.ok) {
-        const data = await resp.json();
-        if (data.success && data.user) {
-          authenticatedUser = data.user;
-        }
+      const data = await resp.json();
+      if (resp.ok && data.success && data.user) {
+        authenticatedUser = data.user;
+      } else if (!resp.ok) {
+        throw new Error(data.error || 'Invalid User ID or Password.');
       }
     } catch (apiErr) {
-      console.warn('Backend API login note:', apiErr?.message);
-    }
-
-    // 2. Check Supabase
-    if (!authenticatedUser) {
-      try {
-        const { data } = await supabase
-          .from('user_accounts')
-          .select('*')
-          .or(`userId.eq.${cleanId},email.eq.${cleanId}`)
-          .limit(1);
-
-        if (data && data.length > 0 && data[0].password === cleanPassword) {
-          authenticatedUser = {
-            id: data[0].id,
-            userId: data[0].userId,
-            email: data[0].email,
-            name: data[0].name,
-            role: data[0].role || 'Verified Client',
-            lastLogin: new Date().toISOString()
-          };
-        }
-      } catch (dbErr) {
-        console.warn('Supabase login check note:', dbErr?.message);
-      }
-    }
-
-    // 3. Check local cache
-    if (!authenticatedUser) {
+      // Fallback check local cache
       const localAccounts = getLocalAccounts();
       const match = localAccounts.find(a => (a.userId === cleanId || a.email === cleanId) && a.password === cleanPassword);
       if (match) {
@@ -192,13 +154,12 @@ export function AuthProvider({ children }) {
           email: match.email,
           name: match.name,
           role: match.role || 'Verified Client',
+          recoveryKey: match.recoveryKey || '',
           lastLogin: new Date().toISOString()
         };
+      } else {
+        throw new Error(apiErr.message || 'Invalid credentials. Check User ID and Password.');
       }
-    }
-
-    if (!authenticatedUser) {
-      throw new Error('Invalid User ID or Password. Check your credentials or use Forgot Password.');
     }
 
     localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(authenticatedUser));
@@ -208,101 +169,87 @@ export function AuthProvider({ children }) {
     return authenticatedUser;
   };
 
-  // Request Reset OTP Code
-  const requestResetCode = async (userId) => {
+  // 3. VERIFY 12-DIGIT SECRET RECOVERY KEY
+  const verifyRecoveryKey = async (userId, recoveryKey) => {
     const cleanId = (userId || '').trim().toLowerCase();
+    const cleanKey = (recoveryKey || '').trim();
+
     if (!cleanId) {
       throw new Error('Please enter your registered User ID or Email address.');
     }
+    if (!cleanKey) {
+      throw new Error('Please enter your 12-digit Secret Recovery Key.');
+    }
 
-    let result = null;
-
-    // 1. Call Backend API
-    const localAccounts = getLocalAccounts();
     try {
-      const resp = await fetch('/api/user-auth?action=request-reset-code', {
+      const resp = await fetch('/api/user-auth?action=verify-recovery-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, localAccounts })
+        body: JSON.stringify({ userId: cleanId, recoveryKey: cleanKey })
       });
       const data = await resp.json();
       if (!resp.ok || !data.success) {
-        throw new Error(data.error || 'Failed to request reset code.');
+        throw new Error(data.error || 'Secret Recovery Key verification failed.');
       }
-      result = data;
-    } catch (apiErr) {
-      throw new Error(apiErr.message || `No registered account found matching "${cleanId}".`);
+      logSecurityEvent('RECOVERY_KEY_VERIFIED', `Recovery Key verified for: ${cleanId}`, { userId: cleanId });
+      return data;
+    } catch (err) {
+      // Check local accounts as fallback
+      const localAccounts = getLocalAccounts();
+      const user = localAccounts.find(u => u.userId === cleanId || u.email === cleanId);
+      if (user && user.recoveryKey) {
+        const normLocal = user.recoveryKey.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        const normInput = cleanKey.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        if (normLocal === normInput) {
+          return { success: true, verified: true, userId: user.userId, email: user.email };
+        }
+      }
+      throw new Error(err.message || 'Invalid Secret Recovery Key for this account. Access denied.');
     }
-
-    logSecurityEvent('OTP_REQUEST', `Reset OTP Requested for: ${cleanId}`, { userId: cleanId });
-    return result;
   };
 
-  // Reset Password With Verified OTP Code
-  const resetPasswordWithCode = async (userId, code, newPassword) => {
+  // 4. UPDATE PASSWORD WITH VERIFIED SECRET RECOVERY KEY
+  const updatePasswordWithRecoveryKey = async (userId, recoveryKey, newPassword) => {
     const cleanId = (userId || '').trim().toLowerCase();
-    const cleanCode = (code || '').trim();
+    const cleanKey = (recoveryKey || '').trim();
     const cleanNewPassword = (newPassword || '').trim();
 
-    if (!cleanId) {
-      throw new Error('User ID or Email is required.');
-    }
-    if (!cleanCode || cleanCode.length !== 6) {
-      throw new Error('Please enter the 6-digit verification code sent to your email.');
+    if (!cleanId || !cleanKey) {
+      throw new Error('User ID and 12-digit Secret Recovery Key are required.');
     }
     if (!cleanNewPassword || cleanNewPassword.length < 6) {
       throw new Error('New password must be at least 6 characters long.');
     }
 
-    let success = false;
-
-    // 1. Call Backend API
     try {
-      const resp = await fetch('/api/user-auth?action=reset-password', {
+      const resp = await fetch('/api/user-auth?action=update-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, code: cleanCode, newPassword: cleanNewPassword, localAccounts: getLocalAccounts() })
+        body: JSON.stringify({ userId: cleanId, recoveryKey: cleanKey, newPassword: cleanNewPassword })
       });
       const data = await resp.json();
       if (!resp.ok || !data.success) {
-        throw new Error(data.error || 'Password reset verification failed.');
+        throw new Error(data.error || 'Failed to update password.');
       }
-      success = true;
-    } catch (apiErr) {
-      // Fallback local check
+
+      // Update local storage
       const localAccounts = getLocalAccounts();
-      const localUser = localAccounts.find(a => a.userId === cleanId || a.email === cleanId);
-      if (localUser) {
-        if (!localUser.resetOtp || localUser.resetOtp !== cleanCode) {
-          throw new Error('Verification failed: The 6-digit code you entered is incorrect. Access denied.');
-        }
-        if (localUser.resetOtpExpiresAt && Date.now() > localUser.resetOtpExpiresAt) {
-          throw new Error('Verification code has expired. Please request a new code.');
-        }
-        localUser.password = cleanNewPassword;
-        localUser.resetOtp = null;
-        localUser.resetOtpExpiresAt = null;
-        localUser.updatedAt = new Date().toISOString();
-        saveLocalAccount(localUser);
-        success = true;
-      } else {
-        throw apiErr;
+      const idx = localAccounts.findIndex(a => a.userId === cleanId || a.email === cleanId);
+      if (idx >= 0) {
+        localAccounts[idx].password = cleanNewPassword;
+        localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(localAccounts));
       }
-    }
 
-    // Also update local cache if found
-    const localAccounts = getLocalAccounts();
-    const idx = localAccounts.findIndex(a => a.userId === cleanId || a.email === cleanId);
-    if (idx >= 0) {
-      localAccounts[idx].password = cleanNewPassword;
-      localAccounts[idx].resetOtp = null;
-      localAccounts[idx].resetOtpExpiresAt = null;
-      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(localAccounts));
+      logSecurityEvent('PASSWORD_UPDATE_SUCCESS', `Password successfully updated with recovery key for: ${cleanId}`, { userId: cleanId });
+      return data;
+    } catch (err) {
+      throw new Error(err.message || 'Error updating password.');
     }
-
-    logSecurityEvent('PASSWORD_RESET_SUCCESS', `Password successfully reset with verified OTP for: ${cleanId}`, { userId: cleanId });
-    return true;
   };
+
+  // Backwards compatible aliases
+  const requestResetCode = async (userId) => verifyRecoveryKey(userId, '');
+  const resetPasswordWithCode = async (userId, code, newPassword) => updatePasswordWithRecoveryKey(userId, code, newPassword);
 
   // Logout
   const logout = () => {
@@ -321,6 +268,8 @@ export function AuthProvider({ children }) {
       loading,
       login,
       register,
+      verifyRecoveryKey,
+      updatePasswordWithRecoveryKey,
       requestResetCode,
       resetPasswordWithCode,
       logout

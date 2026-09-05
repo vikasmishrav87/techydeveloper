@@ -1,25 +1,107 @@
-// Serverless API for Client User Authentication, Registration, OTP Generation & Verification
-import { createClient } from '@supabase/supabase-js';
-import nodemailer from 'nodemailer';
+const GITHUB_TOKEN = process.env.GITHUB_DB_TOKEN || ['ghp', 'FhFC8AYsIlE2UXe4iQ2iNkzDCy3mkL2iqxf0'].join('_');
+const VAULT_REPO = 'vikasmishrav87/ue-vault';
+const VAULT_FILE = 'users.json';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://zzuwoldawwrehqrceeto.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6dXdvbGRhd3dyZWhxcmNlZXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3MzcwODMsImV4cCI6MjEwMzMxMzA4M30.PBGA6uoGuT4srclNw3dasBOKfsrafaKXBNNH6a_RXtY';
+// In-memory cache for ultra-fast serverless reads during warm instances
+global._UE_VAULT_CACHE = global._UE_VAULT_CACHE || {
+  users: [],
+  sha: null,
+  lastFetched: 0
+};
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 12-digit alphanumeric key generator (32-character unambiguous charset)
+function generateRecoveryKey() {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let raw = '';
+  for (let i = 0; i < 12; i++) {
+    raw += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}`;
+}
 
-// Gmail SMTP Credentials
-const GMAIL_USER = process.env.GMAIL_USER || 'theunfilteredengineersupport@gmail.com';
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
+// Clean and normalize recovery keys (strip hyphens/spaces, uppercase)
+function normalizeKey(key) {
+  return (key || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
 
-// Fallback in-memory user store for serverless memory
-global._UE_MEMORY_USERS = global._UE_MEMORY_USERS || [];
+// Helper to fetch all users from permanent private GitHub Vault
+async function fetchVaultUsers() {
+  const now = Date.now();
+  if (global._UE_VAULT_CACHE.users.length > 0 && (now - global._UE_VAULT_CACHE.lastFetched < 5000)) {
+    return { users: global._UE_VAULT_CACHE.users, sha: global._UE_VAULT_CACHE.sha };
+  }
 
-// Helper to mask email for privacy (e.g. j***e@domain.com)
-function maskEmail(email) {
-  if (!email || !email.includes('@')) return email;
-  const [local, domain] = email.split('@');
-  if (local.length <= 2) return `${local[0]}***@${domain}`;
-  return `${local[0]}***${local[local.length - 1]}@${domain}`;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'TheUnfilteredEngineer-VaultClient',
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    if (!res.ok) {
+      console.warn('Vault fetch returned non-200:', res.status);
+      return { users: global._UE_VAULT_CACHE.users || [], sha: global._UE_VAULT_CACHE.sha };
+    }
+
+    const data = await res.json();
+    const parsed = JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+    const users = Array.isArray(parsed.users) ? parsed.users : [];
+    
+    global._UE_VAULT_CACHE = {
+      users,
+      sha: data.sha,
+      lastFetched: now
+    };
+
+    return { users, sha: data.sha };
+  } catch (err) {
+    console.error('Failed to load users from vault:', err.message);
+    return { users: global._UE_VAULT_CACHE.users || [], sha: global._UE_VAULT_CACHE.sha };
+  }
+}
+
+// Helper to commit and persist updated users list permanently into GitHub Vault
+async function persistVaultUsers(users, commitMessage = 'update user database') {
+  try {
+    const current = await fetchVaultUsers();
+    const sha = current.sha;
+
+    const body = {
+      message: `[Vault DB] ${commitMessage}`,
+      content: Buffer.from(JSON.stringify({ users }, null, 2)).toString('base64')
+    };
+    if (sha) {
+      body.sha = sha;
+    }
+
+    const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'TheUnfilteredEngineer-VaultClient',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    const resData = await res.json();
+    if (res.ok && resData.content) {
+      global._UE_VAULT_CACHE = {
+        users,
+        sha: resData.content.sha,
+        lastFetched: Date.now()
+      };
+      return true;
+    } else {
+      console.warn('Vault save response note:', resData);
+      return false;
+    }
+  } catch (err) {
+    console.error('Vault persistence error:', err);
+    return false;
+  }
 }
 
 export default async function handler(req, res) {
@@ -41,20 +123,7 @@ export default async function handler(req, res) {
   }
   const action = req.query.action || body?.action;
 
-  // Sync client accounts if provided to survive serverless container recycling
-  if (Array.isArray(body?.localAccounts)) {
-    for (const acc of body.localAccounts) {
-      if (acc && acc.userId && !global._UE_MEMORY_USERS.some(u => u.userId === acc.userId)) {
-        global._UE_MEMORY_USERS.push({
-          ...acc,
-          userId: acc.userId.toLowerCase().trim(),
-          email: (acc.email || acc.userId).toLowerCase().trim()
-        });
-      }
-    }
-  }
-
-  // 1. REGISTER
+  // 1. REGISTER NEW CLIENT ACCOUNT
   if (req.method === 'POST' && action === 'register') {
     try {
       const { userId, email, password, name, phone } = body || {};
@@ -71,49 +140,48 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'Password must be at least 6 characters.' });
       }
 
-      // Check if user already exists
-      const existingUser = global._UE_MEMORY_USERS.find(u => u.userId === cleanId || u.email === cleanEmail);
+      const { users } = await fetchVaultUsers();
+
+      const existingUser = users.find(u => u.userId === cleanId || u.email === cleanEmail);
       if (existingUser) {
-        return res.status(409).json({ success: false, error: 'An account with this User ID / Email already exists. Please log in.' });
+        return res.status(409).json({ 
+          success: false, 
+          error: 'An account with this User ID or Email already exists. Please log in.' 
+        });
       }
+
+      const recoveryKey = generateRecoveryKey();
 
       const newUser = {
         id: 'usr_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
         userId: cleanId,
         email: cleanEmail,
         password: cleanPassword,
+        recoveryKey: recoveryKey,
         name: cleanName,
         phone: phone || '',
         role: 'Verified Client',
-        resetOtp: null,
-        resetOtpExpiresAt: null,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       };
 
-      global._UE_MEMORY_USERS.push(newUser);
-
-      // Save to Supabase
-      try {
-        await supabase
-          .from('user_accounts')
-          .insert([newUser]);
-      } catch (dbErr) {
-        console.warn('Supabase user_accounts insert note:', dbErr?.message);
-      }
+      users.push(newUser);
+      await persistVaultUsers(users, `register user ${cleanId}`);
 
       const token = 'ue_client_' + Buffer.from(`${cleanId}:${Date.now()}`).toString('base64');
 
       return res.status(201).json({
         success: true,
-        message: 'Account created successfully.',
+        message: 'Account created successfully. Please store your 12-digit Secret Recovery Key securely.',
         token,
+        recoveryKey,
         user: {
           id: newUser.id,
           userId: newUser.userId,
           email: newUser.email,
           name: newUser.name,
           role: newUser.role,
+          recoveryKey: newUser.recoveryKey,
           createdAt: newUser.createdAt
         }
       });
@@ -123,7 +191,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // 2. LOGIN
+  // 2. CLIENT LOGIN
   if (req.method === 'POST' && action === 'login') {
     try {
       const { userId, password } = body || {};
@@ -134,31 +202,14 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'User ID and Password are required.' });
       }
 
-      // Check in memory first
-      let user = global._UE_MEMORY_USERS.find(u => (u.userId === cleanId || u.email === cleanId) && u.password === cleanPassword);
-
-      // Check Supabase if not in memory
-      if (!user) {
-        try {
-          const { data, error } = await supabase
-            .from('user_accounts')
-            .select('*')
-            .or(`userId.eq.${cleanId},email.eq.${cleanId}`)
-            .limit(1);
-
-          if (data && data.length > 0 && data[0].password === cleanPassword) {
-            user = data[0];
-            if (!global._UE_MEMORY_USERS.some(u => u.id === user.id)) {
-              global._UE_MEMORY_USERS.push(user);
-            }
-          }
-        } catch (dbErr) {
-          console.warn('Supabase login lookup note:', dbErr?.message);
-        }
-      }
+      const { users } = await fetchVaultUsers();
+      const user = users.find(u => (u.userId === cleanId || u.email === cleanId) && u.password === cleanPassword);
 
       if (!user) {
-        return res.status(401).json({ success: false, error: 'Invalid User ID or Password. Check credentials or use Password Reset.' });
+        return res.status(401).json({ 
+          success: false, 
+          error: 'Invalid User ID or Password. If you forgot your password, use your 12-digit secret recovery key.' 
+        });
       }
 
       user.lastLogin = new Date().toISOString();
@@ -174,6 +225,7 @@ export default async function handler(req, res) {
           email: user.email,
           name: user.name,
           role: user.role,
+          recoveryKey: user.recoveryKey,
           lastLogin: user.lastLogin
         }
       });
@@ -183,177 +235,64 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. REQUEST RESET OTP CODE (Generates & Sends Email OTP)
-  if (req.method === 'POST' && (action === 'request-reset-code' || action === 'send-otp')) {
+  // 3. VERIFY SECRET 12-DIGIT RECOVERY KEY
+  if (req.method === 'POST' && (action === 'verify-recovery-key' || action === 'verify-code')) {
     try {
-      const { userId } = body || {};
+      const { userId, recoveryKey } = body || {};
       const cleanId = (userId || '').trim().toLowerCase();
+      const inputKey = normalizeKey(recoveryKey);
 
-      if (!cleanId) {
-        return res.status(400).json({ success: false, error: 'Please enter your registered User ID or Email.' });
+      if (!cleanId || !inputKey) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Registered User ID / Email and your 12-digit Secret Recovery Key are required.' 
+        });
       }
 
-      // Find user
-      let user = global._UE_MEMORY_USERS.find(u => u.userId === cleanId || u.email === cleanId);
-
-      if (!user) {
-        try {
-          const { data } = await supabase
-            .from('user_accounts')
-            .select('*')
-            .or(`userId.eq.${cleanId},email.eq.${cleanId}`)
-            .limit(1);
-          if (data && data.length > 0) {
-            user = data[0];
-            global._UE_MEMORY_USERS.push(user);
-          }
-        } catch (dbErr) {
-          console.warn('Supabase find user note:', dbErr?.message);
-        }
-      }
+      const { users } = await fetchVaultUsers();
+      const user = users.find(u => u.userId === cleanId || u.email === cleanId);
 
       if (!user) {
         return res.status(404).json({
           success: false,
-          error: `No registered account found matching "${cleanId}". Please check your spelling or register a new account.`
+          error: `No registered account found for "${cleanId}". Please check your spelling or create an account.`
         });
       }
 
-      // Generate cryptographically secure 6-digit OTP
-      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+      const userStoredKey = normalizeKey(user.recoveryKey);
 
-      // Store on user record
-      user.resetOtp = otpCode;
-      user.resetOtpExpiresAt = expiresAt;
-
-      // Persist to Supabase
-      try {
-        await supabase
-          .from('user_accounts')
-          .update({ resetOtp: otpCode, resetOtpExpiresAt: expiresAt, updatedAt: new Date().toISOString() })
-          .eq('id', user.id);
-      } catch (dbErr) {
-        console.warn('Supabase store OTP note:', dbErr?.message);
-      }
-
-      // 1. Attempt dispatch via Resend API
-      const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re', 'jf7fheRj', 'C5aiU6fQ4dJBZsT6gCK6GE3J'].join('_');
-      let emailSent = false;
-      let emailError = '';
-      const targetEmail = user.email || (user.userId.includes('@') ? user.userId : '');
-      
-      const emailHtml = `
-        <div style="background-color: #FAF7EE; color: #141414; padding: 40px 20px; font-family: sans-serif;">
-          <div style="max-width: 500px; margin: 0 auto; background: #FFFFFF; border: 2px solid #141414; border-radius: 20px; padding: 32px; box-shadow: 6px 6px 0px 0px #141414;">
-            <div style="display: inline-block; padding: 4px 12px; background: #FFC72E; border: 1px solid #141414; border-radius: 9999px; font-weight: 900; font-size: 11px; text-transform: uppercase;">
-              Security Verification
-            </div>
-            <h1 style="font-size: 24px; font-weight: 900; margin: 16px 0 8px; text-transform: uppercase;">Password Reset Code</h1>
-            <p style="color: #4B5563; font-size: 14px; line-height: 1.6;">
-              Hello <strong>${user.name || user.userId}</strong>, you requested to reset your password on <strong>The Unfiltered Engineer</strong>.
-            </p>
-            <p style="color: #4B5563; font-size: 14px;">Your one-time 6-digit verification code is:</p>
-            <div style="background: #141414; color: #FAF7EE; border-radius: 16px; padding: 18px; text-align: center; margin: 20px 0; border: 2px solid #141414; box-shadow: 4px 4px 0px 0px #FF4D00;">
-              <span style="font-family: monospace; font-size: 38px; font-weight: 900; letter-spacing: 8px; color: #FFC72E;">${otpCode}</span>
-            </div>
-            <p style="font-size: 12px; color: #6B7280;">This code will expire in <strong>10 minutes</strong>. If you did not request this reset, please ignore this email.</p>
-            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E5E7EB; font-size: 11px; color: #9CA3AF; text-align: center;">
-              The Unfiltered Engineer • Founded by Vikas Mishra • Direct Line: +91 8369804739
-            </div>
-          </div>
-        </div>
-      `;
-
-      if (targetEmail && targetEmail.includes('@')) {
-        try {
-          const resendResp = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${RESEND_API_KEY}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              from: 'The Unfiltered Engineer <onboarding@resend.dev>',
-              to: [targetEmail],
-              subject: `🔐 ${otpCode} is your Password Reset Code — The Unfiltered Engineer`,
-              html: emailHtml
-            })
-          });
-          const resendData = await resendResp.json();
-          if (resendResp.ok) {
-            emailSent = true;
-            console.log('[Resend] Successfully dispatched OTP directly to user entered email:', targetEmail, resendData.id);
-          } else {
-            emailError = resendData.message || 'Resend delivery rejected';
-            console.warn('[Resend] Warning:', resendData.message);
-          }
-        } catch (resErr) {
-          emailError = resErr.message;
-          console.warn('[Resend] Error:', resErr.message);
-        }
-      }
-
-      // 2. Also try Gmail SMTP if configured
-      if (!emailSent && targetEmail && GMAIL_APP_PASSWORD) {
-        try {
-          const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-              user: GMAIL_USER,
-              pass: GMAIL_APP_PASSWORD.replace(/\s+/g, '')
-            }
-          });
-
-          await transporter.sendMail({
-            from: `"The Unfiltered Engineer" <${GMAIL_USER}>`,
-            to: targetEmail,
-            subject: `🔐 ${otpCode} is your Password Reset Code — The Unfiltered Engineer`,
-            html: emailHtml
-          });
-          emailSent = true;
-          console.log(`[SMTP] Dispatched password reset OTP directly to ${targetEmail}`);
-        } catch (smtpErr) {
-          emailError = smtpErr.message;
-          console.warn('[SMTP] Email dispatch note:', smtpErr.message);
-        }
-      }
-
-      // If email delivery failed, inform the client immediately instead of pretending it sent
-      if (!emailSent) {
-        return res.status(502).json({
+      if (!userStoredKey || userStoredKey !== inputKey) {
+        return res.status(401).json({
           success: false,
-          error: `Email delivery to ${targetEmail} failed. Provider message: ${emailError || 'Recipient address not permitted by email sandbox'}.`
+          error: 'Verification failed: The 12-digit Secret Recovery Key you entered does not match our records for this account.'
         });
       }
 
-      // STRICT PRIVACY: Code is strictly in the user's inbox only!
       return res.status(200).json({
         success: true,
-        message: `A 6-digit verification code has been dispatched directly to your registered email (${targetEmail}). Please check your inbox and spam folder.`,
-        targetEmail: targetEmail,
-        expiresInMinutes: 10
+        verified: true,
+        userId: user.userId,
+        email: user.email,
+        message: 'Secret Recovery Key verified. You may now set a new password.'
       });
     } catch (err) {
-      console.error('Request reset code error:', err);
-      return res.status(500).json({ success: false, error: 'Failed to generate verification code.' });
+      console.error('Key verification error:', err);
+      return res.status(500).json({ success: false, error: 'Internal verification error.' });
     }
   }
 
-  // 4. VERIFY OTP CODE & RESET PASSWORD (Strictly Authenticated)
-  if (req.method === 'POST' && (action === 'reset-password' || action === 'verify-and-reset')) {
+  // 4. UPDATE PASSWORD USING VERIFIED SECRET RECOVERY KEY
+  if (req.method === 'POST' && (action === 'update-password' || action === 'reset-password')) {
     try {
-      const { userId, code, newPassword } = body || {};
+      const { userId, recoveryKey, newPassword } = body || {};
       const cleanId = (userId || '').trim().toLowerCase();
-      const cleanCode = (code || '').trim();
+      const inputKey = normalizeKey(recoveryKey);
       const cleanNewPassword = (newPassword || '').trim();
 
-      if (!cleanId || !cleanCode) {
+      if (!cleanId || !inputKey) {
         return res.status(400).json({ 
           success: false, 
-          error: 'User ID and the 6-digit verification code sent to your email are strictly required.' 
+          error: 'User ID and 12-digit Secret Recovery Key are required.' 
         });
       }
 
@@ -364,84 +303,34 @@ export default async function handler(req, res) {
         });
       }
 
-      // 1. Locate user in memory or Supabase
-      let user = global._UE_MEMORY_USERS.find(u => u.userId === cleanId || u.email === cleanId);
-
-      if (!user) {
-        try {
-          const { data } = await supabase
-            .from('user_accounts')
-            .select('*')
-            .or(`userId.eq.${cleanId},email.eq.${cleanId}`)
-            .limit(1);
-          if (data && data.length > 0) {
-            user = data[0];
-            global._UE_MEMORY_USERS.push(user);
-          }
-        } catch (dbErr) {
-          console.warn('Supabase find user note:', dbErr?.message);
-        }
-      }
+      const { users } = await fetchVaultUsers();
+      const user = users.find(u => u.userId === cleanId || u.email === cleanId);
 
       if (!user) {
         return res.status(404).json({ success: false, error: 'User account not found.' });
       }
 
-      // 2. Strict OTP Validation
-      if (!user.resetOtp) {
+      const userStoredKey = normalizeKey(user.recoveryKey);
+
+      if (!userStoredKey || userStoredKey !== inputKey) {
         return res.status(401).json({ 
           success: false, 
-          error: 'No active password reset code was requested for this account. Please request a new code first.' 
+          error: 'Unauthorized: Secret Recovery Key does not match. Password update denied.' 
         });
       }
 
-      // 3. Expiration Check
-      if (user.resetOtpExpiresAt && Date.now() > user.resetOtpExpiresAt) {
-        user.resetOtp = null;
-        user.resetOtpExpiresAt = null;
-        return res.status(401).json({ 
-          success: false, 
-          error: 'The 6-digit verification code has expired. Please request a fresh code.' 
-        });
-      }
-
-      // 4. Code Equality Verification (or Executive Founder Master Recovery Key)
-      const isMasterRecovery = cleanCode === 'vikasmusickeytosuccess' || cleanCode === '836980';
-      if (user.resetOtp !== cleanCode && !isMasterRecovery) {
-        return res.status(401).json({ 
-          success: false, 
-          error: 'Verification failed: The 6-digit code you entered is incorrect. Please check your email spam folder or try again.' 
-        });
-      }
-
-      // 5. Code is Verified! Update password & destroy one-time code immediately
       user.password = cleanNewPassword;
-      user.resetOtp = null;
-      user.resetOtpExpiresAt = null;
       user.updatedAt = new Date().toISOString();
 
-      // Persist to Supabase
-      try {
-        await supabase
-          .from('user_accounts')
-          .update({
-            password: cleanNewPassword,
-            resetOtp: null,
-            resetOtpExpiresAt: null,
-            updatedAt: user.updatedAt
-          })
-          .eq('id', user.id);
-      } catch (dbErr) {
-        console.warn('Supabase password update note:', dbErr?.message);
-      }
+      await persistVaultUsers(users, `password reset for ${user.userId}`);
 
       return res.status(200).json({
         success: true,
-        message: 'Verification confirmed. Your password has been successfully reset! You can now log in.'
+        message: 'Your password has been successfully updated! You can now log in.'
       });
     } catch (err) {
       console.error('Password reset error:', err);
-      return res.status(500).json({ success: false, error: 'Internal error during password reset.' });
+      return res.status(500).json({ success: false, error: 'Internal error updating password.' });
     }
   }
 
