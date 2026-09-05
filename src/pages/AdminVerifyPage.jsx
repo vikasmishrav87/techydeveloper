@@ -87,7 +87,7 @@ export default function AdminVerifyPage() {
       setIsAuthenticated(true);
       setAuthError('');
     } else {
-      setAuthError('❌ Access Denied: Incorrect Executive Passcode. Access is strictly forbidden.');
+      setAuthError('Access denied: Invalid passkey.');
     }
   };
 
@@ -476,25 +476,24 @@ export default function AdminVerifyPage() {
       <div className="min-h-screen pt-28 pb-20 bg-[#070B14] text-slate-100 font-sans flex items-center justify-center p-4">
         <div className="max-w-md w-full p-8 sm:p-10 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl text-center space-y-6 relative overflow-hidden backdrop-blur-xl">
           
-          <div className="size-16 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 overflow-hidden flex items-center justify-center mx-auto border border-sky-400/30 p-2 shadow-lg shadow-sky-500/20">
-            <ShieldCheck className="w-10 h-10 text-white" />
+          <div className="size-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-slate-300">
+            <Lock className="w-6 h-6" />
           </div>
 
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-bold uppercase mb-2">
-              <Shield className="w-3.5 h-3.5" />
-              EXECUTIVE CLOUD GATEWAY
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-400 text-xs font-mono font-medium mb-2">
+              <span>Security Check</span>
             </div>
-            <h2 className="text-2xl font-extrabold tracking-tight text-white">FOUNDER EXECUTIVE ACCESS</h2>
-            <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-              Restricted strictly to <strong>Vikas Mishra</strong>. Enter executive master passcode to unlock complete backend database oversight, registered user credentials, secret recovery keys, and permanent payment ledgers.
+            <h2 className="text-xl font-bold tracking-tight text-white uppercase">Authentication Required</h2>
+            <p className="text-slate-400 text-xs mt-1.5 leading-relaxed font-mono">
+              Please enter your security passkey to continue.
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-left">
             <div>
-              <label className="block text-xs font-mono font-semibold text-slate-300 uppercase mb-1.5">
-                EXECUTIVE MASTER PASSKEY
+              <label className="block text-xs font-mono font-medium text-slate-400 uppercase mb-1.5">
+                Passkey
               </label>
               <div className="relative">
                 <input
@@ -504,8 +503,8 @@ export default function AdminVerifyPage() {
                   autoComplete="new-password"
                   value={loginPasscode}
                   onChange={(e) => setLoginPasscode(e.target.value)}
-                  placeholder="Enter executive passkey..."
-                  className="w-full pl-4 pr-11 py-3.5 rounded-2xl border border-slate-700 bg-slate-950 text-white font-mono text-sm tracking-wider focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  placeholder="••••••••••••••••"
+                  className="w-full pl-4 pr-11 py-3 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono text-sm tracking-wider focus:border-sky-500 focus:outline-none"
                 />
                 <button
                   type="button"
@@ -518,22 +517,22 @@ export default function AdminVerifyPage() {
             </div>
 
             {authError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold leading-relaxed">
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium leading-relaxed font-mono">
                 {authError}
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-sm uppercase tracking-wider shadow-lg shadow-sky-600/30 transition-all cursor-pointer active:scale-98"
+              className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider border border-slate-700 transition-all cursor-pointer"
             >
-              AUTHENTICATE & UNLOCK PORTAL
+              Verify & Proceed
             </button>
           </form>
 
-          <div className="pt-2 border-t border-slate-800 text-center">
-            <Link to="/" className="text-xs font-mono text-slate-400 hover:text-sky-400 transition-colors">
-              ← Return to Main Website
+          <div className="pt-2 border-t border-slate-800/80 text-center">
+            <Link to="/" className="text-xs font-mono text-slate-500 hover:text-slate-300 transition-colors">
+              ← Return to Home
             </Link>
           </div>
         </div>
@@ -568,7 +567,7 @@ export default function AdminVerifyPage() {
                 Executive Command Center
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                Founder Vikas Mishra's unified ledger: manage users, view plain passwords, 12-digit secret keys, verify payments, and edit live cloud vault.
+                Master operational ledger: client account management, verified payment records, and cloud database vault.
               </p>
             </div>
           </div>
