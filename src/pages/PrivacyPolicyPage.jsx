@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, Lock, Eye, Database, Globe, FileText, 
@@ -289,7 +289,6 @@ export default function PrivacyPolicyPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#FAF7EE]/80">
               <div><strong>Founder & Controller:</strong> Vikas Sunil Mishra</div>
               <div><strong>Support Email:</strong> <a href="mailto:theunfilteredengineersupport@gmail.com" className="text-[#FFC72E] underline">theunfilteredengineersupport@gmail.com</a></div>
-              <div><strong>Founder Direct Email:</strong> <a href="mailto:vikasmishraoffice87@gmail.com" className="text-[#FFC72E] underline">vikasmishraoffice87@gmail.com</a></div>
               <div><strong>WhatsApp / Phone:</strong> <a href="https://wa.me/918369804739" className="text-[#25D366] underline">+91 8369804739</a></div>
             </div>
           </div>

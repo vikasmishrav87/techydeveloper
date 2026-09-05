@@ -6,7 +6,7 @@ export const CONTACT_INFO = {
   telegramUrl: "https://t.me/Yourstrulyvikasmishra",
   email: "theunfilteredengineersupport@gmail.com",
   supportEmail: "theunfilteredengineersupport@gmail.com",
-  founderEmail: "vikasmishraoffice87@gmail.com",
+  founderEmail: "theunfilteredengineersupport@gmail.com",
   location: "Global Distributed Delivery • 1,000+ Senior Engineers Worldwide",
   securityStatus: "MILITARY-GRADE DEFENSE (SHA-256 ZERO-TRUST ACTIVE)",
   teamScale: "1,000+ Vetted Senior Engineers & Specialists"

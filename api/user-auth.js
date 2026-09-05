@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIs
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Gmail SMTP Credentials
-const GMAIL_USER = process.env.GMAIL_USER || 'vikasmishraoffice87@gmail.com';
+const GMAIL_USER = process.env.GMAIL_USER || 'theunfilteredengineersupport@gmail.com';
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
 
 // Fallback in-memory user store for serverless memory

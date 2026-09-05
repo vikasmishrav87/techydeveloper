@@ -13,7 +13,6 @@ COMPANY PROFILE & KNOWLEDGE BASE:
   - WhatsApp: +918369804739 (WhatsApp link: https://wa.me/918369804739)
   - Telegram: @Yourstrulyvikasmishra (Telegram link: https://t.me/Yourstrulyvikasmishra)
   - Email: theunfilteredengineersupport@gmail.com
-  - Founder Direct Email: vikasmishraoffice87@gmail.com
   - HQ & NOC: Mumbai, India & San Francisco, USA (9 Global Hubs: SF, New York, London, Zurich, Dubai, Mumbai, Singapore, Tokyo, Sydney)
 - Team Scale: 1,000+ Vetted Senior Expert Engineers worldwide (Ex-FAANG, Web3 Core Devs, AI Researchers). ZERO junior hand-offs.
 - Core Value Proposition: We engineer, build, and secure mission-critical enterprise tech solutions and IT infrastructure with zero fluff, guaranteed 99.999% SLA, and military-grade zero-trust defense.

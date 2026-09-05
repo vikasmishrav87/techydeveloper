@@ -230,7 +230,7 @@ export default function AuthPage({ initialMode = 'login' }) {
                   required
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder="e.g. vikasmishraji87 or email@domain.com"
+                  placeholder="Enter your User ID or Email address..."
                   className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
                 />
               </div>
@@ -349,7 +349,7 @@ export default function AuthPage({ initialMode = 'login' }) {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="e.g. Vikas Mishra"
+                    placeholder="Enter your full name or company name..."
                     className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none"
                   />
                 </div>
@@ -366,7 +366,7 @@ export default function AuthPage({ initialMode = 'login' }) {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. yourname@gmail.com"
+                    placeholder="Enter your valid email address..."
                     className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[#141414] bg-[#FAF7EE] text-[#141414] text-xs sm:text-sm font-mono font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF4D00]"
                   />
                 </div>
@@ -474,12 +474,12 @@ export default function AuthPage({ initialMode = 'login' }) {
             <div className="p-3 rounded-2xl bg-[#FAF7EE] border-2 border-[#141414] text-center text-xs font-mono">
               <span className="text-[#141414]/70">Mail delay or need urgent recovery?</span>{' '}
               <a
-                href={`https://wa.me/918369804739?text=Hi%20Vikas%2C%20I%20need%20assistance%20verifying%20my%20account%20on%20The%20Unfiltered%20Engineer%3A%20${encodeURIComponent(userId)}`}
+                href={`https://wa.me/918369804739?text=Hello%2C%20I%20need%20assistance%20verifying%20my%20account%20on%20The%20Unfiltered%20Engineer%3A%20${encodeURIComponent(userId)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-[#25D366] font-black underline hover:text-[#128C7E] inline-flex items-center gap-1"
               >
-                WhatsApp Founder Vikas (+91 8369804739)
+                WhatsApp Direct Support (+91 8369804739)
               </a>
             </div>
           )}

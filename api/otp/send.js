@@ -1,10 +1,10 @@
-﻿import nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 
 // In-memory OTP storage for serverless runtime
 global._ACTIVE_EMAIL_OTPS = global._ACTIVE_EMAIL_OTPS || new Map();
 
 // Gmail SMTP Credentials (from Environment variables or configured fallback)
-const GMAIL_USER = process.env.GMAIL_USER || 'vikasmishraoffice87@gmail.com';
+const GMAIL_USER = process.env.GMAIL_USER || 'theunfilteredengineersupport@gmail.com';
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || ''; // 16-character Google App Password
 
 export default async function handler(req, res) {
