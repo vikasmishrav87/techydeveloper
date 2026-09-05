@@ -129,6 +129,14 @@ export default async function handler(req, res) {
         try { body = JSON.parse(body); } catch (e) {}
       }
 
+      // Mandatory validation: Screenshot Proof is required
+      if (!body.screenshot || typeof body.screenshot !== 'string' || body.screenshot.trim().length < 30) {
+        return res.status(400).json({
+          success: false,
+          error: 'Verification rejected: Payment screenshot / photo proof is strictly mandatory.'
+        });
+      }
+
       const clientIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
       const orderId = body.id || ('TXN-' + Date.now().toString().slice(-6) + Math.floor(100 + Math.random() * 900));
 

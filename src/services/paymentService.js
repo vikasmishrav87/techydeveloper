@@ -1,4 +1,4 @@
-﻿// Payment Verification & Real-Time Approval Engine
+// Payment Verification & Real-Time Approval Engine
 import { supabase } from './supabaseClient';
 
 const LOCAL_STORAGE_KEY = 'ue_client_active_payment_v1';
@@ -134,23 +134,24 @@ export function generateWhatsAppApprovalMessage(payment) {
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://theunfilteredengineer.vercel.app';
   const portalUrl = `${origin}/admin/verify?id=${payment.id}`;
 
-  const message = `🔔 *PAYMENT SUBMITTED FOR VERIFICATION* 🔔
+  const message = `🔔 *NEW PAYMENT SUBMITTED WITH ATTACHED SCREENSHOT* 🔔
 
-Hi Vikas, I have submitted my payment proof for verification:
+Hi Vikas, I have completed the payment and attached my transaction screenshot proof:
 
 📋 *Order ID:* ${payment.id}
 💰 *Amount Paid:* $${payment.amountUSD?.toLocaleString()} USD (₹${payment.amountINR?.toLocaleString()} INR)
 💳 *Payment Method:* ${payment.method} ${payment.network ? `(${payment.network})` : ''}
 👤 *Payer / Client Name:* ${payment.clientName}
 📧 *Email for Receipt:* ${payment.clientEmail}
-${payment.clientPhone ? `📱 *Phone:* ${payment.clientPhone}\n` : ''}🔢 *Submitted UTR / TxID / Ref:* \`${payment.utr}\`
+${payment.clientPhone ? `📱 *Phone:* ${payment.clientPhone}\n` : ''}🔢 *Submitted UTR / Ref:* \`${payment.utr}\`
 🎯 *Engagement Scope:* ${payment.service}
+📸 *Payment Screenshot:* ✅ ATTACHED & STORED IN CLOUD VAULT
 
 ━━━━━━━━━━━━━━━━━━━━
-🛡️ *Executive Verification Portal (Secured):*
+🔍 *View Attached Screenshot & Instant 1-Click Approve:*
 ${portalUrl}
 ━━━━━━━━━━━━━━━━━━━━
-_Please log in with your Executive Passkey to review my proof/screenshot and approve. My browser is currently waiting on the live verification screen._`;
+_Payment screenshot is stored in your Executive Vault. Click the link above to view the high-resolution screenshot and approve with 1 click. (Client is also forwarding the receipt image here)._`;
 
   return encodeURIComponent(message);
 }

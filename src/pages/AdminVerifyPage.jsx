@@ -1000,20 +1000,37 @@ export default function AdminVerifyPage() {
                         </div>
 
                         {/* Screenshot Proof */}
-                        {p.screenshot && (
-                          <div className="flex-shrink-0">
-                            <img
-                              src={p.screenshot}
-                              alt="Payment Proof"
-                              onClick={() => setSelectedImage(p.screenshot)}
-                              className="w-20 h-20 rounded-2xl object-cover border border-slate-700 cursor-pointer hover:opacity-80 transition-opacity bg-black"
-                              title="Click to view full image"
-                            />
-                            <div className="text-[10px] text-center text-slate-500 font-mono mt-1">
-                              View Proof
+                        <div className="flex-shrink-0">
+                          {p.screenshot ? (
+                            <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-slate-950 border border-emerald-500/40 shadow-lg">
+                              <div
+                                onClick={() => setSelectedImage(p.screenshot)}
+                                className="relative group cursor-pointer overflow-hidden rounded-xl border border-slate-700 bg-black"
+                              >
+                                <img
+                                  src={p.screenshot}
+                                  alt="Payment Proof"
+                                  className="w-24 h-24 rounded-xl object-cover group-hover:scale-105 transition-all"
+                                  title="Click to expand screenshot proof"
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[11px] font-mono font-bold">
+                                  🔍 Expand
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedImage(p.screenshot)}
+                                className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/40 cursor-pointer flex items-center gap-1 transition-all"
+                              >
+                                <span>📸 Attached SS</span>
+                              </button>
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="px-3 py-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-slate-500 text-[10px] font-mono text-center">
+                              <div>No SS Attached</div>
+                            </div>
+                          )}
+                        </div>
 
                         {/* Actions */}
                         <div className="flex sm:flex-col gap-2 flex-shrink-0">
@@ -1636,20 +1653,41 @@ export default function AdminVerifyPage() {
       {selectedImage && (
         <div
           onClick={() => setSelectedImage(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
         >
-          <div className="relative max-w-4xl max-h-[90vh] overflow-auto">
-            <img
-              src={selectedImage}
-              alt="Full Resolution Proof"
-              className="max-w-full max-h-[85vh] rounded-2xl border border-slate-700 shadow-2xl mx-auto"
-            />
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-slate-900 text-white hover:bg-slate-800 cursor-pointer"
-            >
-              <X className="w-6 h-6" />
-            </button>
+          <div className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl border border-slate-700 bg-slate-950 shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3.5 bg-slate-900 border-b border-slate-800">
+              <span className="text-xs font-mono font-bold text-white flex items-center gap-2">
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Attached Payment Proof Screenshot (Full Resolution)
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={selectedImage}
+                  target="_blank"
+                  rel="noreferrer"
+                  download="payment_screenshot.jpg"
+                  className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono font-medium flex items-center gap-1 border border-slate-700"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Open Full ↗</span>
+                </a>
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="p-1.5 rounded-xl bg-slate-800 hover:bg-rose-950 hover:text-rose-400 text-slate-300 transition-colors cursor-pointer"
+                  title="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-3 overflow-auto flex items-center justify-center bg-black/80 max-h-[80vh]">
+              <img
+                src={selectedImage}
+                alt="Full Resolution Proof"
+                className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-lg"
+              />
+            </div>
           </div>
         </div>
       )}
