@@ -240,6 +240,7 @@ export default async function handler(req, res) {
       // 1. Attempt dispatch via Resend API
       const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re', 'jf7fheRj', 'C5aiU6fQ4dJBZsT6gCK6GE3J'].join('_');
       let emailSent = false;
+      let emailError = '';
       const targetEmail = user.email || (user.userId.includes('@') ? user.userId : '');
       
       const emailHtml = `
@@ -282,41 +283,14 @@ export default async function handler(req, res) {
           const resendData = await resendResp.json();
           if (resendResp.ok) {
             emailSent = true;
-            console.log('[Resend] Sent OTP to', targetEmail, resendData.id);
+            console.log('[Resend] Successfully dispatched OTP directly to user entered email:', targetEmail, resendData.id);
           } else {
+            emailError = resendData.message || 'Resend delivery rejected';
             console.warn('[Resend] Warning:', resendData.message);
           }
         } catch (resErr) {
+          emailError = resErr.message;
           console.warn('[Resend] Error:', resErr.message);
-        }
-
-        // Also send admin notification copy to Vikas so the code is never lost
-        if (targetEmail.toLowerCase() !== 'vikasmishraoffice87@gmail.com') {
-          try {
-            await fetch('https://api.resend.com/emails', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${RESEND_API_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                from: 'The Unfiltered Engineer <onboarding@resend.dev>',
-                to: ['vikasmishraoffice87@gmail.com'],
-                subject: `🔐 Client Reset Code: ${otpCode} for ${user.userId} (${targetEmail})`,
-                html: `
-                  <div style="font-family:sans-serif; padding:20px; background:#FAF7EE; border:2px solid #141414; border-radius:12px;">
-                    <h2>Client Password Reset Request</h2>
-                    <p>User <strong>${user.name || user.userId}</strong> (${targetEmail}) requested a password reset on The Unfiltered Engineer.</p>
-                    <p>Their one-time 6-digit verification code is:</p>
-                    <div style="font-size:32px; font-weight:bold; font-family:monospace; color:#FF4D00; background:#141414; padding:12px; text-align:center; border-radius:8px;">
-                      ${otpCode}
-                    </div>
-                  </div>
-                `
-              })
-            });
-            console.log('[Resend] Admin backup copy sent to vikasmishraoffice87@gmail.com');
-          } catch (e) {}
         }
       }
 
@@ -340,17 +314,26 @@ export default async function handler(req, res) {
             html: emailHtml
           });
           emailSent = true;
-          console.log(`[SMTP] Dispatched password reset OTP to ${targetEmail}`);
+          console.log(`[SMTP] Dispatched password reset OTP directly to ${targetEmail}`);
         } catch (smtpErr) {
+          emailError = smtpErr.message;
           console.warn('[SMTP] Email dispatch note:', smtpErr.message);
         }
       }
 
-      // STRICT PRIVACY: NEVER RETURN THE CODE HINT!
+      // If email delivery failed, inform the client immediately instead of pretending it sent
+      if (!emailSent) {
+        return res.status(502).json({
+          success: false,
+          error: `Email delivery to ${targetEmail} failed. Provider message: ${emailError || 'Recipient address not permitted by email sandbox'}.`
+        });
+      }
+
+      // STRICT PRIVACY: Code is strictly in the user's inbox only!
       return res.status(200).json({
         success: true,
-        message: `A 6-digit verification code has been dispatched to your registered email (${maskEmail(targetEmail || cleanId)}). Please check your inbox and spam folder.`,
-        targetEmail: maskEmail(targetEmail || cleanId),
+        message: `A 6-digit verification code has been dispatched directly to your registered email (${targetEmail}). Please check your inbox and spam folder.`,
+        targetEmail: targetEmail,
         expiresInMinutes: 10
       });
     } catch (err) {
