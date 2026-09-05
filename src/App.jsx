@@ -135,59 +135,388 @@ export default function App() {
           <Route path="/estimator" element={<EstimatorPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           
-          {/* Universal Checkout Hub */}
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/payment" element={<CheckoutPage />} />
-          <Route path="/pay" element={<CheckoutPage />} />
-          <Route path="/invoice" element={<CheckoutPage />} />
+          {/* Universal Checkout Hub (Protected: Login Strictly Required to Pay) */}
+          <Route 
+            path="/checkout" 
+            element={
+              <ProtectedRoute toolName="Client Checkout & Retainer Portal">
+                <CheckoutPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/payment" 
+            element={
+              <ProtectedRoute toolName="Client Checkout & Retainer Portal">
+                <CheckoutPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay" 
+            element={
+              <ProtectedRoute toolName="Client Checkout & Retainer Portal">
+                <CheckoutPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/invoice" 
+            element={
+              <ProtectedRoute toolName="Client Checkout & Retainer Portal">
+                <CheckoutPage />
+              </ProtectedRoute>
+            } 
+          />
           
-          {/* Dedicated Individual Payment Pages */}
-          <Route path="/pay/upi" element={<UPIPaymentPage />} />
-          <Route path="/upi" element={<UPIPaymentPage />} />
-          <Route path="/upi-payment" element={<UPIPaymentPage />} />
+          {/* Dedicated Individual Payment Pages (Protected) */}
+          <Route 
+            path="/pay/upi" 
+            element={
+              <ProtectedRoute toolName="UPI Payment Gateway">
+                <UPIPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/upi" 
+            element={
+              <ProtectedRoute toolName="UPI Payment Gateway">
+                <UPIPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/upi-payment" 
+            element={
+              <ProtectedRoute toolName="UPI Payment Gateway">
+                <UPIPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
           
-          <Route path="/pay/bank" element={<BankPaymentPage />} />
-          <Route path="/bank" element={<BankPaymentPage />} />
-          <Route path="/bank-transfer" element={<BankPaymentPage />} />
+          <Route 
+            path="/pay/bank" 
+            element={
+              <ProtectedRoute toolName="Bank Wire Transfer Gateway">
+                <BankPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bank" 
+            element={
+              <ProtectedRoute toolName="Bank Wire Transfer Gateway">
+                <BankPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bank-transfer" 
+            element={
+              <ProtectedRoute toolName="Bank Wire Transfer Gateway">
+                <BankPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
           
-          <Route path="/pay/crypto" element={<CryptoPaymentPage />} />
-          <Route path="/crypto" element={<CryptoPaymentPage />} />
-          <Route path="/ethereum" element={<CryptoPaymentPage />} />
-          <Route path="/pay/ethereum" element={<CryptoPaymentPage />} />
-          <Route path="/pay/eth" element={<CryptoPaymentPage />} />
-          <Route path="/eth" element={<CryptoPaymentPage />} />
-          <Route path="/crypto-payment" element={<CryptoPaymentPage />} />
-          <Route path="/pay/btc" element={<CryptoPaymentPage />} />
-          <Route path="/btc" element={<CryptoPaymentPage />} />
-          <Route path="/bitcoin" element={<CryptoPaymentPage />} />
-          <Route path="/pay/bitcoin" element={<CryptoPaymentPage />} />
-          <Route path="/pay/sol" element={<CryptoPaymentPage />} />
-          <Route path="/sol" element={<CryptoPaymentPage />} />
-          <Route path="/solana" element={<CryptoPaymentPage />} />
-          <Route path="/pay/solana" element={<CryptoPaymentPage />} />
-          <Route path="/pay/tron" element={<CryptoPaymentPage />} />
-          <Route path="/pay/trx" element={<CryptoPaymentPage />} />
-          <Route path="/pay/trc20" element={<CryptoPaymentPage />} />
-          <Route path="/tron" element={<CryptoPaymentPage />} />
-          <Route path="/trx" element={<CryptoPaymentPage />} />
-          <Route path="/trc20" element={<CryptoPaymentPage />} />
-          <Route path="/pay/bnb" element={<CryptoPaymentPage />} />
-          <Route path="/pay/bsc" element={<CryptoPaymentPage />} />
-          <Route path="/pay/bep20" element={<CryptoPaymentPage />} />
-          <Route path="/bnb" element={<CryptoPaymentPage />} />
-          <Route path="/bsc" element={<CryptoPaymentPage />} />
-          <Route path="/bep20" element={<CryptoPaymentPage />} />
-          <Route path="/pay/polygon" element={<CryptoPaymentPage />} />
-          <Route path="/pay/matic" element={<CryptoPaymentPage />} />
-          <Route path="/pay/pol" element={<CryptoPaymentPage />} />
-          <Route path="/polygon" element={<CryptoPaymentPage />} />
-          <Route path="/matic" element={<CryptoPaymentPage />} />
-          <Route path="/pol" element={<CryptoPaymentPage />} />
+          <Route 
+            path="/pay/crypto" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/crypto" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/ethereum" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/ethereum" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/eth" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/eth" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/crypto-payment" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/btc" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/btc" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bitcoin" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/bitcoin" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/sol" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/sol" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/solana" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/solana" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/tron" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/trx" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/trc20" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tron" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trx" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trc20" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/bnb" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/bsc" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/bep20" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bnb" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bsc" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bep20" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/polygon" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/matic" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pay/pol" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/polygon" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/matic" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pol" 
+            element={
+              <ProtectedRoute toolName="Cryptocurrency Payment Gateway">
+                <CryptoPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
           
-          <Route path="/pay/card" element={<CardPaymentPage />} />
-          <Route path="/card" element={<CardPaymentPage />} />
-          <Route path="/stripe" element={<CardPaymentPage />} />
-          <Route path="/card-payment" element={<CardPaymentPage />} />
+          <Route 
+            path="/pay/card" 
+            element={
+              <ProtectedRoute toolName="Stripe Card Payment Gateway">
+                <CardPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/card" 
+            element={
+              <ProtectedRoute toolName="Stripe Card Payment Gateway">
+                <CardPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/stripe" 
+            element={
+              <ProtectedRoute toolName="Stripe Card Payment Gateway">
+                <CardPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/card-payment" 
+            element={
+              <ProtectedRoute toolName="Stripe Card Payment Gateway">
+                <CardPaymentPage />
+              </ProtectedRoute>
+            } 
+          />
 
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />

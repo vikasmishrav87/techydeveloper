@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Upload, Check, X, ShieldCheck, Image as ImageIcon, Camera, Lock, Zap, ArrowRight 
+  Upload, Check, X, ShieldCheck, Image as ImageIcon, Camera, Lock, Zap, ArrowRight, LogIn, UserPlus 
 } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { submitPaymentVerification, triggerWhatsAppApprovalAlert } from '../services/paymentService';
 
 export default function PaymentProofForm({
@@ -15,6 +17,10 @@ export default function PaymentProofForm({
   utrPlaceholder = 'e.g. 423948293849',
   onSubmitted
 }) {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
@@ -23,6 +29,14 @@ export default function PaymentProofForm({
   const [screenshotFileName, setScreenshotFileName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      if (user.name || user.fullName) setClientName(user.name || user.fullName);
+      if (user.email) setClientEmail(user.email);
+      if (user.phone) setClientPhone(user.phone);
+    }
+  }, [user]);
 
   const fileInputRef = useRef(null);
 
@@ -94,6 +108,12 @@ export default function PaymentProofForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      alert('Authentication required: You must be logged in to submit a payment verification.');
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
     if (!clientName || !clientEmail) {
       alert('Please enter your Name and Email for payment receipt generation.');
       return;
@@ -141,6 +161,35 @@ export default function PaymentProofForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-2">
       
+      {/* If not authenticated, show alert banner */}
+      {!isAuthenticated && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-950 text-xs font-mono space-y-2 mb-2">
+          <div className="flex items-center gap-2 font-bold text-amber-900 text-sm">
+            <Lock className="w-4 h-4 text-amber-600 flex-shrink-0" />
+            <span>Login Required to Pay</span>
+          </div>
+          <p className="text-slate-700 text-xs leading-relaxed font-sans">
+            You must be logged in to your account to submit payment and receive your verified receipt.
+          </p>
+          <div className="flex items-center gap-2 pt-1">
+            <Link
+              to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Log In</span>
+            </Link>
+            <Link
+              to={`/signup?redirect=${encodeURIComponent(location.pathname)}`}
+              className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>Create Account</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Client Identity Fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
@@ -152,7 +201,7 @@ export default function PaymentProofForm({
             required
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
-            placeholder="e.g. Vikas Mishra"
+            placeholder="e.g. Rahul Sharma"
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-sky-500 focus:outline-none"
           />
         </div>

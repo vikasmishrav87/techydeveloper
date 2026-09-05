@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, ShieldAlert, ArrowRight, UserPlus, LogIn, Sparkles, CheckCircle2 } from 'lucide-react';
@@ -45,24 +45,51 @@ export default function ProtectedRoute({ children, toolName = 'Diagnostic Teleme
             </h2>
             
             <p className="text-xs sm:text-sm font-medium text-[#141414]/80 mt-3 leading-relaxed max-w-md mx-auto">
-              The <strong>Deep 24-Factor Technical SEO Auditor</strong> and <strong>Zero-Trust Offensive Security Sandbox</strong> are restricted to authenticated client accounts.
+              {toolName ? (
+                <span>
+                  The <strong>{toolName}</strong> is strictly restricted to registered client accounts. Please log in or create an account to proceed.
+                </span>
+              ) : (
+                <span>
+                  The <strong>Diagnostic Telemetry Engine</strong> is restricted to authenticated client accounts.
+                </span>
+              )}
             </p>
           </div>
 
           {/* Benefits checklist */}
           <div className="bg-[#FAF7EE] border-2 border-[#141414] rounded-2xl p-4 text-left text-xs font-mono font-bold text-[#141414] space-y-2">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
-              <span>Unlimited 24-Factor Multi-Pillar Technical Audits</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
-              <span>Full Offensive Vulnerability Scans & CVE Telemetry</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
-              <span>Exportable Engineering Action Roadmaps</span>
-            </div>
+            {toolName?.toLowerCase().includes('payment') || toolName?.toLowerCase().includes('checkout') ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
+                  <span>Permanent Milestone & Retainer Cloud Tracking</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
+                  <span>Instant Verified Tax Invoice & GST Receipt Generation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
+                  <span>Direct WhatsApp Executive Priority Channel</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
+                  <span>Unlimited 24-Factor Multi-Pillar Technical Audits</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
+                  <span>Full Offensive Vulnerability Scans & CVE Telemetry</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[#25D366] flex-shrink-0" />
+                  <span>Exportable Engineering Action Roadmaps</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Dual Action Buttons */}
