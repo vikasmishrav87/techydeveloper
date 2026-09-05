@@ -418,6 +418,17 @@ export default function AdminDashboard({ isOpen, onClose }) {
                   <Activity className="w-3.5 h-3.5" />
                   <span>Telemetry ({securityLogs.length})</span>
                 </button>
+
+                <a
+                  href="/admin/verify"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-sm hover:from-sky-400 hover:to-indigo-500 transition-all ml-auto"
+                  title="Open Full Founder Executive Portal with 12-Digit Secret Keys, Passwords & Live Database"
+                >
+                  <Key className="w-3.5 h-3.5" />
+                  <span>Executive Vault Portal ↗</span>
+                </a>
               </div>
 
               {activeTab === 'inquiries' && (
