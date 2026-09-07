@@ -206,63 +206,28 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
         </div>
 
-        {/* Mobile & Tablet Action Bar (< lg screens): Specially engineered to NEVER clip START A PROJECT */}
-        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+        {/* Mobile & Tablet Action Bar (< lg screens): Clean, uncluttered, guaranteed 100% visible on all phone screens */}
+        <div className="flex lg:hidden items-center gap-2 sm:gap-2.5 flex-shrink-0">
           
-          {/* Client Authentication Login / Profile - Shown on tablets (sm+), accessible in drawer on small phones */}
-          {!isAuthenticated ? (
-            <Link
-              to="/login"
-              className="hidden sm:inline-flex brutal-btn items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-[11px] sm:text-xs font-display font-black shadow-[2px_2px_0_0_#141414] whitespace-nowrap cursor-pointer"
-              title="Client Login"
-            >
-              <LogIn className="w-3 h-3 text-[#FF4D00]" />
-              <span>LOGIN</span>
-            </Link>
-          ) : (
-            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-[11px] font-display font-black shadow-[2px_2px_0_0_#141414]">
-              <div className="size-4 rounded-full bg-[#FF4D00] text-[#FAF7EE] flex items-center justify-center text-[9px] uppercase font-black">
-                {user.name?.[0] || user.userId?.[0] || 'U'}
-              </div>
-              <span className="max-w-[65px] truncate text-[#141414] uppercase">
-                {user.name || user.userId}
-              </span>
-            </div>
-          )}
-
-          {/* AI Bot Quick Button - Shown on tablets sm+, accessible in drawer and floating launcher on small phones */}
-          <button
-            onClick={onOpenAIChat}
-            className="hidden sm:flex brutal-btn items-center justify-center size-8 sm:size-9 rounded-full bg-[#FFC72E] text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer"
-            title="Ask AI Principal"
-            aria-label="Ask AI Principal"
-          >
-            <Bot className="size-4 text-[#141414]" />
-          </button>
-
-          {/* START A PROJECT: Guaranteed 100% visible, beautifully spaced, never clipped on any screen */}
+          {/* START A PROJECT: Beautifully sized for phone screens */}
           <Link
             to="/contact"
-            className="brutal-btn inline-flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[10.5px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
+            className="brutal-btn inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[11px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
           >
             <span>START A PROJECT</span>
           </Link>
           
-          {/* 3-Dash Menu Toggle: Dedicated mobile trigger in bright high-contrast amber */}
+          {/* 3-DASH MENU BUTTON: Prominent amber-yellow button with bold, high-contrast 3-dash sign */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="brutal-btn flex items-center justify-center size-9 sm:size-10 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer flex-shrink-0 active:scale-95 transition-all ml-0.5"
+            className="brutal-btn flex items-center justify-center size-9 sm:size-10 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer flex-shrink-0 active:scale-95 transition-all"
             aria-label="Toggle 3-dash navigation menu to view all services and features"
-            title="View all services and features"
+            title="View all services & menu"
           >
             {mobileMenuOpen ? (
-              <X className="size-5 stroke-[2.5] text-[#141414]" />
+              <X className="size-5 sm:size-6 text-[#141414]" strokeWidth={2.5} />
             ) : (
-              <div className="flex flex-col justify-center items-center gap-[3px] w-4.5 h-4.5" aria-label="3-Dash Menu">
-                <span className="w-4.5 h-[2.5px] bg-[#141414] rounded-full block"></span>
-                <span className="w-4.5 h-[2.5px] bg-[#141414] rounded-full block"></span>
-                <span className="w-4.5 h-[2.5px] bg-[#141414] rounded-full block"></span>
-              </div>
+              <Menu className="size-5 sm:size-6 text-[#141414]" strokeWidth={2.5} />
             )}
           </button>
         </div>

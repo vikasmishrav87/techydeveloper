@@ -75,12 +75,8 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
             <>
               {/* Desktop view: Brand Logo (untouched) */}
               <img src="/assets/brand-logo.png" alt="Brand Logo" className="hidden lg:block size-8 object-contain rounded-md" />
-              {/* Mobile Phone UI view: Clear 3-dash menu */}
-              <div className="flex lg:hidden flex-col justify-center items-center gap-[3px] w-5 h-5" aria-label="3-Dash Menu">
-                <span className="w-4 h-[2px] bg-[#FFC72E] rounded-full block"></span>
-                <span className="w-4 h-[2px] bg-[#FFC72E] rounded-full block"></span>
-                <span className="w-4 h-[2px] bg-[#FFC72E] rounded-full block"></span>
-              </div>
+              {/* Mobile Phone UI view: Clear 3-dash menu icon */}
+              <Menu className="block lg:hidden size-6 text-[#FFC72E]" strokeWidth={2.5} />
             </>
           )}
         </button>
