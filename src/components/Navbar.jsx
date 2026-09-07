@@ -82,22 +82,22 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           : 'bg-[#FAF7EE]/90 backdrop-blur-sm py-4'
       }`}
     >
-      <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 flex items-center justify-between gap-1.5 sm:gap-3">
+      <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-4 xl:gap-6">
         
-        {/* Left: Brand Logo (Responsive for Android & small phone screens) */}
-        <div className="flex-shrink min-w-0">
+        {/* Left: Brand Logo (Always flex-shrink-0 so desktop links never overlap) */}
+        <div className="flex-shrink-0">
           <BrandLogo size="md" withText={true} linkTo="/" />
         </div>
 
-        {/* Center: Desktop Nav Links (Cleanly spaced for lg+ screens) */}
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-6 2xl:gap-8">
+        {/* Center: Desktop Nav Links (Cleanly spaced for all desktop and laptop resolutions) */}
+        <nav className="hidden lg:flex items-center gap-2.5 xl:gap-5 2xl:gap-7 flex-shrink-0">
           {primaryNavLinks.map((link) => {
             const isActive = location.pathname === link.to;
             return (
               <Link
                 key={link.name}
                 to={link.to}
-                className={`font-display text-xs xl:text-sm font-bold tracking-wide uppercase transition-colors whitespace-nowrap ${
+                className={`font-display text-[11px] xl:text-xs 2xl:text-sm font-bold tracking-wide uppercase transition-colors whitespace-nowrap ${
                   isActive 
                     ? "text-[#FF4D00] underline decoration-[#141414] decoration-2 underline-offset-4" 
                     : "text-[#141414] hover:text-[#FF4D00]"
@@ -113,7 +113,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             <button
               onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
               onBlur={() => setTimeout(() => setMoreDropdownOpen(false), 250)}
-              className="inline-flex items-center gap-1 font-display text-xs xl:text-sm font-bold tracking-wide uppercase text-[#141414] hover:text-[#FF4D00] transition-colors cursor-pointer whitespace-nowrap"
+              className="inline-flex items-center gap-1 font-display text-[11px] xl:text-xs 2xl:text-sm font-bold tracking-wide uppercase text-[#141414] hover:text-[#FF4D00] transition-colors cursor-pointer whitespace-nowrap"
             >
               <span>MORE</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-[#FF4D00]' : 'text-[#141414]'}`} />
@@ -146,7 +146,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
         </nav>
 
         {/* Right: Desktop Action Buttons (lg+ screens) */}
-        <div className="hidden lg:flex items-center gap-2 xl:gap-3 flex-shrink-0">
+        <div className="hidden lg:flex items-center gap-1.5 xl:gap-3 flex-shrink-0">
           
           {/* Executive Portal (visible on ultra-wide 2xl screens) */}
           <Link
@@ -161,7 +161,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* AI Bot */}
           <button
             onClick={onOpenAIChat}
-            className="brutal-btn inline-flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 xl:py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[2px_2px_0_0_#141414] cursor-pointer whitespace-nowrap"
+            className="brutal-btn inline-flex items-center gap-1.5 px-2 xl:px-3 py-1.5 xl:py-2 rounded-full bg-[#F4EFE6] hover:bg-white text-[#141414] border-2 border-[#141414] text-xs font-display font-bold shadow-[2px_2px_0_0_#141414] cursor-pointer whitespace-nowrap"
             title="Ask AI Principal"
           >
             <Bot className="w-3.5 xl:w-4 h-3.5 xl:h-4 text-[#FF4D00]" />
@@ -172,7 +172,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {!isAuthenticated ? (
             <Link
               to="/login"
-              className="brutal-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[2px_2px_0_0_#141414] whitespace-nowrap cursor-pointer"
+              className="brutal-btn inline-flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 xl:py-2 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] text-[#141414] border-2 border-[#141414] text-xs font-display font-black shadow-[2px_2px_0_0_#141414] whitespace-nowrap cursor-pointer"
               title="Client Login & Access"
             >
               <LogIn className="w-3.5 h-3.5 text-[#FF4D00]" />
@@ -199,7 +199,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* START A PROJECT Big Button with generous padding and space */}
           <Link
             to="/contact"
-            className="brutal-btn inline-flex items-center justify-center gap-2 px-5 xl:px-6 py-2 xl:py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs xl:text-sm font-black tracking-wide uppercase shadow-[3px_3px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer ml-1"
+            className="brutal-btn inline-flex items-center justify-center gap-2 px-4 xl:px-6 py-2 xl:py-2.5 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] font-display text-xs xl:text-sm font-black tracking-wide uppercase shadow-[3px_3px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer ml-1"
           >
             <span>START A PROJECT</span>
           </Link>
