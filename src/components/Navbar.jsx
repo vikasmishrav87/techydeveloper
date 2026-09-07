@@ -207,12 +207,12 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
         </div>
 
         {/* Mobile & Tablet Action Bar (< lg screens): Clean, uncluttered, guaranteed 100% visible on all phone screens */}
-        <div className="flex lg:hidden items-center gap-2 sm:gap-2.5 flex-shrink-0">
+        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
           
           {/* START A PROJECT: Beautifully sized for phone screens */}
           <Link
             to="/contact"
-            className="brutal-btn inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[11px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
+            className="brutal-btn inline-flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[10.5px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
           >
             <span>START A PROJECT</span>
           </Link>
@@ -220,7 +220,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* 3-DASH MENU BUTTON: Prominent amber-yellow button with bold, high-contrast 3-dash sign */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="brutal-btn flex items-center justify-center size-9 sm:size-10 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer flex-shrink-0 active:scale-95 transition-all"
+            className="brutal-btn flex items-center justify-center size-8.5 sm:size-10 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer flex-shrink-0 active:scale-95 transition-all"
             aria-label="Toggle 3-dash navigation menu to view all services and features"
             title="View all services & menu"
           >
