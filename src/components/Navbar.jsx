@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CONTACT_INFO } from '../data/agencyData';
+import { CONTACT_INFO, SERVICE_PILLARS } from '../data/agencyData';
 import BrandLogo from './BrandLogo';
 import { useAuth } from '../context/AuthContext';
-import { Terminal, Shield, ShieldCheck, MessageCircle, Send, Menu, X, Globe, Sparkles, UserCheck, Bot, ChevronDown, CreditCard, User, LogIn, LogOut } from 'lucide-react';
+import { 
+  Terminal, Shield, ShieldCheck, MessageCircle, Send, Menu, X, Globe, 
+  Sparkles, UserCheck, Bot, ChevronDown, ChevronRight, CreditCard, User, 
+  LogIn, LogOut, Code, Cpu, Blocks, Cloud, Database, Server, TrendingUp, 
+  Award, Layers, ArrowRight, Zap, FileText 
+} from 'lucide-react';
 
 export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
   const [scrolled, setScrolled] = useState(false);
@@ -29,16 +34,34 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
     { name: 'Pricing', to: '/pricing' },
   ];
 
-  // Full navigation links for the mobile drawer menu
-  const mobileDrawerLinks = [
-    { name: 'Home', to: '/' },
-    { name: 'Services & Pillars', to: '/services' },
-    { name: '360° Growth & Tech', to: '/marketing' },
-    { name: 'Security Audit & Defense', to: '/security-audit' },
-    { name: 'Project Scope Estimator', to: '/estimator' },
-    { name: 'Client Case Studies', to: '/case-studies' },
-    { name: 'Pricing & Engagements', to: '/pricing' },
-    { name: 'Contact & Briefing', to: '/contact' },
+  // Icon resolver for all 9 service pillars
+  const getPillarIcon = (id) => {
+    switch (id) {
+      case 'saas-products': return Cloud;
+      case 'cyber-security': return Shield;
+      case 'fullstack-web-dev': return Code;
+      case 'data-engineering-models': return Database;
+      case 'blockchain-web3': return Blocks;
+      case 'ai-cognitive': return Cpu;
+      case 'ai-agents-workflow': return Bot;
+      case 'software-services': return Server;
+      case 'digital-marketing-360': return TrendingUp;
+      default: return Layers;
+    }
+  };
+
+  // Full platform directory for the mobile drawer menu ("all things")
+  const mobilePlatformThings = [
+    { name: 'Home', to: '/', icon: Globe, badge: 'Main' },
+    { name: '360° Growth & Tech', to: '/marketing', icon: TrendingUp, badge: 'ROAS' },
+    { name: 'Security Audit Scanner', to: '/security-audit', icon: Shield, badge: 'Zero-Trust' },
+    { name: 'Project Scope Estimator', to: '/estimator', icon: Sparkles, badge: 'Instant' },
+    { name: 'Free SEO & Speed Audit', to: '/seo-audit', icon: Zap, badge: 'Vitals' },
+    { name: 'Worldwide 3D Network', to: '/worldwide', icon: Globe, badge: '1,000+' },
+    { name: 'Client Case Studies', to: '/case-studies', icon: Award, badge: 'Proof' },
+    { name: 'Pricing & Engagements', to: '/pricing', icon: CreditCard, badge: 'Clear' },
+    { name: 'Contact & Briefing', to: '/contact', icon: Send, badge: '24h SLA' },
+    { name: 'Legal Terms & SLA', to: '/terms', icon: FileText, badge: 'GDPR' },
   ];
 
   // Secondary tools in clean dropdown
@@ -225,63 +248,63 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
             <span>START A PROJECT</span>
           </Link>
           
-          {/* Mobile Drawer Toggle */}
+          {/* 3-Dash Menu Toggle: Dedicated mobile trigger to view all services and all features */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="brutal-btn flex items-center justify-center size-8 sm:size-9 rounded-full bg-[#FAF7EE] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer ml-0.5"
-            aria-label="Toggle navigation menu"
+            className="brutal-btn flex items-center justify-center size-8 sm:size-9 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer ml-0.5 active:scale-95 transition-all"
+            aria-label="Toggle 3-dash menu for all services and features"
+            title="View all services and features"
           >
-            {mobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
+            {mobileMenuOpen ? (
+              <X className="size-4 sm:size-5 stroke-[2.5]" />
+            ) : (
+              <div className="flex flex-col justify-center items-center gap-[3px] w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true">
+                <span className="w-3.5 sm:w-4 h-[2px] bg-[#141414] rounded-full"></span>
+                <span className="w-3.5 sm:w-4 h-[2px] bg-[#141414] rounded-full"></span>
+                <span className="w-3.5 sm:w-4 h-[2px] bg-[#141414] rounded-full"></span>
+              </div>
+            )}
           </button>
         </div>
 
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu: View All Services & All Things under the 3 Dash */}
       {mobileMenuOpen && (
-        <div className="lg:hidden px-4 pt-4 pb-6 bg-[#FAF7EE] border-b-2 border-[#141414] shadow-[0_6px_0_0_#141414] space-y-2 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
-          {mobileDrawerLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.to}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-2.5 rounded-2xl font-display text-sm font-black uppercase text-[#141414] hover:bg-[#FFC72E] border-2 border-transparent hover:border-[#141414] transition-all"
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="lg:hidden max-h-[calc(100vh-76px)] overflow-y-auto overscroll-contain px-3 sm:px-4 py-4 bg-[#FAF7EE] border-b-4 border-[#141414] shadow-[0_8px_0_0_#141414] space-y-4 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
           
-          <div className="pt-3 mt-3 border-t-2 border-[#141414]/15 space-y-2.5">
-            {/* AI Assistant button in drawer */}
+          {/* Top Row: AI Assistant & Client Account Access */}
+          <div className="space-y-2">
             <button
               onClick={() => { setMobileMenuOpen(false); onOpenAIChat(); }}
-              className="brutal-btn w-full flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FAF7EE] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]"
+              className="brutal-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xs font-black uppercase bg-[#FAF7EE] text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_0_#141414]"
             >
               <div className="flex items-center gap-2">
                 <Bot className="w-4 h-4 text-[#FF4D00]" />
                 <span>ASK AI ARCHITECT</span>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-[#FFC72E] text-[#141414] text-[10px]">ONLINE</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#FFC72E] text-[#141414] text-[10px] font-black">ONLINE</span>
             </button>
+
             {!isAuthenticated ? (
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="brutal-btn flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FAF7EE] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#FF4D00]"
+                className="brutal-btn flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xs font-black uppercase bg-white text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_0_#FF4D00]"
               >
                 <div className="flex items-center gap-2">
                   <LogIn className="w-4 h-4 text-[#FF4D00]" />
                   <span>CLIENT LOGIN / REGISTER</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-[#FF4D00] text-[#FAF7EE] text-[10px]">ACCESS</span>
+                <span className="px-2 py-0.5 rounded-full bg-[#FF4D00] text-[#FAF7EE] text-[10px] font-black">ACCESS</span>
               </Link>
             ) : (
-              <div className="flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FAF7EE] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]">
+              <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xs font-black uppercase bg-white text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_0_#141414]">
                 <div className="flex items-center gap-2">
-                  <div className="size-6 rounded-full bg-[#FF4D00] text-white flex items-center justify-center text-[10px]">
+                  <div className="size-6 rounded-full bg-[#FF4D00] text-white flex items-center justify-center text-[10px] font-black">
                     {user.name?.[0] || user.userId?.[0] || 'U'}
                   </div>
-                  <span className="truncate max-w-[140px]">{user.name || user.userId}</span>
+                  <span className="truncate max-w-[140px] text-xs font-black">{user.name || user.userId}</span>
                 </div>
                 <button
                   onClick={() => { logout(); setMobileMenuOpen(false); }}
@@ -291,47 +314,157 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
                 </button>
               </div>
             )}
+          </div>
 
+          {/* ALL SERVICES (9 ENGINEERING PILLARS) DIRECTORY */}
+          <div className="pt-2 border-t-2 border-[#141414]/15">
+            <div className="flex items-center justify-between pb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FF4D00] animate-pulse"></span>
+                <span className="font-display text-xs font-black uppercase tracking-wider text-[#141414]">
+                  ALL SERVICES ({SERVICE_PILLARS.length} PILLARS)
+                </span>
+              </div>
+              <Link
+                to="/services"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-[11px] font-bold text-[#FF4D00] hover:underline flex items-center gap-0.5 uppercase"
+              >
+                <span>Overview</span>
+                <ChevronRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="space-y-1.5">
+              {SERVICE_PILLARS.map((pillar) => {
+                const IconComponent = getPillarIcon(pillar.id);
+                const isActive = location.pathname === `/services/${pillar.id}`;
+                return (
+                  <Link
+                    key={pillar.id}
+                    to={`/services/${pillar.id}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-2.5 p-2 rounded-xl border-2 border-[#141414] transition-all group ${
+                      isActive 
+                        ? 'bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]' 
+                        : 'bg-white hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
+                    }`}
+                  >
+                    <div className="size-8 rounded-lg bg-[#141414] text-[#FAF7EE] group-hover:bg-[#FF4D00] flex items-center justify-center flex-shrink-0 transition-colors">
+                      <IconComponent className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-bold text-[#FF4D00] uppercase truncate">
+                          {pillar.badge}
+                        </span>
+                        <span className="text-[9px] text-[#141414]/60 uppercase truncate">
+                          • {pillar.category}
+                        </span>
+                      </div>
+                      <div className="text-xs font-black text-[#141414] truncate">
+                        {pillar.title}
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#141414]/40 group-hover:text-[#141414] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                  </Link>
+                );
+              })}
+            </div>
+
+            <Link
+              to="/services"
+              onClick={() => setMobileMenuOpen(false)}
+              className="brutal-btn block w-full text-center py-2.5 rounded-xl font-display text-xs font-black uppercase bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] border-2 border-[#141414] shadow-[2px_2px_0_0_#FF4D00] mt-2.5 transition-colors cursor-pointer"
+            >
+              <span>EXPLORE ALL SERVICES & SPECS →</span>
+            </Link>
+          </div>
+
+          {/* ALL PLATFORM TOOLS & PAGES ("ALL THINGS") */}
+          <div className="pt-3 border-t-2 border-[#141414]/15">
+            <div className="flex items-center gap-2 pb-2.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#FF4D00]" />
+              <span className="font-display text-xs font-black uppercase tracking-wider text-[#141414]">
+                ALL TOOLS & PLATFORM PAGES
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1.5">
+              {mobilePlatformThings.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.to;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-2 p-2 rounded-xl border-2 border-[#141414] text-left transition-all ${
+                      isActive 
+                        ? 'bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]' 
+                        : 'bg-white hover:bg-[#FFC72E] shadow-[2px_2px_0_0_#141414]'
+                    }`}
+                  >
+                    <div className="size-6 rounded-md bg-[#141414] text-[#FAF7EE] flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-3 h-3" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[11px] font-black text-[#141414] truncate leading-tight">
+                        {item.name}
+                      </div>
+                      <div className="text-[9px] text-[#FF4D00] font-bold uppercase truncate">
+                        {item.badge}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* EXECUTIVE PORTAL & DIRECT PAYMENT */}
+          <div className="pt-3 border-t-2 border-[#141414]/15 space-y-2">
             <Link
               to="/admin/verify"
               onClick={() => setMobileMenuOpen(false)}
-              className="brutal-btn flex items-center justify-between px-4 py-3 rounded-full font-display text-xs font-black uppercase bg-[#FFC72E] text-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]"
+              className="brutal-btn flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xs font-black uppercase bg-[#FFC72E] text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_0_#141414]"
             >
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#141414]" />
                 <span>EXECUTIVE PORTAL</span>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-[#141414] text-[#FAF7EE] text-[10px]">SECURED</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#141414] text-[#FAF7EE] text-[10px] font-black">PASSKEY</span>
             </Link>
 
             <Link
               to="/checkout"
               onClick={() => setMobileMenuOpen(false)}
-              className="brutal-btn block w-full text-center py-3 rounded-full font-display text-xs font-black uppercase bg-[#FF4D00] text-[#FAF7EE] border-2 border-[#141414] shadow-[3px_3px_0_0_#141414]"
+              className="brutal-btn block w-full text-center py-2.5 rounded-xl font-display text-xs font-black uppercase bg-[#FF4D00] text-[#FAF7EE] border-2 border-[#141414] shadow-[2px_2px_0_0_#141414]"
             >
-              💳 DIRECT CLIENT CHECKOUT
+              💳 DIRECT CLIENT CHECKOUT (UPI / WIRE / USDT)
             </Link>
+          </div>
 
-            <div className="pt-1 flex items-center gap-2">
-              <a
-                href={CONTACT_INFO.whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="brutal-btn flex-1 py-3 px-4 rounded-full bg-[#25D366] text-[#141414] border-2 border-[#141414] text-xs font-display font-black uppercase flex items-center justify-center gap-2 shadow-[3px_3px_0_0_#141414]"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>WHATSAPP</span>
-              </a>
-              <a
-                href={CONTACT_INFO.telegramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="brutal-btn py-3 px-4 rounded-full bg-[#F4EFE6] text-[#141414] border-2 border-[#141414] text-xs font-display font-black uppercase flex items-center justify-center gap-1.5 shadow-[3px_3px_0_0_#141414]"
-              >
-                <Send className="w-3.5 h-3.5 text-[#0284C7]" />
-                <span>TELEGRAM</span>
-              </a>
-            </div>
+          {/* DIRECT FOUNDER WAR ROOM CONNECT (WhatsApp & Telegram) */}
+          <div className="pt-2 border-t-2 border-[#141414]/15 flex items-center gap-2">
+            <a
+              href={CONTACT_INFO.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="brutal-btn flex-1 py-2.5 px-3 rounded-xl bg-[#25D366] text-[#141414] border-2 border-[#141414] text-xs font-display font-black uppercase flex items-center justify-center gap-2 shadow-[2px_2px_0_0_#141414]"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>WHATSAPP</span>
+            </a>
+            <a
+              href={CONTACT_INFO.telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="brutal-btn py-2.5 px-3 rounded-xl bg-[#F4EFE6] text-[#141414] border-2 border-[#141414] text-xs font-display font-black uppercase flex items-center justify-center gap-1.5 shadow-[2px_2px_0_0_#141414]"
+            >
+              <Send className="w-3.5 h-3.5 text-[#0284C7]" />
+              <span>TELEGRAM</span>
+            </a>
           </div>
         </div>
       )}
