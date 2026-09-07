@@ -9,7 +9,7 @@ export default function BrandLogo({ size = 'md', withText = true, className = ''
   const sizeMap = {
     xs: { icon: 'size-7', img: 'size-7', text: 'text-xs', sub: 'text-[8px]' },
     sm: { icon: 'size-8 sm:size-9', img: 'size-8 sm:size-9', text: 'text-xs sm:text-sm', sub: 'text-[9px]' },
-    md: { icon: 'size-8 xs:size-9 sm:size-10 lg:size-11', img: 'size-8 xs:size-9 sm:size-10 lg:size-11', text: 'text-[10.5px] xs:text-xs sm:text-sm lg:text-base', sub: 'text-[10px]' },
+    md: { icon: 'size-9 sm:size-10 lg:size-11', img: 'size-9 sm:size-10 lg:size-11', text: 'text-[13.5px] xs:text-[14.5px] sm:text-base lg:text-base', sub: 'text-[10px]' },
     lg: { icon: 'size-12 sm:size-14', img: 'size-12 sm:size-14', text: 'text-base sm:text-lg', sub: 'text-xs' },
     xl: { icon: 'size-16 sm:size-20', img: 'size-16 sm:size-20', text: 'text-xl sm:text-2xl', sub: 'text-sm' },
   };
@@ -35,7 +35,7 @@ export default function BrandLogo({ size = 'md', withText = true, className = ''
 
       {withText && (
         <div className="flex flex-col pr-1 min-w-0">
-          <span className="font-display font-black tracking-tight text-[#141414] group-hover:text-[#FF4D00] transition-colors whitespace-nowrap leading-none uppercase text-[10.5px] xs:text-xs sm:text-sm lg:text-base">
+          <span className={`font-display font-black tracking-tight text-[#141414] group-hover:text-[#FF4D00] transition-colors whitespace-nowrap leading-none uppercase ${currentSize.text}`}>
             THE UNFILTERED ENGINEER
           </span>
           <span className={`hidden sm:flex font-display font-bold text-[#FF4D00] tracking-[0.14em] uppercase items-center gap-1.5 mt-1 ${currentSize.sub}`}>
