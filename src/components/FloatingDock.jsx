@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
-import { MessageCircle, Send, ShieldCheck, X, Bot, Plus } from 'lucide-react';
+import { MessageCircle, Send, ShieldCheck, X, Bot, Plus, Layers, Menu } from 'lucide-react';
 
 export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
   const [expanded, setExpanded] = useState(false);
@@ -13,6 +13,16 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
       {expanded && (
         <div className="flex flex-col items-end gap-2 mb-1 animate-fadeIn">
           
+          {/* All 9 Services & Directory */}
+          <Link
+            to="/services"
+            onClick={() => setExpanded(false)}
+            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#141414] text-[#FFC72E] text-xs font-display font-black uppercase shadow-[3px_3px_0_0_#FFC72E] border-2 border-[#141414] hover:-translate-y-0.5 transition-transform"
+          >
+            <span>ALL SERVICES (9 PILLARS)</span>
+            <Layers className="size-4 text-[#FFC72E]" />
+          </Link>
+
           {/* Executive Verification Portal */}
           <Link
             to="/admin/verify"
@@ -57,8 +67,22 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
           onClick={() => setExpanded(!expanded)}
           className="size-12 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FFC72E] text-[#141414] shadow-[4px_4px_0_0_#141414] flex items-center justify-center transition-transform hover:-translate-y-0.5 cursor-pointer p-1"
           title="The Unfiltered Engineer Menu"
+          aria-label="Toggle navigation menu"
         >
-          {expanded ? <X className="size-5 text-[#FAF7EE]" /> : <img src="/assets/brand-logo.png" alt="Brand Logo" className="size-8 object-contain rounded-md" />}
+          {expanded ? (
+            <X className="size-5 text-[#FAF7EE]" />
+          ) : (
+            <>
+              {/* Desktop view: Brand Logo (untouched) */}
+              <img src="/assets/brand-logo.png" alt="Brand Logo" className="hidden lg:block size-8 object-contain rounded-md" />
+              {/* Mobile Phone UI view: Clear 3-dash menu */}
+              <div className="flex lg:hidden flex-col justify-center items-center gap-[3px] w-5 h-5" aria-label="3-Dash Menu">
+                <span className="w-4 h-[2px] bg-[#FFC72E] rounded-full block"></span>
+                <span className="w-4 h-[2px] bg-[#FFC72E] rounded-full block"></span>
+                <span className="w-4 h-[2px] bg-[#FFC72E] rounded-full block"></span>
+              </div>
+            </>
+          )}
         </button>
 
         {/* Primary WhatsApp Direct Contact Floating Button */}

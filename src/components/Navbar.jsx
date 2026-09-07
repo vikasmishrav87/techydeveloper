@@ -82,10 +82,10 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           : 'bg-[#FAF7EE]/90 backdrop-blur-sm py-4'
       }`}
     >
-      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+      <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 flex items-center justify-between gap-1.5 sm:gap-3">
         
-        {/* Left: Brand Logo */}
-        <div className="flex-shrink-0">
+        {/* Left: Brand Logo (Responsive for Android & small phone screens) */}
+        <div className="flex-shrink min-w-0">
           <BrandLogo size="md" withText={true} linkTo="/" />
         </div>
 
@@ -243,25 +243,25 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
           {/* START A PROJECT: Guaranteed 100% visible, beautifully spaced, never clipped on any screen */}
           <Link
             to="/contact"
-            className="brutal-btn inline-flex items-center justify-center px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[11px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
+            className="brutal-btn inline-flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] text-[10.5px] sm:text-xs font-display font-black tracking-wide uppercase shadow-[2px_2px_0_0_#FF4D00] whitespace-nowrap flex-shrink-0 cursor-pointer"
           >
             <span>START A PROJECT</span>
           </Link>
           
-          {/* 3-Dash Menu Toggle: Dedicated mobile trigger to view all services and all features */}
+          {/* 3-Dash Menu Toggle: Dedicated mobile trigger in bright high-contrast amber */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="brutal-btn flex items-center justify-center size-8 sm:size-9 rounded-full bg-[#FAF7EE] hover:bg-[#FFC72E] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer ml-0.5 active:scale-95 transition-all"
-            aria-label="Toggle 3-dash menu for all services and features"
+            className="brutal-btn flex items-center justify-center size-9 sm:size-10 rounded-full bg-[#FFC72E] hover:bg-[#FFE600] border-2 border-[#141414] text-[#141414] shadow-[2px_2px_0_0_#141414] cursor-pointer flex-shrink-0 active:scale-95 transition-all ml-0.5"
+            aria-label="Toggle 3-dash navigation menu to view all services and features"
             title="View all services and features"
           >
             {mobileMenuOpen ? (
-              <X className="size-4 sm:size-5 stroke-[2.5]" />
+              <X className="size-5 stroke-[2.5] text-[#141414]" />
             ) : (
-              <div className="flex flex-col justify-center items-center gap-[3px] w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true">
-                <span className="w-3.5 sm:w-4 h-[2px] bg-[#141414] rounded-full"></span>
-                <span className="w-3.5 sm:w-4 h-[2px] bg-[#141414] rounded-full"></span>
-                <span className="w-3.5 sm:w-4 h-[2px] bg-[#141414] rounded-full"></span>
+              <div className="flex flex-col justify-center items-center gap-[3px] w-4.5 h-4.5" aria-label="3-Dash Menu">
+                <span className="w-4.5 h-[2.5px] bg-[#141414] rounded-full block"></span>
+                <span className="w-4.5 h-[2.5px] bg-[#141414] rounded-full block"></span>
+                <span className="w-4.5 h-[2.5px] bg-[#141414] rounded-full block"></span>
               </div>
             )}
           </button>
@@ -271,7 +271,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
       {/* Mobile Drawer Menu: View All Services & All Things under the 3 Dash */}
       {mobileMenuOpen && (
-        <div className="lg:hidden max-h-[calc(100vh-76px)] overflow-y-auto overscroll-contain px-3 sm:px-4 py-4 bg-[#FAF7EE] border-b-4 border-[#141414] shadow-[0_8px_0_0_#141414] space-y-4 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
+        <div className="lg:hidden max-h-[calc(100dvh-68px)] sm:max-h-[calc(100vh-76px)] overflow-y-auto overscroll-contain px-3 sm:px-4 py-4 bg-[#FAF7EE] border-b-4 border-[#141414] shadow-[0_8px_0_0_#141414] space-y-4 animate-in fade-in slide-in-from-top-2 duration-200 text-left">
           
           {/* Top Row: AI Assistant & Client Account Access */}
           <div className="space-y-2">

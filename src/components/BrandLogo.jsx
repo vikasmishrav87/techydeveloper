@@ -35,8 +35,9 @@ export default function BrandLogo({ size = 'md', withText = true, className = ''
 
       {withText && (
         <div className="flex flex-col pr-1 min-w-0">
-          <span className={`font-display font-black tracking-tight text-[#141414] group-hover:text-[#FF4D00] transition-colors whitespace-nowrap leading-none uppercase text-[11px] xs:text-xs sm:text-sm lg:text-base`}>
-            THE UNFILTERED ENGINEER
+          <span className="font-display font-black tracking-tight text-[#141414] group-hover:text-[#FF4D00] transition-colors whitespace-nowrap leading-none uppercase">
+            <span className="inline sm:hidden text-xs">UNFILTERED</span>
+            <span className="hidden sm:inline text-sm lg:text-base">THE UNFILTERED ENGINEER</span>
           </span>
           <span className={`hidden sm:flex font-display font-bold text-[#FF4D00] tracking-[0.14em] uppercase items-center gap-1.5 mt-1 ${currentSize.sub}`}>
             <span className="size-1.5 rounded-full bg-[#FF4D00] animate-ping" />
