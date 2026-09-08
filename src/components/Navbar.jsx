@@ -7,7 +7,7 @@ import {
   Terminal, Shield, ShieldCheck, MessageCircle, Send, Menu, X, Globe, 
   Sparkles, UserCheck, Bot, ChevronDown, ChevronRight, CreditCard, User, 
   LogIn, LogOut, Code, Cpu, Blocks, Cloud, Database, Server, TrendingUp, 
-  Award, Layers, ArrowRight, Zap, FileText 
+  Award, Layers, ArrowRight, Zap, FileText, Home
 } from 'lucide-react';
 
 export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
@@ -27,6 +27,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
   // Primary focused desktop navigation links (fits cleanly without crowding)
   const primaryNavLinks = [
+    { name: 'Home', to: '/' },
     { name: 'Services', to: '/services' },
     { name: '360° Growth', to: '/marketing' },
     { name: 'Security Audit', to: '/security-audit' },
@@ -52,7 +53,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
 
   // Full platform directory for the mobile drawer menu ("all things")
   const mobilePlatformThings = [
-    { name: 'Home', to: '/', icon: Globe, badge: 'Main' },
+    { name: 'Home', to: '/', icon: Home, badge: 'Main' },
     { name: '360° Growth & Tech', to: '/marketing', icon: TrendingUp, badge: 'ROAS' },
     { name: 'Security Audit Scanner', to: '/security-audit', icon: Shield, badge: 'Zero-Trust' },
     { name: 'Project Scope Estimator', to: '/estimator', icon: Sparkles, badge: 'Instant' },
@@ -90,7 +91,7 @@ export default function Navbar({ onOpenTerminal, onOpenAdmin, onOpenAIChat }) {
         </div>
 
         {/* Center: Desktop Nav Links (Cleanly spaced for all desktop and laptop resolutions) */}
-        <nav className="hidden lg:flex items-center gap-2.5 xl:gap-5 2xl:gap-7 flex-shrink-0">
+        <nav className="hidden lg:flex items-center gap-2 xl:gap-4.5 2xl:gap-6 flex-shrink-0">
           {primaryNavLinks.map((link) => {
             const isActive = location.pathname === link.to;
             return (
