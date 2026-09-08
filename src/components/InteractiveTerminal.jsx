@@ -43,7 +43,7 @@ export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
   security          Show unhackable zero-trust military defense specs
   audit <domain>    Run instant security & exploit assessment
   whatsapp          Launch WhatsApp direct channel (+918369804739)
-  telegram          Launch Telegram direct channel (@Yourstrulyvikasmishra)
+  telegram          Launch Official Telegram channel
   pricing           View transparent retainer and sprint tiers
   clear             Clear terminal screen
   exit              Close interactive CLI session`
@@ -119,7 +119,7 @@ export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
         window.open(CONTACT_INFO.whatsappUrl, '_blank');
         newHistory.push({
           type: 'output',
-          text: `Opening WhatsApp chat with Vikas Mishra (${CONTACT_INFO.phoneDisplay})...`
+          text: `Opening WhatsApp chat with Principal Architect (${CONTACT_INFO.phoneDisplay})...`
         });
         break;
 
@@ -127,7 +127,7 @@ export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
         window.open(CONTACT_INFO.telegramUrl, '_blank');
         newHistory.push({
           type: 'output',
-          text: `Opening Telegram channel with ${CONTACT_INFO.telegramUser}...`
+          text: `Opening Official Telegram channel...`
         });
         break;
 

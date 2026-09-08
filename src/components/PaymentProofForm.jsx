@@ -144,7 +144,7 @@ export default function PaymentProofForm({
         screenshot: screenshotData
       });
 
-      // Automatically trigger WhatsApp ping to Vikas Mishra with 1-click Approve / Deny
+      // Automatically trigger WhatsApp ping to Executive Approver with 1-click Approve / Deny
       triggerWhatsAppApprovalAlert(payment);
 
       if (onSubmitted) {
@@ -152,7 +152,7 @@ export default function PaymentProofForm({
       }
     } catch (err) {
       console.error('Submission failed:', err);
-      alert('Failed to submit verification. Please try again or message Vikas Mishra directly.');
+      alert('Failed to submit verification. Please try again or contact Executive Support on WhatsApp directly.');
     } finally {
       setIsSubmitting(false);
     }

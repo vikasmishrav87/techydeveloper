@@ -117,7 +117,7 @@ export default function CaseStudies() {
                     </Link>
 
                     <a
-                      href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to build a similar solution.`)}`}
+                      href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I read the "${study.title}" case study for ${study.client} and want to build a similar solution.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"
@@ -148,7 +148,7 @@ export default function CaseStudies() {
                 <ArrowRight className="size-4" />
               </Link>
               <a
-                href="https://wa.me/918369804739?text=Hi%20Vikas%2C%20I%20reviewed%20your%20case%20studies%20and%20want%20to%20discuss%20building%20a%20similar%20enterprise%20solution."
+                href="https://wa.me/918369804739?text=Hi%2C%20I%20reviewed%20your%20case%20studies%20and%20want%20to%20discuss%20building%20a%20similar%20enterprise%20solution."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="sticker-pill px-6 py-4 text-sm bg-[#25D366] text-[#141414] shadow-[4px_4px_0_0_#141414] cursor-pointer flex items-center justify-center gap-2"

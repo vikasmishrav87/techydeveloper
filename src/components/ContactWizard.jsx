@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { CONTACT_INFO, SERVICE_PILLARS } from '../data/agencyData';
 import { saveInquiry } from '../services/storageService';
 import { MessageCircle, Send, Mail, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
@@ -28,7 +28,7 @@ export default function ContactWizard() {
   };
 
   const getWhatsAppForwardLink = () => {
-    const text = encodeURIComponent(`Hi Vikas, I am submitting a project inquiry:\n• Name: ${formData.name}\n• Company: ${formData.company || 'N/A'}\n• Specialization: ${formData.selectedService}\n• Model: ${formData.budget}\n• Brief: ${formData.message || 'Ready to start.'}`);
+    const text = encodeURIComponent(`Hi, I am submitting a project inquiry to The Unfiltered Engineer:\n• Name: ${formData.name}\n• Company: ${formData.company || 'N/A'}\n• Specialization: ${formData.selectedService}\n• Model: ${formData.budget}\n• Brief: ${formData.message || 'Ready to start.'}`);
     return `https://wa.me/918369804739?text=${text}`;
   };
 
@@ -65,7 +65,7 @@ export default function ContactWizard() {
             BRIEF DISPATCHED!
           </div>
           <p className="text-sm sm:text-base font-bold text-[#141414]">
-            Vikas Sunil Mishra has been notified. For instant 24/7 priority routing, forward your inquiry directly to WhatsApp or Support Email:
+            Our Executive Engineering Team has been notified. For instant 24/7 priority routing, forward your inquiry directly to WhatsApp or Support Email:
           </p>
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <a

@@ -9,7 +9,7 @@ export default function AIChatBot({ isOpen, onClose }) {
     {
       id: 'welcome-1',
       role: 'assistant',
-      content: `👋 **Welcome to The Unfiltered Engineer!**\n\nI am your **AI Solutions Architect** powered by GPT-4o. I have deep knowledge across our **1,000+ senior engineer collective** and 8 specialized practices.\n\nI can answer **any technical question**, scope your architecture, or connect you directly with **Vikas Mishra**.\n\nHow can I help you today?`
+      content: `👋 **Welcome to The Unfiltered Engineer!**\n\nI am your **AI Solutions Architect** powered by GPT-4o. I have deep knowledge across our **1,000+ senior engineer collective** and 8 specialized practices.\n\nI can answer **any technical question**, scope your architecture, or connect you directly with our **Principal Architect & Executive Team**.\n\nHow can I help you today?`
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -22,7 +22,7 @@ export default function AIChatBot({ isOpen, onClose }) {
     "🚀 How does your 1,000+ engineer squad work?",
     "🛡️ Tell me about your Zero-Trust Cyber Security SLA",
     "🤖 What can you build with custom AI LLMs & Agent Swarms?",
-    "💬 How can I consult directly with Vikas Mishra?",
+    "💬 How can I consult directly with the Principal Architect?",
     "📈 How does the 360° Marketing ROAS engine work?",
     "⛓️ What Web3 & Blockchain protocols do you engineer?"
   ];
@@ -79,7 +79,7 @@ export default function AIChatBot({ isOpen, onClose }) {
         {
           id: `bot-${Date.now()}`,
           role: 'assistant',
-          content: `I ran into an issue connecting to the AI brain. You can chat directly with **Vikas Mishra** on WhatsApp: [Chat on WhatsApp](https://wa.me/918369804739)`
+          content: `I ran into an issue connecting to the AI brain. You can chat directly with our **Executive Team** on WhatsApp: [Chat on WhatsApp](https://wa.me/918369804739)`
         }
       ]);
     } finally {
@@ -196,7 +196,7 @@ export default function AIChatBot({ isOpen, onClose }) {
                 </span>
               </div>
               <p className="text-[11px] text-[#FAF7EE]/70 font-medium">
-                Vikas Mishra Senior Engineering Intelligence
+                Senior Engineering Intelligence & Solutions
               </p>
             </div>
           </div>

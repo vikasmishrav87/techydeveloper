@@ -187,7 +187,7 @@ export default function UPIPaymentPage() {
               <div className="mb-3">
                 <h3 className="text-sm font-bold text-slate-950">Submit Payment Proof for Instant Approval</h3>
                 <p className="text-xs text-slate-500">
-                  After paying on your UPI app, paste the 12-digit UTR number or attach a screenshot. Vikas Mishra will receive an instant approval request.
+                  After paying on your UPI app, paste the 12-digit UTR number or attach a screenshot. The Executive Verification Desk will receive an instant approval request.
                 </p>
               </div>
 

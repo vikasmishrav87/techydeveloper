@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   CheckCircle2, XCircle, Clock, ShieldCheck, Download, RefreshCw, 
   MessageCircle, ExternalLink, ArrowRight, Copy, Check, Eye
@@ -84,7 +84,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">Payment Received & Confirmed! 🎉</h2>
           <p className="text-slate-600 text-sm mt-1">
-            Your transaction has been approved by Vikas Mishra. Your engineering retainer & milestone is now officially active.
+            Your transaction has been approved by the Executive Verification Desk. Your engineering retainer & milestone is now officially active.
           </p>
         </div>
 
@@ -133,13 +133,13 @@ export default function LivePaymentStatus({ payment, onReset }) {
           </button>
           
           <a
-            href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, my payment of $${currentPayment.amountUSD} (Order: ${currentPayment.id}) is confirmed. Let's start the project scope.`)}`}
+            href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, my payment of $${currentPayment.amountUSD} (Order: ${currentPayment.id}) is confirmed. Let's start the project scope.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
             <MessageCircle className="w-4 h-4" />
-            <span>Message Vikas on WhatsApp</span>
+            <span>Message Executive Support on WhatsApp</span>
           </a>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
           </button>
 
           <a
-            href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, my payment verification for Order ${currentPayment.id} ($${currentPayment.amountUSD}) was denied. Here is my correct transaction details.`)}`}
+            href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, my payment verification for Order ${currentPayment.id} ($${currentPayment.amountUSD}) was denied. Here is my correct transaction details.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
@@ -219,7 +219,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Verifying Your Transaction...</h2>
         <p className="text-slate-400 text-sm mt-1 max-w-md mx-auto">
-          We have notified Vikas Mishra directly on WhatsApp. This screen will <strong>automatically update</strong> the instant your payment is approved.
+          We have notified the Executive Verification Desk directly on WhatsApp. This screen will <strong>automatically update</strong> the instant your payment is approved.
         </p>
       </div>
 
@@ -282,7 +282,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
           className="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/20 active:scale-[0.99]"
         >
           <MessageCircle className="w-4 h-4" />
-          <span>Ping Vikas on WhatsApp for Fast-Track Approval</span>
+          <span>Ping Executive Support on WhatsApp for Fast-Track Approval</span>
         </button>
 
         <button
@@ -297,7 +297,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
       </div>
 
       <div className="text-[11px] text-slate-500">
-        💡 <em>Do not close this page. Once Vikas Mishra approves the transaction from WhatsApp, your receipt will load automatically.</em>
+        💡 <em>Do not close this page. Once the Executive Verification Desk approves the transaction from WhatsApp, your receipt will load automatically.</em>
       </div>
 
     </div>

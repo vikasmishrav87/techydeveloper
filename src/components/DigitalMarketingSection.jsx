@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MARKETING_CHANNELS, CONTACT_INFO } from '../data/agencyData';
 import { 
@@ -98,7 +98,7 @@ export default function DigitalMarketingSection() {
 
               <div className="pt-2">
                 <a
-                  href={`https://wa.me/918369804739?text=${encodeURIComponent('Hi Vikas, I want to discuss hiring your 360° Tech Marketing squad for our growth campaigns.')}`}
+                  href={`https://wa.me/918369804739?text=${encodeURIComponent('Hi, I want to discuss hiring your 360° Tech Marketing squad for our growth campaigns.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="sticker-pill px-6 py-3.5 bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#FF4D00] cursor-pointer"
@@ -165,7 +165,7 @@ export default function DigitalMarketingSection() {
 
                   <div className="pt-2">
                     <a
-                      href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I want to discuss scaling our pipeline with the "${ch.name}" channel.`)}`}
+                      href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I want to discuss scaling our pipeline with the "${ch.name}" channel.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="sticker-pill px-4 py-2.5 bg-[#25D366] text-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] cursor-pointer inline-flex items-center gap-2"
@@ -286,7 +286,7 @@ export default function DigitalMarketingSection() {
                 </div>
 
                 <a
-                  href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I ran the 360° Growth Estimator with $${monthlySpend.toLocaleString()} monthly spend targeting ${targetRoas}x ROAS ($${projectedRevenue.toLocaleString()} revenue). Let's build the campaign.`)}`}
+                  href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I ran the 360° Growth Estimator with $${monthlySpend.toLocaleString()} monthly spend targeting ${targetRoas}x ROAS ($${projectedRevenue.toLocaleString()} revenue). Let's build the campaign.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="sticker-pill w-full py-3 bg-[#FF4D00] hover:bg-[#FFC72E] hover:text-[#141414] text-[#FAF7EE] text-xs font-display font-black shadow-[3px_3px_0_0_#FFC72E] cursor-pointer flex items-center justify-center gap-2"

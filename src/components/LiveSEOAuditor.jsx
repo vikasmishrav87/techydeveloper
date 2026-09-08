@@ -555,11 +555,11 @@ export default function LiveSEOAuditor() {
           {/* Action Dispatcher Footer */}
           <div className="pt-4 border-t-2 border-[#141414]/15 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xs font-medium text-[#141414]/80">
-              Want Vikas Mishra's senior growth and engineering squad to execute this 24-factor technical SEO overhaul for <strong>{result.domain}</strong>?
+              Want our senior growth and engineering squad to execute this 24-factor technical SEO overhaul for <strong>{result.domain}</strong>?
             </div>
 
             <a
-              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I ran the 24-Factor SEO Audit for ${result.domain}. We want to resolve our technical deficiencies and scale organic search traffic. Let's deploy the remediation squad.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I ran the 24-Factor SEO Audit for ${result.domain}. We want to resolve our technical deficiencies and scale organic search traffic. Let's deploy the remediation squad.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="sticker-pill px-6 py-3 bg-[#FFC72E] hover:bg-[#FFE600] text-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#FF4D00] cursor-pointer flex items-center gap-2 whitespace-nowrap"

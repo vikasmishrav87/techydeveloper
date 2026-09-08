@@ -58,14 +58,14 @@ export default async function handler(req, res) {
       .update({
         status: newStatus,
         updatedAt: new Date().toISOString(),
-        reviewedBy: 'Vikas Mishra (WhatsApp 1-Click Approval)'
+        reviewedBy: 'Executive Approver (WhatsApp 1-Click Approval)'
       })
       .eq('id', id);
   } catch (err) {
     console.error('Supabase update err:', err);
   }
 
-  // 2. Render sleek mobile confirmation screen for Vikas
+  // 2. Render sleek mobile confirmation screen
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -184,7 +184,7 @@ export default async function handler(req, res) {
           </div>
           <div class="order-row">
             <span class="order-label">Action By:</span>
-            <span class="order-val">Vikas Mishra</span>
+            <span class="order-val">Executive Approver</span>
           </div>
           <div class="order-row">
             <span class="order-label">Live Sync:</span>

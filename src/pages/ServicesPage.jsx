@@ -112,7 +112,7 @@ export default function ServicesPage() {
                   </Link>
 
                   <a
-                    href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I want to discuss hiring the ${service.title} engineering squad.`)}`}
+                    href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I want to discuss hiring the ${service.title} engineering squad.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="sticker-pill size-10 bg-[#25D366] text-[#141414] shadow-[3px_3px_0_0_#141414]"
@@ -134,7 +134,7 @@ export default function ServicesPage() {
             NEED A CUSTOM DEDICATED SQUAD?
           </h2>
           <p className="mt-3 text-sm sm:text-lg font-medium text-[#FAF7EE]/70 max-w-xl mx-auto">
-            Tell Vikas your architectural requirements. We assemble and deploy senior engineers in under 24 hours.
+            Tell us your architectural requirements. We assemble and deploy senior engineers in under 24 hours.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
@@ -150,7 +150,7 @@ export default function ServicesPage() {
               className="inline-flex items-center gap-2 rounded-full border-2 border-[#FAF7EE] px-8 py-4 font-display text-sm sm:text-base font-black uppercase text-[#FAF7EE] transition-all hover:bg-[#FAF7EE] hover:text-[#141414] hover:-translate-y-1"
             >
               <MessageCircle className="size-4" />
-              <span>WHATSAPP VIKAS</span>
+              <span>WHATSAPP ARCHITECT</span>
             </a>
           </div>
         </div>

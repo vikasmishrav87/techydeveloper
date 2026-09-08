@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_INFO } from '../data/agencyData';
 import { Calculator, Shield, Cpu, Brain, Layers, Globe2, MessageCircle, ArrowRight, Check, Zap } from 'lucide-react';
@@ -48,7 +48,7 @@ export default function ProjectEstimator() {
 
   const getWhatsAppEstimateLink = () => {
     const selectedNames = selectedServices.map((id) => serviceOptions.find((o) => o.id === id)?.name).filter(Boolean).join(', ');
-    const text = encodeURIComponent(`Hi Vikas, I created a custom scope estimate:\n• Practices: ${selectedNames}\n• Squad Scale: ${squadScale.toUpperCase()} (${squadInfo.headcount})\n• Timeline: ${squadInfo.weeks}\n\nLet's discuss onboarding.`);
+    const text = encodeURIComponent(`Hi, I created a custom scope estimate for The Unfiltered Engineer:\n• Practices: ${selectedNames}\n• Squad Scale: ${squadScale.toUpperCase()} (${squadInfo.headcount})\n• Timeline: ${squadInfo.weeks}\n\nLet's discuss onboarding.`);
     return `https://wa.me/918369804739?text=${text}`;
   };
 
@@ -146,7 +146,7 @@ export default function ProjectEstimator() {
 
               <div>
                 <span className="text-[11px] font-bold uppercase text-[#141414]/70">Executive Oversight:</span>
-                <div className="font-display text-base font-black uppercase text-[#141414] mt-0.5">Vikas Sunil Mishra</div>
+                <div className="font-display text-base font-black uppercase text-[#141414] mt-0.5">Principal Architect & Senior Collective</div>
               </div>
             </div>
           </div>

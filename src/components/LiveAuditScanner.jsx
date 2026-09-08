@@ -583,11 +583,11 @@ export default function LiveAuditScanner() {
           {/* Action Dispatcher Footer */}
           <div className="pt-4 border-t-2 border-[#141414]/15 flex flex-wrap items-center justify-between gap-4">
             <div className="text-xs font-medium text-[#141414]/75">
-              Need Vikas Mishra's elite red-team defense squad to patch these vulnerabilities and secure zero-breach compliance?
+              Need our elite red-team defense squad to patch these vulnerabilities and secure zero-breach compliance?
             </div>
 
             <a
-              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I audited ${auditResult.domain} on your Security scanner. Here are our defensive gaps: ${auditResult.vulnerabilities.map(v => v.title).join(', ')}. Let's execute the hardening sprint.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I audited ${auditResult.domain} on your Security scanner. Here are our defensive gaps: ${auditResult.vulnerabilities.map(v => v.title).join(', ')}. Let's execute the hardening sprint.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="sticker-pill px-6 py-3 bg-[#FF4D00] hover:bg-[#FFC72E] hover:text-[#141414] text-[#FAF7EE] text-xs font-display font-black shadow-[3px_3px_0_0_#FFC72E] cursor-pointer flex items-center gap-2"

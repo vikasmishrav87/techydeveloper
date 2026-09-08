@@ -87,10 +87,10 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
           target="_blank"
           rel="noopener noreferrer"
           className="h-12 px-5 rounded-full border-2 border-[#141414] bg-[#25D366] text-[#141414] font-display text-xs font-black uppercase tracking-wider shadow-[4px_4px_0_0_#141414] flex items-center gap-2 transition-transform hover:-translate-y-0.5"
-          title="Direct WhatsApp with Founder Vikas Mishra"
+          title="Direct WhatsApp with Executive Team"
         >
           <MessageCircle className="size-5 text-[#141414] fill-current" />
-          <span className="hidden sm:inline">WHATSAPP FOUNDER</span>
+          <span className="hidden sm:inline">WHATSAPP ARCHITECT</span>
         </a>
 
       </div>

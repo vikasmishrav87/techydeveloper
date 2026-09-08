@@ -30,7 +30,7 @@ export const WORK_MODEL_ECOSYSTEM = {
       step: "01",
       phase: "Architecture Blueprint & Zero-Trust Spec",
       duration: "Days 1 - 3",
-      desc: "Direct technical workshop with Vikas Mishra & Principal Architects. We define threat models, microservice schemas, database latency limits, and delivery milestones.",
+      desc: "Direct technical workshop with Principal Architects & Systems Engineers. We define threat models, microservice schemas, database latency limits, and delivery milestones.",
       deliverable: "Complete Technical Architecture Blueprint & Threat Model Document"
     },
     {

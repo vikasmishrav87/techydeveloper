@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CASE_STUDIES, CONTACT_INFO } from '../data/agencyData';
 import { ArrowLeft, MessageCircle, ArrowRight, ShieldCheck, CheckCircle2, Star, Zap, Layers, Server } from 'lucide-react';
@@ -59,7 +59,7 @@ export default function CaseStudyDetailPage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-3.5">
             <a
-              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I read the "${study.title}" case study for ${study.client} and want to discuss building a similar system.`)}`}
+              href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I read the "${study.title}" case study for ${study.client} and want to discuss building a similar system.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="sticker-pill px-7 py-3.5 sm:px-9 sm:py-4.5 bg-[#FF4D00] hover:bg-[#FFC72E] hover:text-[#141414] text-[#FAF7EE] text-xs sm:text-sm shadow-[4px_4px_0_0_#FFC72E] cursor-pointer"

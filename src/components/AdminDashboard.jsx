@@ -560,7 +560,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
                       <div className="grid grid-cols-2 gap-2.5">
                         {selectedLead.phone ? (
                           <a
-                            href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${selectedLead.name}, this is Vikas Mishra from The Unfiltered Engineer regarding your inquiry.`)}`}
+                            href={`https://wa.me/${selectedLead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${selectedLead.name}, this is The Unfiltered Engineer Executive Team regarding your inquiry.`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs"
@@ -699,7 +699,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
                           </select>
 
                           <a
-                            href={`https://wa.me/?text=${encodeURIComponent(`Hi ${u.name}, this is Vikas Mishra from The Unfiltered Engineer.`)}`}
+                            href={`https://wa.me/?text=${encodeURIComponent(`Hi ${u.name}, this is The Unfiltered Engineer Executive Team.`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-950"

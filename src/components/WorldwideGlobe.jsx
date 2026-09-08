@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLOBAL_HUBS, CONTACT_INFO } from '../data/agencyData';
 import { Globe2, MessageCircle, ArrowRight, Zap, Radio, Activity, Cpu, Server, ShieldCheck, MapPin } from 'lucide-react';
@@ -328,7 +328,7 @@ export default function WorldwideGlobe() {
 
                 <div className="mt-6 pt-4 border-t-2 border-[#141414]/10">
                   <a
-                    href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi Vikas, I want to route our project through your ${cityName} engineering hub.`)}`}
+                    href={`https://wa.me/918369804739?text=${encodeURIComponent(`Hi, I want to route our project through your ${cityName} engineering hub.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="sticker-pill w-full py-3 bg-[#141414] hover:bg-[#FF4D00] text-[#FAF7EE] shadow-[3px_3px_0_0_#141414] flex items-center justify-center gap-2 font-black text-xs uppercase cursor-pointer transition-all"

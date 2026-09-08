@@ -14,14 +14,14 @@ export default function PrivacyPolicyPage() {
       content: (
         <div className="space-y-3">
           <p>
-            Welcome to <strong>The Unfiltered Engineer</strong> ("we", "our", "us", or "the Studio"), operated under the executive direction of <strong>Vikas Sunil Mishra</strong>. This Privacy Policy describes in complete transparency how we collect, process, store, disclose, and protect your information when you visit our website (<strong>https://theunfilteredengineer.vercel.app</strong>), utilize our live diagnostic telemetry tools, engage our engineering squads, or communicate with our team.
+            Welcome to <strong>The Unfiltered Engineer</strong> ("we", "our", "us", or "the Studio"), operated under the executive direction of <strong>The Unfiltered Engineer Executive Governance Desk</strong>. This Privacy Policy describes in complete transparency how we collect, process, store, disclose, and protect your information when you visit our website (<strong>https://theunfilteredengineer.vercel.app</strong>), utilize our live diagnostic telemetry tools, engage our engineering squads, or communicate with our team.
           </p>
           <p>
             We adhere to the highest global data privacy benchmarks, including the <strong>European Union General Data Protection Regulation (GDPR)</strong>, the <strong>United Kingdom Data Protection Act 2018 (UK GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA/CPRA)</strong>, the <strong>India Digital Personal Data Protection Act (DPDP)</strong>, and global zero-trust cybersecurity standards.
           </p>
           <div className="p-3.5 rounded-2xl bg-[#FAF7EE] border border-[#141414] text-xs font-bold">
             <span className="text-[#FF4D00]">DATA CONTROLLER: </span>
-            The Unfiltered Engineer • Principal: Vikas Sunil Mishra • Enterprise Contact: <a href="mailto:theunfilteredengineersupport@gmail.com" className="underline text-[#141414]">theunfilteredengineersupport@gmail.com</a>
+            The Unfiltered Engineer • Executive Governance Desk • Enterprise Contact: <a href="mailto:theunfilteredengineersupport@gmail.com" className="underline text-[#141414]">theunfilteredengineersupport@gmail.com</a>
           </div>
         </div>
       )
@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="size-2 rounded-full bg-[#25D366] flex-shrink-0 mt-1" />
-              <span><strong>Payment Authentication & Verification:</strong> To reconcile incoming wire transfers, UPI payments, and cryptocurrency settlements within our live executive ledger overseen by Vikas Mishra.</span>
+              <span><strong>Payment Authentication & Verification:</strong> To reconcile incoming wire transfers, UPI payments, and cryptocurrency settlements within our live executive ledger overseen by the Executive Verification Desk.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="size-2 rounded-full bg-[#FFC72E] flex-shrink-0 mt-1" />
@@ -287,7 +287,7 @@ export default function PrivacyPolicyPage() {
           <div className="p-4 rounded-2xl bg-[#141414] text-[#FAF7EE] space-y-2 border-2 border-[#141414]">
             <div className="font-display font-black text-sm text-[#FFC72E] uppercase">THE UNFILTERED ENGINEER • EXECUTIVE DATA DESK</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#FAF7EE]/80">
-              <div><strong>Founder & Controller:</strong> Vikas Sunil Mishra</div>
+              <div><strong>Executive Controller:</strong> The Unfiltered Engineer Governance Desk</div>
               <div><strong>Support Email:</strong> <a href="mailto:theunfilteredengineersupport@gmail.com" className="text-[#FFC72E] underline">theunfilteredengineersupport@gmail.com</a></div>
               <div><strong>WhatsApp / Phone:</strong> <a href="https://wa.me/918369804739" className="text-[#25D366] underline">+91 8369804739</a></div>
             </div>
@@ -322,7 +322,7 @@ export default function PrivacyPolicyPage() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-4 text-xs font-mono font-bold text-[#141414]/70">
-            <span>FOUNDER: <strong>VIKAS SUNIL MISHRA</strong></span>
+            <span>GOVERNANCE: <strong>EXECUTIVE DESK</strong></span>
             <span>•</span>
             <span>EFFECTIVE: <strong>SEPTEMBER 2026 (v2026.4)</strong></span>
             <span>•</span>
@@ -372,7 +372,7 @@ export default function PrivacyPolicyPage() {
           <div>
             <h3 className="font-display text-xl sm:text-2xl font-black uppercase">HAVE A PRIVACY QUESTION OR AUDIT REQUEST?</h3>
             <p className="text-xs sm:text-sm font-medium text-[#141414]/80 mt-1">
-              Contact Vikas Mishra directly via official support email or WhatsApp for privacy concerns.
+              Contact the Executive Governance Desk directly via official support email or WhatsApp for privacy concerns.
             </p>
           </div>
 
@@ -386,7 +386,7 @@ export default function PrivacyPolicyPage() {
             </a>
 
             <a
-              href="https://wa.me/918369804739?text=Hi%20Vikas%2C%20I%20have%20a%20question%20regarding%20The%20Unfiltered%20Engineer%20Privacy%20Policy."
+              href="https://wa.me/918369804739?text=Hi%2C%20I%20have%20a%20question%20regarding%20The%20Unfiltered%20Engineer%20Privacy%20Policy."
               target="_blank"
               rel="noopener noreferrer"
               className="sticker-pill px-6 py-3 bg-[#25D366] text-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] cursor-pointer flex items-center gap-2"

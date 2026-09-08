@@ -8,7 +8,7 @@ export default function ClientProofSection() {
       domain: 'fintech-apex.io',
       role: 'CORE BANKING INFRASTRUCTURE',
       tag: 'WHATSAPP VERIFIED',
-      quote: 'Vikas and his engineering squad migrated our entire core ledger with zero downtime. Security audit score 100/100.',
+      quote: 'The Unfiltered Engineer squad migrated our entire core ledger with zero downtime. Security audit score 100/100.',
       author: 'Managing Director, Fintech'
     },
     {

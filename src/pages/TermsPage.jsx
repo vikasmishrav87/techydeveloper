@@ -14,7 +14,7 @@ export default function TermsPage() {
       content: (
         <div className="space-y-3">
           <p>
-            By accessing the website at <strong>https://theunfilteredengineer.vercel.app</strong>, submitting architecture briefs, utilizing our live telemetry audit scanners, or engaging engineering squads from <strong>The Unfiltered Engineer</strong> ("the Studio", "we", "us"), operated under the leadership of <strong>Vikas Sunil Mishra</strong>, you agree to be bound by these Terms of Service.
+            By accessing the website at <strong>https://theunfilteredengineer.vercel.app</strong>, submitting architecture briefs, utilizing our live telemetry audit scanners, or engaging engineering squads from <strong>The Unfiltered Engineer</strong> ("the Studio", "we", "us"), operated under the leadership of <strong>The Unfiltered Engineer Executive Leadership Desk</strong>, you agree to be bound by these Terms of Service.
           </p>
           <p className="text-xs text-[#141414]/80">
             If you are entering into this agreement on behalf of a corporation, venture-backed startup, or legal entity, you represent that you possess the full legal authority to bind that entity to these governance provisions.
@@ -64,7 +64,7 @@ export default function TermsPage() {
             </div>
           </div>
           <p className="text-xs text-[#141414]/80">
-            All transactions require submitter UTR / transaction hash verification and manual authorization by Founder Vikas Mishra before squad deployment.
+            All transactions require submitter UTR / transaction hash verification and manual authorization by the Executive Verification Desk before squad deployment.
           </p>
         </div>
       )
@@ -122,7 +122,7 @@ export default function TermsPage() {
       title: '8. GOVERNING LAW & DISPUTE RESOLUTION',
       content: (
         <p className="text-xs leading-relaxed text-[#141414]/80">
-          These Terms of Service and any contractual disputes arising hereunder shall be governed by and construed in accordance with applicable laws, with initial mediation conducted in good faith directly with Executive Director Vikas Sunil Mishra.
+          These Terms of Service and any contractual disputes arising hereunder shall be governed by and construed in accordance with applicable laws, with initial mediation conducted in good faith directly with the Executive Leadership Desk.
         </p>
       )
     },
@@ -136,7 +136,7 @@ export default function TermsPage() {
           <div className="p-4 rounded-2xl bg-[#141414] text-[#FAF7EE] space-y-2 border-2 border-[#141414]">
             <div className="font-display font-black text-sm text-[#FFC72E] uppercase">THE UNFILTERED ENGINEER • LEGAL & GOVERNANCE DESK</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#FAF7EE]/80">
-              <div><strong>Principal Executive:</strong> Vikas Sunil Mishra</div>
+              <div><strong>Executive Governance:</strong> The Unfiltered Engineer Leadership Desk</div>
               <div><strong>Support Email:</strong> <a href="mailto:theunfilteredengineersupport@gmail.com" className="text-[#FFC72E] underline">theunfilteredengineersupport@gmail.com</a></div>
               <div><strong>WhatsApp / Phone:</strong> <a href="https://wa.me/918369804739" className="text-[#25D366] underline">+91 8369804739</a></div>
             </div>
@@ -171,7 +171,7 @@ export default function TermsPage() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-4 text-xs font-mono font-bold text-[#141414]/70">
-            <span>FOUNDER: <strong>VIKAS SUNIL MISHRA</strong></span>
+            <span>GOVERNANCE: <strong>EXECUTIVE LEADERSHIP DESK</strong></span>
             <span>•</span>
             <span>EFFECTIVE: <strong>SEPTEMBER 2026</strong></span>
             <span>•</span>
@@ -221,7 +221,7 @@ export default function TermsPage() {
           <div>
             <h3 className="font-display text-xl sm:text-2xl font-black uppercase">NEED A CUSTOM MASTER SERVICE AGREEMENT (MSA)?</h3>
             <p className="text-xs sm:text-sm font-medium text-[#141414]/80 mt-1">
-              Contact Vikas Mishra for tailored enterprise vendor agreements, SLA commitments, and mutual NDA execution.
+              Contact our Executive Team for tailored enterprise vendor agreements, SLA commitments, and mutual NDA execution.
             </p>
           </div>
 
@@ -235,7 +235,7 @@ export default function TermsPage() {
             </a>
 
             <a
-              href="https://wa.me/918369804739?text=Hi%20Vikas%2C%20I%20want%20to%20discuss%20a%20Master%20Service%20Agreement%20for%20our%20enterprise%20project."
+              href="https://wa.me/918369804739?text=Hi%2C%20I%20want%20to%20discuss%20a%20Master%20Service%20Agreement%20for%20our%20enterprise%20project."
               target="_blank"
               rel="noopener noreferrer"
               className="sticker-pill px-6 py-3 bg-[#25D366] text-[#141414] text-xs font-display font-black shadow-[3px_3px_0_0_#141414] cursor-pointer flex items-center gap-2"
