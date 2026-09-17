@@ -67,7 +67,7 @@ export async function sendAIChatMessage(conversationHistory = [], userMessage = 
       headers: {
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://the-unfiltered-engineer.vercel.app',
+        'HTTP-Referer': 'https://techydeveloper.vercel.app',
         'X-Title': 'The Unfiltered Engineer AI Assistant'
       },
       body: JSON.stringify({

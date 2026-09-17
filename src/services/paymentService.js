@@ -131,7 +131,7 @@ export function clearActiveClientPayment() {
  * Generate formatted WhatsApp notification message for Vikas Mishra with Secured Executive Portal link
  */
 export function generateWhatsAppApprovalMessage(payment) {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://theunfilteredengineer.vercel.app';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://techydeveloper.vercel.app';
 
   const message = `🔔 *PAYMENT SUBMITTED FOR VERIFICATION* 🔔
 

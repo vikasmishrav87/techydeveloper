@@ -14,7 +14,7 @@ export default function TermsPage() {
       content: (
         <div className="space-y-3">
           <p>
-            By accessing the website at <strong>https://theunfilteredengineer.vercel.app</strong>, submitting architecture briefs, utilizing our live telemetry audit scanners, or engaging engineering squads from <strong>The Unfiltered Engineer</strong> ("the Studio", "we", "us"), operated under the leadership of <strong>The Unfiltered Engineer Executive Leadership Desk</strong>, you agree to be bound by these Terms of Service.
+            By accessing the website at <strong>https://techydeveloper.vercel.app</strong>, submitting architecture briefs, utilizing our live telemetry audit scanners, or engaging engineering squads from <strong>The Unfiltered Engineer</strong> ("the Studio", "we", "us"), operated under the leadership of <strong>The Unfiltered Engineer Executive Leadership Desk</strong>, you agree to be bound by these Terms of Service.
           </p>
           <p className="text-xs text-[#141414]/80">
             If you are entering into this agreement on behalf of a corporation, venture-backed startup, or legal entity, you represent that you possess the full legal authority to bind that entity to these governance provisions.

@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
       content: (
         <div className="space-y-3">
           <p>
-            Welcome to <strong>The Unfiltered Engineer</strong> ("we", "our", "us", or "the Studio"), operated under the executive direction of <strong>The Unfiltered Engineer Executive Governance Desk</strong>. This Privacy Policy describes in complete transparency how we collect, process, store, disclose, and protect your information when you visit our website (<strong>https://theunfilteredengineer.vercel.app</strong>), utilize our live diagnostic telemetry tools, engage our engineering squads, or communicate with our team.
+            Welcome to <strong>The Unfiltered Engineer</strong> ("we", "our", "us", or "the Studio"), operated under the executive direction of <strong>The Unfiltered Engineer Executive Governance Desk</strong>. This Privacy Policy describes in complete transparency how we collect, process, store, disclose, and protect your information when you visit our website (<strong>https://techydeveloper.vercel.app</strong>), utilize our live diagnostic telemetry tools, engage our engineering squads, or communicate with our team.
           </p>
           <p>
             We adhere to the highest global data privacy benchmarks, including the <strong>European Union General Data Protection Regulation (GDPR)</strong>, the <strong>United Kingdom Data Protection Act 2018 (UK GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA/CPRA)</strong>, the <strong>India Digital Personal Data Protection Act (DPDP)</strong>, and global zero-trust cybersecurity standards.
