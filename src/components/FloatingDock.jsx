@@ -66,7 +66,7 @@ export default function FloatingDock({ onOpenTerminal, onOpenAIChat }) {
         <button
           onClick={() => setExpanded(!expanded)}
           className="size-12 rounded-full border-2 border-[#141414] bg-[#141414] hover:bg-[#FFC72E] text-[#141414] shadow-[4px_4px_0_0_#141414] flex items-center justify-center transition-transform hover:-translate-y-0.5 cursor-pointer p-1"
-          title="The Unfiltered Engineer Menu"
+          title="TechyDeveloper Menu"
           aria-label="Toggle navigation menu"
         >
           {expanded ? (

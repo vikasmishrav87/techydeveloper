@@ -179,7 +179,7 @@ export default function InteractivePlayground() {
                     <span className="px-2 py-0.5 rounded bg-bronze-500/20 text-bronze-400 text-[10px]">Solidity + Assembly (Yul)</span>
                   </div>
                   <div className="text-xs text-titanium-400 mt-1">
-                    Compare unoptimized template code vs. The Unfiltered Engineer's gas-slicing Yul assembly.
+                    Compare unoptimized template code vs. TechyDeveloper's gas-slicing Yul assembly.
                   </div>
                 </div>
 
@@ -198,7 +198,7 @@ export default function InteractivePlayground() {
                       contractOptimization === 'optimized' ? 'bg-bronze-500 text-dark-950 font-bold' : 'text-titanium-400'
                     }`}
                   >
-                    Unfiltered Yul Engine
+                    TechyDeveloper Yul Engine
                   </button>
                 </div>
               </div>
@@ -216,7 +216,7 @@ function batchTransfer(address[] calldata rec, uint256[] calldata amt) external 
         _balances[rec[i]] += amt[i]; // Memory expansion & repeated SLOAD/SSTORE
     }
 }`
-                        : `// Unfiltered Yul inline assembly
+                        : `// TechyDeveloper Yul inline assembly
 assembly {
     let ptr := add(rec.offset, 0x20)
     let end := add(ptr, mul(rec.length, 0x20))

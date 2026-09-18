@@ -48,7 +48,7 @@ export default function ProjectEstimator() {
 
   const getWhatsAppEstimateLink = () => {
     const selectedNames = selectedServices.map((id) => serviceOptions.find((o) => o.id === id)?.name).filter(Boolean).join(', ');
-    const text = encodeURIComponent(`Hi, I created a custom scope estimate for The Unfiltered Engineer:\n• Practices: ${selectedNames}\n• Squad Scale: ${squadScale.toUpperCase()} (${squadInfo.headcount})\n• Timeline: ${squadInfo.weeks}\n\nLet's discuss onboarding.`);
+    const text = encodeURIComponent(`Hi, I created a custom scope estimate for TechyDeveloper:\n• Practices: ${selectedNames}\n• Squad Scale: ${squadScale.toUpperCase()} (${squadInfo.headcount})\n• Timeline: ${squadInfo.weeks}\n\nLet's discuss onboarding.`);
     return `https://wa.me/918369804739?text=${text}`;
   };
 

@@ -211,7 +211,7 @@ export default function CheckoutPage() {
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
           <div className="size-16 rounded-2xl overflow-hidden bg-[#141414] border-2 border-[#141414] shadow-[4px_4px_0_0_#FF4D00] p-1.5 mx-auto mb-4 hover:scale-105 transition-transform">
-            <img src="/assets/brand-logo.png" alt="The Unfiltered Engineer Official Brand Logo" className="w-full h-full object-contain rounded-xl" />
+            <img src="/assets/brand-logo.png" alt="TechyDeveloper Official Brand Logo" className="w-full h-full object-contain rounded-xl" />
           </div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFC72E] border-2 border-[#141414] text-[#141414] text-xs font-display font-black uppercase tracking-wider mb-3 shadow-[3px_3px_0_0_#141414]">
             <Lock className="w-3.5 h-3.5 text-[#141414]" />
@@ -821,7 +821,7 @@ export default function CheckoutPage() {
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-bold text-slate-950 mt-2">Transaction Confirmed!</h3>
                 <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-                  Thank you for deploying your engineering engagement with <strong>The Unfiltered Engineer</strong>.
+                  Thank you for deploying your engineering engagement with <strong>TechyDeveloper</strong>.
                 </p>
               </div>
 

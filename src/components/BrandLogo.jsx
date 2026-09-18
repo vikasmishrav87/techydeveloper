@@ -22,7 +22,7 @@ export default function BrandLogo({ size = 'md', withText = true, className = ''
       <div className={`relative ${currentSize.icon} rounded-xl overflow-hidden border-2 border-[#141414] bg-[#141414] shadow-[3px_3px_0_0_#FF4D00] group-hover:shadow-[4px_4px_0_0_#141414] group-hover:scale-105 transition-all flex-shrink-0 flex items-center justify-center p-0.5`}>
         <img
           src="/assets/brand-logo.png"
-          alt="The Unfiltered Engineer Brand Logo"
+          alt="TechyDeveloper Brand Logo"
           className="w-full h-full object-contain rounded-lg"
           loading="eager"
           draggable={false}
@@ -36,7 +36,7 @@ export default function BrandLogo({ size = 'md', withText = true, className = ''
       {withText && (
         <div className="flex flex-col pr-1 min-w-0">
           <span className={`font-display font-black tracking-tight text-[#141414] group-hover:text-[#FF4D00] transition-colors whitespace-nowrap leading-none uppercase ${currentSize.text}`}>
-            THE UNFILTERED ENGINEER
+            TECHYDEVELOPER
           </span>
           <span className={`hidden sm:flex font-display font-bold text-[#FF4D00] tracking-[0.14em] uppercase items-center gap-1.5 mt-1 ${currentSize.sub}`}>
             <span className="size-1.5 rounded-full bg-[#FF4D00] animate-ping" />

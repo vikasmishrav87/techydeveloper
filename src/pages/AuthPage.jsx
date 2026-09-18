@@ -228,7 +228,7 @@ export default function AuthPage({ initialMode = 'login' }) {
         <div className="size-16 sm:size-20 rounded-2xl bg-[#141414] overflow-hidden border-2 border-[#141414] shadow-[4px_4px_0_0_#FF4D00] p-1.5 mx-auto hover:scale-105 transition-transform">
           <img 
             src="/assets/brand-logo.png" 
-            alt="The Unfiltered Engineer Official Brand Logo" 
+            alt="TechyDeveloper Official Brand Logo" 
             className="w-full h-full object-contain rounded-xl"
           />
         </div>
@@ -555,7 +555,7 @@ export default function AuthPage({ initialMode = 'login' }) {
           <div className="p-3 rounded-2xl bg-[#FAF7EE] border-2 border-[#141414] text-center text-xs font-mono">
             <span className="text-[#141414]/70">Lost your 12-digit secret recovery key?</span>{' '}
             <a
-              href={`https://wa.me/918369804739?text=Hello%2C%20I%20need%20executive%20assistance%20recovering%20my%20account%20on%20The%20Unfiltered%20Engineer%3A%20${encodeURIComponent(userId)}`}
+              href={`https://wa.me/918369804739?text=Hello%2C%20I%20need%20executive%20assistance%20recovering%20my%20account%20on%20TechyDeveloper%3A%20${encodeURIComponent(userId)}`}
               target="_blank"
               rel="noreferrer"
               className="text-[#25D366] font-black underline hover:text-[#128C7E] inline-flex items-center gap-1"

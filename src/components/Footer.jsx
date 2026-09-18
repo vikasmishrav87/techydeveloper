@@ -29,7 +29,7 @@ export default function Footer({ onOpenTerminal }) {
             <BrandLogo size="md" withText={true} linkTo="/" />
 
             <p className="text-xs sm:text-sm text-[#141414]/75 font-medium leading-relaxed max-w-sm">
-              The Unfiltered Engineer. Global design & engineering studio delivering zero-breach Cyber Security, high-throughput Web3 protocols, production AI swarms, and high-converting tech architectures.
+              TechyDeveloper. Global design & engineering studio delivering zero-breach Cyber Security, high-throughput Web3 protocols, production AI swarms, and high-converting tech architectures.
             </p>
 
             {/* Direct Connect Capsule Buttons */}
@@ -120,7 +120,7 @@ export default function Footer({ onOpenTerminal }) {
         {/* Bottom Bar: Copyright, Legal Links, Back to Top */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-bold text-[#141414]/70">
           <div className="flex flex-wrap items-center gap-3">
-            <span>© {new Date().getFullYear()} THE UNFILTERED ENGINEER. ALL RIGHTS RESERVED.</span>
+            <span>© {new Date().getFullYear()} TECHYDEVELOPER. ALL RIGHTS RESERVED.</span>
             <span>•</span>
             <a href={`mailto:${CONTACT_INFO.supportEmail}`} className="text-[#FF4D00] hover:underline font-mono">
               {CONTACT_INFO.supportEmail}

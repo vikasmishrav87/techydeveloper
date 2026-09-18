@@ -21,11 +21,11 @@ export default function Manifesto() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-dark-800 border border-bronze-500/30 text-bronze-400 text-xs font-mono mb-4">
             <Flame className="w-3.5 h-3.5" />
-            <span>[THE_UNFILTERED_TRUTH]</span>
+            <span>[THE_TECHYDEVELOPER_TRUTH]</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight">
             Why Global Enterprises Choose <br />
-            <span className="bronze-gradient-text">The Unfiltered Engineer Tech Solutions.</span>
+            <span className="bronze-gradient-text">TechyDeveloper Tech Solutions.</span>
           </h2>
           <p className="mt-4 text-titanium-400 text-sm sm:text-base">
             Most legacy IT consultancies are sales machines that outsource code to junior developers. We are an elite technology company that delivers high-performance production tech and IT solutions.
@@ -44,7 +44,7 @@ export default function Manifesto() {
             </div>
             <div className="col-span-4 text-bronze-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Zap className="w-4 h-4 text-bronze-400 shrink-0" />
-              <span>The Unfiltered Engineer</span>
+              <span>TechyDeveloper</span>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ export default function Manifesto() {
                   <span className="text-xs leading-relaxed">{row.traditional}</span>
                 </div>
 
-                {/* The Unfiltered Engineer Advantage */}
+                {/* TechyDeveloper Advantage */}
                 <div className="col-span-4 text-titanium-100 flex items-start gap-2 bg-bronze-950/30 p-2.5 rounded-lg border border-bronze-900/50">
                   <CheckCircle2 className="w-4 h-4 text-bronze-400 shrink-0 mt-0.5" />
                   <span className="text-xs font-medium text-bronze-100 leading-relaxed font-mono">

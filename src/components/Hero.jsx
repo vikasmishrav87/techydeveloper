@@ -31,7 +31,7 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
     '360° TECH GROWTH'
   ];
 
-  // Dynamic Rotating Headline Phrases (Original & Tailored to The Unfiltered Engineer)
+  // Dynamic Rotating Headline Phrases (Original & Tailored to TechyDeveloper)
   const rotatingHeadlines = [
     {
       line1: 'WE ARE ARCHITECTS.',
@@ -237,7 +237,7 @@ export default function Hero({ onOpenTerminal, onOpenScanner, onOpenAIChat }) {
                 <span className="grid size-14 sm:size-16 place-items-center rounded-2xl overflow-hidden bg-[#141414] border-2 border-[#141414] shadow-[3px_3px_0_0_#FF4D00] group-hover:scale-110 transition-transform p-1">
                   <img
                     src="/assets/brand-logo.png"
-                    alt="The Unfiltered Engineer Logo"
+                    alt="TechyDeveloper Logo"
                     className="w-full h-full object-contain rounded-xl"
                   />
                 </span>

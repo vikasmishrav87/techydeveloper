@@ -67,7 +67,7 @@ export default function DigitalMarketingSection() {
             <div className="lg:col-span-7 space-y-5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4D00] text-[#FAF7EE] text-xs font-display font-black uppercase border border-[#FAF7EE]/20">
                 <Sparkles className="size-3.5" />
-                <span>UNFILTERED GROWTH FORMULA</span>
+                <span>TECHYDEVELOPER GROWTH FORMULA</span>
               </div>
               <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-[#FAF7EE] leading-tight">
                 WE DO NOT BURN AD BUDGET. WE BUILD PREDICTABLE CUSTOMER ACQUISITION ASSETS.

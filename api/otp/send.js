@@ -59,9 +59,9 @@ export default async function handler(req, res) {
 
     // 4. Send HTML Email
     const info = await transporter.sendMail({
-      from: `"The Unfiltered Engineer" <${GMAIL_USER}>`,
+      from: `"TechyDeveloper" <${GMAIL_USER}>`,
       to: cleanEmail,
-      subject: `🔐 ${otpCode} is your verification code — The Unfiltered Engineer`,
+      subject: `🔐 ${otpCode} is your verification code — TechyDeveloper`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
         </head>
         <body>
           <div class="card">
-            <span class="badge">The Unfiltered Engineer</span>
+            <span class="badge">TechyDeveloper</span>
             <h1>Email Verification Code</h1>
             <p>Your one-time verification code is below. It will expire in <strong>10 minutes</strong>.</p>
             <div class="code-box">
@@ -88,7 +88,7 @@ export default async function handler(req, res) {
             </div>
             <p style="font-size: 12px; color: #cbd5e1;">If you did not request this code, you can safely ignore this email.</p>
             <div class="footer">
-              The Unfiltered Engineer • Founded by Vikas Mishra<br>
+              TechyDeveloper • Enterprise Engineering Desk<br>
               Direct Line: +918369804739 • Telegram: @Yourstrulyvikasmishra
             </div>
           </div>

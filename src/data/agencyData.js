@@ -1,7 +1,7 @@
 export const CONTACT_INFO = {
   phone: "+918369804739",
   phoneDisplay: "+91 83698 04739",
-  whatsappUrl: "https://wa.me/918369804739?text=Hello%20The%20Unfiltered%20Engineer,%20I%20want%20to%20discuss%20an%20engineering%20/%20marketing%20project.",
+  whatsappUrl: "https://wa.me/918369804739?text=Hello%20TechyDeveloper,%20I%20want%20to%20discuss%20an%20engineering%20/%20marketing%20project.",
   telegramUser: "@Yourstrulyvikasmishra",
   telegramUrl: "https://t.me/Yourstrulyvikasmishra",
   email: "theunfilteredengineersupport@gmail.com",
@@ -23,7 +23,7 @@ export const CONTACT_INFO = {
 ];
 
 export const WORK_MODEL_ECOSYSTEM = {
-  title: "The Unfiltered Engineering Ecosystem",
+  title: "The TechyDeveloper Engineering Ecosystem",
   subtitle: "How our 1,000+ senior engineer team builds, secures, and scales enterprise systems with zero bureaucracy.",
   pillars: [
     {

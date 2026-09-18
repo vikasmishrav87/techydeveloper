@@ -5,7 +5,7 @@ import { Terminal as TerminalIcon, X, Maximize2, Minimize2, ArrowRight, CornerDo
 export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
-    { type: 'system', text: 'THE UNFILTERED ENGINEER — MILITARY-GRADE INTERACTIVE CLI v4.9' },
+    { type: 'system', text: 'TECHYDEVELOPER — MILITARY-GRADE INTERACTIVE CLI v4.9' },
     { type: 'system', text: 'All sessions are end-to-end verified via HMAC-SHA256 zero-trust tokens.' },
     { type: 'system', text: 'Type "help" to view available engineer commands, or "whatsapp" / "telegram" to contact immediately.' }
   ]);
@@ -177,7 +177,7 @@ export default function InteractiveTerminal({ isOpen, onClose, onNavigateTo }) {
             <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
             <div className="ml-3 flex items-center gap-2">
               <img src="/assets/brand-logo.png" alt="Logo" className="size-4 rounded-xs object-contain" />
-              <span className="text-slate-200 font-sans text-xs font-bold uppercase">THE UNFILTERED ENGINEER CLI (bash)</span>
+              <span className="text-slate-200 font-sans text-xs font-bold uppercase">TECHYDEVELOPER CLI (bash)</span>
             </div>
           </div>
           

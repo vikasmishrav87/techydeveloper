@@ -28,7 +28,7 @@ export default function ContactWizard() {
   };
 
   const getWhatsAppForwardLink = () => {
-    const text = encodeURIComponent(`Hi, I am submitting a project inquiry to The Unfiltered Engineer:\n• Name: ${formData.name}\n• Company: ${formData.company || 'N/A'}\n• Specialization: ${formData.selectedService}\n• Model: ${formData.budget}\n• Brief: ${formData.message || 'Ready to start.'}`);
+    const text = encodeURIComponent(`Hi, I am submitting a project inquiry to TechyDeveloper:\n• Name: ${formData.name}\n• Company: ${formData.company || 'N/A'}\n• Specialization: ${formData.selectedService}\n• Model: ${formData.budget}\n• Brief: ${formData.message || 'Ready to start.'}`);
     return `https://wa.me/918369804739?text=${text}`;
   };
 

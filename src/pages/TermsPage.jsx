@@ -14,7 +14,7 @@ export default function TermsPage() {
       content: (
         <div className="space-y-3">
           <p>
-            By accessing the website at <strong>https://techydeveloper.vercel.app</strong>, submitting architecture briefs, utilizing our live telemetry audit scanners, or engaging engineering squads from <strong>The Unfiltered Engineer</strong> ("the Studio", "we", "us"), operated under the leadership of <strong>The Unfiltered Engineer Executive Leadership Desk</strong>, you agree to be bound by these Terms of Service.
+            By accessing the website at <strong>https://techydeveloper.vercel.app</strong>, submitting architecture briefs, utilizing our live telemetry audit scanners, or engaging engineering squads from <strong>TechyDeveloper</strong> ("the Studio", "we", "us"), operated under the leadership of <strong>TechyDeveloper Executive Leadership Desk</strong>, you agree to be bound by these Terms of Service.
           </p>
           <p className="text-xs text-[#141414]/80">
             If you are entering into this agreement on behalf of a corporation, venture-backed startup, or legal entity, you represent that you possess the full legal authority to bind that entity to these governance provisions.
@@ -28,7 +28,7 @@ export default function TermsPage() {
       content: (
         <div className="space-y-3">
           <p>
-            The Unfiltered Engineer delivers specialized high-throughput software architecture, offensive cybersecurity auditing, smart contract / Web3 protocols, AI neural swarm automation, and 360° technical growth engineering.
+            TechyDeveloper delivers specialized high-throughput software architecture, offensive cybersecurity auditing, smart contract / Web3 protocols, AI neural swarm automation, and 360° technical growth engineering.
           </p>
           <ul className="text-xs space-y-1.5 list-disc list-inside text-[#141414]/80">
             <li><strong>Deliverables:</strong> Defined exclusively in mutual project milestone blueprints agreed upon prior to code deployment.</li>
@@ -134,9 +134,9 @@ export default function TermsPage() {
           <p>For contractual notices, custom enterprise Master Service Agreements (MSAs), or billing verifications:</p>
           
           <div className="p-4 rounded-2xl bg-[#141414] text-[#FAF7EE] space-y-2 border-2 border-[#141414]">
-            <div className="font-display font-black text-sm text-[#FFC72E] uppercase">THE UNFILTERED ENGINEER • LEGAL & GOVERNANCE DESK</div>
+            <div className="font-display font-black text-sm text-[#FFC72E] uppercase">TECHYDEVELOPER • LEGAL & GOVERNANCE DESK</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#FAF7EE]/80">
-              <div><strong>Executive Governance:</strong> The Unfiltered Engineer Leadership Desk</div>
+              <div><strong>Executive Governance:</strong> TechyDeveloper Leadership Desk</div>
               <div><strong>Support Email:</strong> <a href="mailto:theunfilteredengineersupport@gmail.com" className="text-[#FFC72E] underline">theunfilteredengineersupport@gmail.com</a></div>
               <div><strong>WhatsApp / Phone:</strong> <a href="https://wa.me/918369804739" className="text-[#25D366] underline">+91 8369804739</a></div>
             </div>

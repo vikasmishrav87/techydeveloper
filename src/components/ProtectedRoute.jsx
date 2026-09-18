@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children, toolName = 'Diagnostic Teleme
           <div className="size-20 rounded-2xl bg-[#141414] overflow-hidden border-2 border-[#141414] shadow-[4px_4px_0_0_#FF4D00] p-2 mx-auto hover:scale-105 transition-transform">
             <img 
               src="/assets/brand-logo.png" 
-              alt="The Unfiltered Engineer Brand Logo" 
+              alt="TechyDeveloper Brand Logo" 
               className="w-full h-full object-contain rounded-xl"
             />
           </div>

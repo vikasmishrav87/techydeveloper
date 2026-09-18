@@ -10,7 +10,7 @@ export default function BigCtaBanner() {
         <div className="size-16 sm:size-20 rounded-2xl overflow-hidden bg-[#141414] border-2 border-[#FAF7EE] mx-auto mb-6 shadow-[5px_5px_0_0_#FF4D00] hover:scale-110 active:scale-95 transition-transform cursor-pointer p-1.5">
           <img
             src="/assets/brand-logo.png"
-            alt="The Unfiltered Engineer Official Brand Logo"
+            alt="TechyDeveloper Official Brand Logo"
             className="w-full h-full object-contain rounded-xl"
           />
         </div>

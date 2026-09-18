@@ -73,7 +73,7 @@ export default function TestimonialsFaq() {
               Frequently Asked <span className="bronze-gradient-text">Engineering Questions</span>
             </h3>
             <p className="text-xs font-mono text-titanium-400">
-              Unfiltered answers to everything you need to know before onboarding.
+              Direct, transparent answers to everything you need to know before onboarding.
             </p>
           </div>
 

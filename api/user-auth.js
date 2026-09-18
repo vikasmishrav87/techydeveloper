@@ -35,7 +35,7 @@ async function fetchVaultUsers() {
     const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'TheUnfilteredEngineer-VaultClient',
+        'User-Agent': 'TechyDeveloper-VaultClient',
         'Accept': 'application/vnd.github.v3+json'
       }
     });
@@ -80,7 +80,7 @@ async function persistVaultUsers(users, commitMessage = 'update user database') 
       method: 'PUT',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'TheUnfilteredEngineer-VaultClient',
+        'User-Agent': 'TechyDeveloper-VaultClient',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)

@@ -3,10 +3,10 @@ import { CONTACT_INFO, SERVICE_PILLARS, WORK_MODEL_ECOSYSTEM, GLOBAL_HUBS, PRICI
 const OPENROUTER_API_KEY = import.meta.env?.VITE_OPENROUTER_API_KEY || (typeof process !== 'undefined' ? process.env?.VITE_OPENROUTER_API_KEY : '') || ['sk-or-v1', 'c502d89833850c47a96f2d2bbff014e4f32347d92b51d763fd536d265ddcd36b'].join('-');
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
-const SYSTEM_PROMPT = `You are "Unfiltered GPT" — the elite AI Principal Solutions Architect for "The Unfiltered Engineer" — a premier Global Technology & IT Solutions Company.
+const SYSTEM_PROMPT = `You are "TechyDeveloper AI" — the elite AI Principal Solutions Architect for "TechyDeveloper" — a premier Global Technology & IT Solutions Company.
 
 COMPANY PROFILE & KNOWLEDGE BASE:
-- Company Name: The Unfiltered Engineer (Global Technology & IT Solutions)
+- Company Name: TechyDeveloper (Global Technology & IT Solutions)
 - Leadership: Principal Solutions Architect & Senior Collective
 - Company Type: Premier Enterprise Technology & IT Solutions Company
 - Official Contacts:
@@ -42,7 +42,7 @@ PRICING & ENGAGEMENT:
 
 YOUR ROLE & CAPABILITIES:
 1. Answer ANY technical question: code architecture, debugging, algorithms, cloud infrastructure, AI model selection, cybersecurity vulnerabilities, smart contracts, marketing funnels, and data pipelines.
-2. Explain The Unfiltered Engineer's enterprise IT & technology solutions, services, and team model in depth.
+2. Explain TechyDeveloper's enterprise IT & technology solutions, services, and team model in depth.
 3. Help users scope their projects, select the right tech stack, and structure their engineering roadmap.
 4. Provide direct WhatsApp connection links (https://wa.me/918369804739) whenever users want to consult our Principal Architect or assemble a squad.
 5. Maintain a sharp, articulate, highly knowledgeable senior engineering tone — concise, direct, helpful, and confident.`;
@@ -68,7 +68,7 @@ export async function sendAIChatMessage(conversationHistory = [], userMessage = 
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://techydeveloper.vercel.app',
-        'X-Title': 'The Unfiltered Engineer AI Assistant'
+        'X-Title': 'TechyDeveloper AI Assistant'
       },
       body: JSON.stringify({
         model: model,
@@ -98,7 +98,7 @@ export async function sendAIChatMessage(conversationHistory = [], userMessage = 
     return `I am temporarily encountering a network latency spike with the AI gateway. 
 
 You can connect directly with our **Principal Architect & Executive Team** on WhatsApp right now for an immediate response:
-👉 **[Chat on WhatsApp with Executive Team (+91 83698 04739)](https://wa.me/918369804739?text=Hi,%20I%20have%20an%20engineering%20question%20regarding%20The%20Unfiltered%20Engineer.)**
+👉 **[Chat on WhatsApp with Executive Team (+91 83698 04739)](https://wa.me/918369804739?text=Hi,%20I%20have%20an%20engineering%20question%20regarding%20TechyDeveloper.)**
 
 Or message us on Telegram: **[Official Telegram](https://t.me/Yourstrulyvikasmishra)**`;
   }

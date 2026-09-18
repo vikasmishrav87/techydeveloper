@@ -9,7 +9,7 @@ export default function AIChatBot({ isOpen, onClose }) {
     {
       id: 'welcome-1',
       role: 'assistant',
-      content: `👋 **Welcome to The Unfiltered Engineer!**\n\nI am your **AI Solutions Architect** powered by GPT-4o. I have deep knowledge across our **1,000+ senior engineer collective** and 8 specialized practices.\n\nI can answer **any technical question**, scope your architecture, or connect you directly with our **Principal Architect & Executive Team**.\n\nHow can I help you today?`
+      content: `👋 **Welcome to TechyDeveloper!**\n\nI am your **AI Solutions Architect** powered by GPT-4o. I have deep knowledge across our **1,000+ senior engineer collective** and 8 specialized practices.\n\nI can answer **any technical question**, scope your architecture, or connect you directly with our **Principal Architect & Executive Team**.\n\nHow can I help you today?`
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');

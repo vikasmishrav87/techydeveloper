@@ -91,7 +91,7 @@ export default function LivePaymentStatus({ payment, onReset }) {
         {/* Official Receipt Card */}
         <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left font-mono text-xs space-y-3 print:border-none print:shadow-none">
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-            <span className="font-bold text-slate-950 text-sm">THE UNFILTERED ENGINEER</span>
+            <span className="font-bold text-slate-950 text-sm">TECHYDEVELOPER</span>
             <span className="text-emerald-700 font-bold">OFFICIAL RECEIPT</span>
           </div>
 

@@ -1,4 +1,4 @@
-// Master Executive Vault API - The Unfiltered Engineer
+// Master Executive Vault API - TechyDeveloper
 // Complete administrative oversight & mutation control across permanent ue-vault storage
 
 const GITHUB_TOKEN = process.env.GITHUB_DB_TOKEN || ['ghp', 'FhFC8AYsIlE2UXe4iQ2iNkzDCy3mkL2iqxf0'].join('_');
@@ -48,7 +48,7 @@ async function getVaultFile(fileName, forceFresh = false) {
     const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${fileName}`, {
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'TheUnfilteredEngineer-VaultClient',
+        'User-Agent': 'TechyDeveloper-VaultClient',
         'Accept': 'application/vnd.github.v3+json'
       }
     });
@@ -95,7 +95,7 @@ async function putVaultFile(fileName, data, commitMessage = 'update file') {
       method: 'PUT',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'TheUnfilteredEngineer-VaultClient',
+        'User-Agent': 'TechyDeveloper-VaultClient',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)

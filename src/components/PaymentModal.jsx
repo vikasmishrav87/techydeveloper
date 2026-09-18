@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   X, Check, ShieldCheck, CreditCard, QrCode, Globe, Building2, Copy, CheckCircle2, 
@@ -850,7 +850,7 @@ export default function PaymentModal({
                 </span>
                 <h3 className="text-2xl font-bold text-slate-950 mt-2">Transaction Confirmed!</h3>
                 <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-                  Thank you for deploying your engineering engagement with <strong>The Unfiltered Engineer</strong>.
+                  Thank you for deploying your engineering engagement with <strong>TechyDeveloper</strong>.
                 </p>
               </div>
 
