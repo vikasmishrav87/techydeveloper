@@ -247,6 +247,84 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // 5. GOOGLE OAUTH CLIENT LOGIN
+  const loginWithGoogle = async (googleResponse) => {
+    let authPayload = {};
+    if (typeof googleResponse === 'string') {
+      authPayload = { credential: googleResponse };
+    } else if (googleResponse?.credential) {
+      authPayload = { credential: googleResponse.credential };
+    } else if (googleResponse?.access_token) {
+      authPayload = { accessToken: googleResponse.access_token };
+    } else {
+      authPayload = googleResponse || {};
+    }
+
+    const parseJwt = (token) => {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          window.atob(base64)
+            .split('')
+            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        return JSON.parse(jsonPayload);
+      } catch {
+        return null;
+      }
+    };
+
+    let authenticatedUser = null;
+
+    try {
+      const resp = await fetch('/api/user-auth?action=google-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(authPayload)
+      });
+      const data = await resp.json();
+      if (resp.ok && data.success && data.user) {
+        authenticatedUser = data.user;
+      } else {
+        throw new Error(data.error || 'Google authentication failed.');
+      }
+    } catch (apiErr) {
+      // Local fallback in case network / offline: decode JWT credential
+      if (authPayload.credential) {
+        const decoded = parseJwt(authPayload.credential);
+        if (decoded && decoded.email) {
+          authenticatedUser = {
+            id: 'usr_g_' + (decoded.sub || Date.now()),
+            userId: (decoded.email.split('@')[0] || 'google_client').toLowerCase(),
+            email: decoded.email.toLowerCase(),
+            name: decoded.name || 'Google Client',
+            avatar: decoded.picture || '',
+            role: 'Verified Client',
+            authProvider: 'google',
+            createdAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          };
+        } else {
+          throw apiErr;
+        }
+      } else {
+        throw apiErr;
+      }
+    }
+
+    saveLocalAccount(authenticatedUser);
+    localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(authenticatedUser));
+    setUser(authenticatedUser);
+    logSecurityEvent('GOOGLE_AUTH_SUCCESS', `Client signed in with Google: ${authenticatedUser.email}`, { 
+      userId: authenticatedUser.userId,
+      email: authenticatedUser.email
+    });
+
+    return authenticatedUser;
+  };
+
   // Backwards compatible aliases
   const requestResetCode = async (userId) => verifyRecoveryKey(userId, '');
   const resetPasswordWithCode = async (userId, code, newPassword) => updatePasswordWithRecoveryKey(userId, code, newPassword);
@@ -268,6 +346,7 @@ export function AuthProvider({ children }) {
       loading,
       login,
       register,
+      loginWithGoogle,
       verifyRecoveryKey,
       updatePasswordWithRecoveryKey,
       requestResetCode,

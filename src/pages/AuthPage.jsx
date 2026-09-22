@@ -5,12 +5,36 @@ import {
   Lock, Mail, User, Key, Eye, EyeOff, ArrowRight, ShieldCheck, 
   CheckCircle2, AlertTriangle, UserPlus, LogIn, ShieldAlert, Check, Copy, Sparkles, Shield
 } from 'lucide-react';
+import { GOOGLE_AUTH_CONFIG } from '../config/authConfig';
 import confetti from 'canvas-confetti';
+
+function GoogleIcon({ className = "w-5 h-5" }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path
+        fill="#4285F4"
+        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+      />
+    </svg>
+  );
+}
 
 export default function AuthPage({ initialMode = 'login' }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, login, register, verifyRecoveryKey, updatePasswordWithRecoveryKey, isAuthenticated } = useAuth();
+  const { user, login, register, loginWithGoogle, verifyRecoveryKey, updatePasswordWithRecoveryKey, isAuthenticated } = useAuth();
 
   const modeParam = searchParams.get('mode');
   const redirectParam = searchParams.get('redirect') || '/';
@@ -49,6 +73,144 @@ export default function AuthPage({ initialMode = 'login' }) {
       setMode(modeParam);
     }
   }, [modeParam]);
+
+  // Google OAuth Loading State
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Initialize Google Identity Services (GSI)
+  useEffect(() => {
+    if (mode === 'reset') return;
+
+    let checkInterval = null;
+
+    const initGoogleAuth = () => {
+      if (window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_AUTH_CONFIG.clientId,
+            callback: async (response) => {
+              if (response && response.credential) {
+                try {
+                  setGoogleLoading(true);
+                  setError('');
+                  await loginWithGoogle(response.credential);
+                  try {
+                    confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                  } catch {}
+                  navigate(redirectParam, { replace: true });
+                } catch (err) {
+                  setError(err.message || 'Google sign-in failed. Please try again.');
+                } finally {
+                  setGoogleLoading(false);
+                }
+              }
+            },
+            auto_select: false,
+            cancel_on_tap_outside: true
+          });
+
+          // Render official button if container exists
+          const btnEl = document.getElementById('googleSignInBtnContainer');
+          if (btnEl) {
+            btnEl.innerHTML = '';
+            window.google.accounts.id.renderButton(btnEl, {
+              type: 'standard',
+              theme: 'outline',
+              size: 'large',
+              text: mode === 'signup' ? 'signup_with' : 'signin_with',
+              shape: 'pill',
+              logo_alignment: 'left',
+              width: 320
+            });
+          }
+        } catch (e) {
+          console.warn('Google GSI init notice:', e);
+        }
+      }
+    };
+
+    if (window.google?.accounts?.id) {
+      initGoogleAuth();
+    } else {
+      checkInterval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(checkInterval);
+          initGoogleAuth();
+        }
+      }, 300);
+    }
+
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
+  }, [mode, loginWithGoogle, navigate, redirectParam]);
+
+  // Handle Custom Google Sign-In Click
+  const handleCustomGoogleClick = () => {
+    setError('');
+    setGoogleLoading(true);
+
+    if (window.google?.accounts?.oauth2) {
+      try {
+        const client = window.google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_AUTH_CONFIG.clientId,
+          scope: 'email profile openid',
+          callback: async (tokenResponse) => {
+            if (tokenResponse?.error) {
+              setGoogleLoading(false);
+              setError(tokenResponse.error_description || 'Google sign-in was cancelled or encountered an error.');
+              return;
+            }
+            if (tokenResponse?.access_token) {
+              try {
+                await loginWithGoogle(tokenResponse);
+                try {
+                  confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                } catch {}
+                navigate(redirectParam, { replace: true });
+              } catch (err) {
+                setError(err.message || 'Google sign-in failed.');
+              } finally {
+                setGoogleLoading(false);
+              }
+            } else {
+              setGoogleLoading(false);
+            }
+          },
+          error_callback: (err) => {
+            setGoogleLoading(false);
+            console.error('Google OAuth error:', err);
+            setError(err?.message || 'Google authentication window was closed or blocked.');
+          }
+        });
+
+        client.requestAccessToken();
+      } catch (err) {
+        console.error('Failed to launch Google OAuth token client:', err);
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              setGoogleLoading(false);
+              setError('Google pop-up was blocked. Please enable pop-ups or use the official Google button below.');
+            }
+          });
+        } else {
+          setGoogleLoading(false);
+          setError('Google Identity Services is initializing. Please click again in a moment.');
+        }
+      }
+    } else if (window.google?.accounts?.id) {
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          setGoogleLoading(false);
+          setError('Google pop-up was blocked. Please use the button below or check your browser settings.');
+        }
+      });
+    } else {
+      setGoogleLoading(false);
+      setError('Connecting to Google Services... Please click again in 2 seconds.');
+    }
+  };
 
   // Copy Key Helper
   const handleCopyKey = () => {
@@ -279,6 +441,36 @@ export default function AuthPage({ initialMode = 'login' }) {
             >
               CREATE ACCOUNT
             </button>
+          </div>
+        )}
+
+        {/* Google Authentication Section */}
+        {mode !== 'reset' && (
+          <div className="space-y-3">
+            <button
+              type="button"
+              disabled={googleLoading || loading}
+              onClick={handleCustomGoogleClick}
+              className="w-full py-3 px-4 rounded-2xl border-2 border-[#141414] bg-white hover:bg-[#FAF7EE] text-[#141414] font-display font-black text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-3 shadow-[4px_4px_0_0_#141414] hover:shadow-[2px_2px_0_0_#141414] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {googleLoading ? (
+                <div className="size-4 border-2 border-[#141414] border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <GoogleIcon className="size-5 flex-shrink-0" />
+              )}
+              <span>{googleLoading ? 'CONNECTING WITH GOOGLE...' : (mode === 'signup' ? 'SIGN UP WITH GOOGLE' : 'CONTINUE WITH GOOGLE')}</span>
+            </button>
+
+            {/* Official Google GSI Render Mount (Fallback / Direct GSI Button) */}
+            <div id="googleSignInBtnContainer" className="flex justify-center overflow-hidden max-w-full min-h-[0px]"></div>
+
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t-2 border-[#141414]/20"></div>
+              <span className="flex-shrink mx-3 text-[10px] font-mono font-black uppercase text-[#141414]/60 tracking-wider">
+                OR WITH EMAIL & PASSWORD
+              </span>
+              <div className="flex-grow border-t-2 border-[#141414]/20"></div>
+            </div>
           </div>
         )}
 

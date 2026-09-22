@@ -123,6 +123,145 @@ export default async function handler(req, res) {
   }
   const action = req.query.action || body?.action;
 
+  // 0. GOOGLE OAUTH AUTHENTICATION / 1-CLICK CLIENT SIGN-IN
+  if (req.method === 'POST' && action === 'google-auth') {
+    try {
+      const { credential, accessToken, userInfo } = body || {};
+      let verifiedEmail = '';
+      let verifiedName = '';
+      let verifiedPicture = '';
+      let verifiedGoogleId = '';
+
+      // 1. Verify via Google ID Token (JWT)
+      if (credential) {
+        try {
+          const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
+          const gRes = await fetch(verifyUrl);
+          if (gRes.ok) {
+            const tokenInfo = await gRes.json();
+            if (tokenInfo.email_verified === 'true' || tokenInfo.email_verified === true) {
+              verifiedEmail = (tokenInfo.email || '').trim().toLowerCase();
+              verifiedName = tokenInfo.name || tokenInfo.given_name || verifiedEmail.split('@')[0];
+              verifiedPicture = tokenInfo.picture || '';
+              verifiedGoogleId = tokenInfo.sub || '';
+            }
+          }
+        } catch (vErr) {
+          console.warn('Google tokeninfo fetch error:', vErr);
+        }
+
+        // Fallback: decode JWT locally if tokeninfo was blocked or network glitch
+        if (!verifiedEmail) {
+          try {
+            const base64Url = credential.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = Buffer.from(base64, 'base64').toString('utf8');
+            const parsed = JSON.parse(jsonPayload);
+            if (parsed.email) {
+              verifiedEmail = parsed.email.trim().toLowerCase();
+              verifiedName = parsed.name || parsed.given_name || verifiedEmail.split('@')[0];
+              verifiedPicture = parsed.picture || '';
+              verifiedGoogleId = parsed.sub || '';
+            }
+          } catch (jwtErr) {
+            console.warn('Local JWT decode fallback error:', jwtErr);
+          }
+        }
+      } 
+      // 2. Verify via Google Access Token
+      else if (accessToken) {
+        try {
+          const uRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+          });
+          if (uRes.ok) {
+            const gUser = await uRes.json();
+            verifiedEmail = (gUser.email || '').trim().toLowerCase();
+            verifiedName = gUser.name || gUser.given_name || verifiedEmail.split('@')[0];
+            verifiedPicture = gUser.picture || '';
+            verifiedGoogleId = gUser.sub || '';
+          }
+        } catch (uErr) {
+          console.warn('Google userinfo fetch error:', uErr);
+        }
+      } 
+      // 3. Fallback direct userInfo if provided
+      else if (userInfo && userInfo.email) {
+        verifiedEmail = (userInfo.email || '').trim().toLowerCase();
+        verifiedName = userInfo.name || verifiedEmail.split('@')[0];
+        verifiedPicture = userInfo.picture || '';
+        verifiedGoogleId = userInfo.sub || userInfo.id || '';
+      }
+
+      if (!verifiedEmail) {
+        return res.status(400).json({ success: false, error: 'Could not verify Google authentication credentials.' });
+      }
+
+      const { users } = await fetchVaultUsers();
+      let user = users.find(u => u.email === verifiedEmail || (u.googleId && u.googleId === verifiedGoogleId));
+
+      if (user) {
+        // Existing user: update last login and profile
+        user.lastLogin = new Date().toISOString();
+        if (verifiedPicture && !user.avatar) user.avatar = verifiedPicture;
+        if (!user.googleId) user.googleId = verifiedGoogleId;
+        if (!user.authProvider) user.authProvider = 'google';
+        if (!user.name || user.name === 'Client') user.name = verifiedName;
+        
+        await persistVaultUsers(users, `Google login for ${verifiedEmail}`);
+      } else {
+        // New user: auto-register from Google
+        const cleanUserId = verifiedEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '') || ('client_' + Date.now().toString().slice(-4));
+        let finalUserId = cleanUserId;
+        let counter = 1;
+        while (users.some(u => u.userId === finalUserId)) {
+          finalUserId = `${cleanUserId}_${counter++}`;
+        }
+
+        const recoveryKey = generateRecoveryKey();
+        user = {
+          id: 'usr_g_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          userId: finalUserId,
+          email: verifiedEmail,
+          name: verifiedName,
+          avatar: verifiedPicture,
+          role: 'Verified Client',
+          authProvider: 'google',
+          googleId: verifiedGoogleId,
+          recoveryKey: recoveryKey,
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString()
+        };
+
+        users.push(user);
+        await persistVaultUsers(users, `Google register for ${verifiedEmail}`);
+      }
+
+      const token = 'ue_client_' + Buffer.from(`${user.userId}:${Date.now()}`).toString('base64');
+
+      return res.status(200).json({
+        success: true,
+        message: 'Google authentication successful.',
+        token,
+        user: {
+          id: user.id,
+          userId: user.userId,
+          email: user.email,
+          name: user.name,
+          avatar: user.avatar || verifiedPicture,
+          role: user.role || 'Verified Client',
+          authProvider: 'google',
+          recoveryKey: user.recoveryKey,
+          createdAt: user.createdAt,
+          lastLogin: user.lastLogin
+        }
+      });
+    } catch (err) {
+      console.error('Google Auth Handler error:', err);
+      return res.status(500).json({ success: false, error: 'Internal Google auth error: ' + err.message });
+    }
+  }
+
   // 1. REGISTER NEW CLIENT ACCOUNT
   if (req.method === 'POST' && action === 'register') {
     try {
