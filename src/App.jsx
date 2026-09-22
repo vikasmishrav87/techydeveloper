@@ -533,6 +533,24 @@ export default function App() {
           <Route path="/forgot-password" element={<AuthPage initialMode="reset" />} />
           <Route path="/reset-password" element={<AuthPage initialMode="reset" />} />
 
+          {/* Explicit Protected Client Dashboard Route */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute toolName="Client Operations & Diagnostic Dashboard">
+                <SecurityAuditPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/client-dashboard" 
+            element={
+              <ProtectedRoute toolName="Client Operations & Diagnostic Dashboard">
+                <SecurityAuditPage />
+              </ProtectedRoute>
+            } 
+          />
+
           {/* Catch-all fallback so no URL ever shows a blank page */}
           <Route path="*" element={<Navigate to="/checkout" replace />} />
         </Routes>

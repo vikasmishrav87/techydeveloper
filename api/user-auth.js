@@ -132,43 +132,37 @@ export default async function handler(req, res) {
       let verifiedPicture = '';
       let verifiedGoogleId = '';
 
-      // 1. Verify via Google ID Token (JWT)
+      // 1. Verify via Google ID Token (Cryptographically verified via Google TokenInfo)
       if (credential) {
         try {
           const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
           const gRes = await fetch(verifyUrl);
           if (gRes.ok) {
             const tokenInfo = await gRes.json();
-            if (tokenInfo.email_verified === 'true' || tokenInfo.email_verified === true) {
+            
+            // Validate that email is verified by Google
+            const isEmailVerified = tokenInfo.email_verified === 'true' || tokenInfo.email_verified === true;
+            
+            // Validate Audience (token must be issued specifically for our Google client ID)
+            const EXPECTED_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 
+              Buffer.from('ODA5OTY2MDA3NTQwLWN1c2pncWNsOTBnbTFsYTVkN3JoajFzOTQybjdnZ3ZhLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t', 'base64').toString('utf8');
+            
+            const isAuthorizedAudience = !tokenInfo.aud || !EXPECTED_CLIENT_ID || tokenInfo.aud === EXPECTED_CLIENT_ID;
+
+            if (isEmailVerified && isAuthorizedAudience) {
               verifiedEmail = (tokenInfo.email || '').trim().toLowerCase();
               verifiedName = tokenInfo.name || tokenInfo.given_name || verifiedEmail.split('@')[0];
               verifiedPicture = tokenInfo.picture || '';
               verifiedGoogleId = tokenInfo.sub || '';
+            } else if (!isAuthorizedAudience) {
+              return res.status(401).json({ success: false, error: 'Google ID token was minted for an unauthorized application.' });
             }
           }
         } catch (vErr) {
           console.warn('Google tokeninfo fetch error:', vErr);
         }
-
-        // Fallback: decode JWT locally if tokeninfo was blocked or network glitch
-        if (!verifiedEmail) {
-          try {
-            const base64Url = credential.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = Buffer.from(base64, 'base64').toString('utf8');
-            const parsed = JSON.parse(jsonPayload);
-            if (parsed.email) {
-              verifiedEmail = parsed.email.trim().toLowerCase();
-              verifiedName = parsed.name || parsed.given_name || verifiedEmail.split('@')[0];
-              verifiedPicture = parsed.picture || '';
-              verifiedGoogleId = parsed.sub || '';
-            }
-          } catch (jwtErr) {
-            console.warn('Local JWT decode fallback error:', jwtErr);
-          }
-        }
       } 
-      // 2. Verify via Google Access Token
+      // 2. Verify via Google Access Token (Cryptographically verified via Google OAuth2 UserInfo)
       else if (accessToken) {
         try {
           const uRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -176,25 +170,24 @@ export default async function handler(req, res) {
           });
           if (uRes.ok) {
             const gUser = await uRes.json();
-            verifiedEmail = (gUser.email || '').trim().toLowerCase();
-            verifiedName = gUser.name || gUser.given_name || verifiedEmail.split('@')[0];
-            verifiedPicture = gUser.picture || '';
-            verifiedGoogleId = gUser.sub || '';
+            const isEmailVerified = gUser.email_verified === true || gUser.email_verified === 'true';
+            if (isEmailVerified && gUser.email) {
+              verifiedEmail = (gUser.email || '').trim().toLowerCase();
+              verifiedName = gUser.name || gUser.given_name || verifiedEmail.split('@')[0];
+              verifiedPicture = gUser.picture || '';
+              verifiedGoogleId = gUser.sub || '';
+            }
           }
         } catch (uErr) {
           console.warn('Google userinfo fetch error:', uErr);
         }
-      } 
-      // 3. Fallback direct userInfo if provided
-      else if (userInfo && userInfo.email) {
-        verifiedEmail = (userInfo.email || '').trim().toLowerCase();
-        verifiedName = userInfo.name || verifiedEmail.split('@')[0];
-        verifiedPicture = userInfo.picture || '';
-        verifiedGoogleId = userInfo.sub || userInfo.id || '';
       }
 
       if (!verifiedEmail) {
-        return res.status(400).json({ success: false, error: 'Could not verify Google authentication credentials.' });
+        return res.status(401).json({ 
+          success: false, 
+          error: 'Google authentication verification failed. Invalid, expired, or unverified token.' 
+        });
       }
 
       const { users } = await fetchVaultUsers();
@@ -473,7 +466,25 @@ export default async function handler(req, res) {
     }
   }
 
-  // 5. GET SESSION STATUS
+  // 5. CLIENT LOGOUT & SERVER-SIDE SESSION INVALIDATION
+  if (req.method === 'POST' && action === 'logout') {
+    try {
+      const { userId } = body || {};
+      if (userId) {
+        const { users } = await fetchVaultUsers();
+        const u = users.find(x => x.userId === userId || x.email === userId);
+        if (u) {
+          u.lastLogout = new Date().toISOString();
+          await persistVaultUsers(users, `logout user ${userId}`);
+        }
+      }
+      return res.status(200).json({ success: true, message: 'Session invalidated successfully.' });
+    } catch (err) {
+      return res.status(200).json({ success: true, message: 'Session terminated.' });
+    }
+  }
+
+  // 6. GET SESSION STATUS
   if (req.method === 'GET') {
     const authHeader = req.headers.authorization || '';
     const token = authHeader.replace(/^Bearer\s+/i, '');

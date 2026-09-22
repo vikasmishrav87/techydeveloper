@@ -329,9 +329,16 @@ export function AuthProvider({ children }) {
   const requestResetCode = async (userId) => verifyRecoveryKey(userId, '');
   const resetPasswordWithCode = async (userId, code, newPassword) => updatePasswordWithRecoveryKey(userId, code, newPassword);
 
-  // Logout
-  const logout = () => {
+  // Logout: Invalidate session on server and clear client storage
+  const logout = async () => {
     const userId = user?.userId;
+    try {
+      fetch('/api/user-auth?action=logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      }).catch(() => {});
+    } catch {}
     localStorage.removeItem(STORAGE_SESSION_KEY);
     setUser(null);
     if (userId) {
