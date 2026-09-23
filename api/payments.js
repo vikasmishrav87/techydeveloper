@@ -1,4 +1,6 @@
-// Serverless API for Managing Real-Time Payment Submissions, Approvals & Permanent Vault Storage
+// Serverless API for Managing Payments with Strict Session Authorization & IDOR Defense
+import { requireAuth, requireAdmin, getAuthenticatedSession } from './lib/authMiddleware.js';
+import { enforceRateLimit } from './lib/rateLimiter.js';
 
 const GITHUB_TOKEN = process.env.GITHUB_DB_TOKEN || ['ghp', 'FhFC8AYsIlE2UXe4iQ2iNkzDCy3mkL2iqxf0'].join('_');
 const VAULT_REPO = 'vikasmishrav87/ue-vault';
@@ -32,104 +34,156 @@ async function fetchVaultPayments() {
     }
 
     const data = await res.json();
-    const parsed = JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
-    const payments = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.payments) ? parsed.payments : []);
+    let payments = [];
+    if (data.content) {
+      try {
+        const parsed = JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+        payments = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.payments) ? parsed.payments : []);
+      } catch {
+        payments = [];
+      }
+    }
     
     global._UE_PAYMENTS_CACHE = {
       payments,
-      sha: data.sha,
+      sha: data.sha || null,
       lastFetched: now
     };
 
-    return { payments, sha: data.sha };
+    return { payments, sha: data.sha || null };
   } catch (err) {
-    console.error('Failed to load payments from vault:', err.message);
+    console.warn('Failed to load payments from vault:', err.message);
     return { payments: global._UE_PAYMENTS_CACHE.payments || [], sha: global._UE_PAYMENTS_CACHE.sha };
   }
 }
 
 // Helper to commit and persist updated payments permanently into GitHub Vault
-async function persistVaultPayments(payments, commitMessage = 'update payments database') {
-  try {
-    const current = await fetchVaultPayments();
-    const sha = current.sha;
+async function persistVaultPayments(payments, commitMessage = 'update payments database', retries = 3) {
+  global._UE_PAYMENTS_CACHE.payments = payments;
+  global._UE_PAYMENTS_CACHE.lastFetched = Date.now();
 
-    const body = {
-      message: `[Vault DB] ${commitMessage}`,
-      content: Buffer.from(JSON.stringify(payments, null, 2)).toString('base64')
-    };
-    if (sha) {
-      body.sha = sha;
-    }
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const current = await fetchVaultPayments();
+      const sha = current.sha;
 
-    const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'TechyDeveloper-VaultClient',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-
-    const resData = await res.json();
-    if (res.ok && resData.content) {
-      global._UE_PAYMENTS_CACHE = {
-        payments,
-        sha: resData.content.sha,
-        lastFetched: Date.now()
+      const body = {
+        message: `[Vault DB] ${commitMessage}`,
+        content: Buffer.from(JSON.stringify(payments, null, 2)).toString('base64'),
+        branch: 'main'
       };
-      return true;
+      if (sha) {
+        body.sha = sha;
+      }
+
+      const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'User-Agent': 'TechyDeveloper-VaultClient',
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      const resData = await res.json();
+      if (res.ok && resData.content) {
+        global._UE_PAYMENTS_CACHE.sha = resData.content.sha;
+        return true;
+      }
+
+      if (res.status === 409 && attempt < retries - 1) {
+        global._UE_PAYMENTS_CACHE.lastFetched = 0;
+        await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
+        continue;
+      }
+    } catch (err) {
+      console.error('Vault payments persistence error:', err.message);
     }
-    return false;
-  } catch (err) {
-    console.error('Vault payments persistence error:', err);
-    return false;
   }
+  return false;
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const reqOrigin = req.headers.origin || 'https://techydeveloper.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, X-Admin-Passcode'
   );
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // 1. GET: Fetch payment by ID or list all payments
+  // 1. GET: Fetch payments with strict IDOR defense
   if (req.method === 'GET') {
+    // Check authentication
+    const session = await getAuthenticatedSession(req);
+    const adminCheck = await requireAdmin(req, { status: () => ({ json: () => {} }) });
+    const isAdmin = adminCheck?.isAdmin === true;
+
+    if (!session && !isAdmin) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized: You must be logged in to view payment history.'
+      });
+    }
+
     const { id } = req.query;
     const { payments } = await fetchVaultPayments();
 
+    // Admin can see all payments or any payment by ID
+    if (isAdmin) {
+      if (id) {
+        const payment = payments.find(p => p.id === id);
+        if (!payment) return res.status(404).json({ success: false, error: 'Payment not found' });
+        return res.status(200).json({ success: true, payment });
+      }
+      return res.status(200).json({ success: true, count: payments.length, payments });
+    }
+
+    // Client IDOR Protection: clients can ONLY see their own payments
     if (id) {
       const payment = payments.find(p => p.id === id);
-      if (!payment) {
-        return res.status(404).json({ success: false, error: 'Payment record not found' });
+      if (!payment) return res.status(404).json({ success: false, error: 'Payment not found' });
+
+      const isOwner = payment.userId === session.userId || payment.clientEmail === session.email;
+      if (!isOwner) {
+        return res.status(403).json({ success: false, error: 'Forbidden: Access denied to this payment record.' });
       }
       return res.status(200).json({ success: true, payment });
     }
 
+    // Filter payments strictly to session user
+    const clientPayments = payments.filter(
+      p => p.userId === session.userId || (p.clientEmail && p.clientEmail.toLowerCase() === session.email.toLowerCase())
+    );
+
     return res.status(200).json({
       success: true,
-      count: payments.length,
-      payments
+      count: clientPayments.length,
+      payments: clientPayments
     });
   }
 
-  // 2. POST: Submit a new payment verification request (Permanent Vault Persistence)
+  // 2. POST: Submit a payment verification request
   if (req.method === 'POST') {
+    if (!enforceRateLimit(req, res, 'submit-payment', 10, 60000)) return;
+
+    // Verify authenticated session
+    const session = await requireAuth(req, res);
+    if (!session) return; // Response handled by middleware
+
     try {
       let body = req.body;
       if (typeof body === 'string') {
         try { body = JSON.parse(body); } catch (e) {}
       }
 
-      // Mandatory validation: Screenshot Proof is required
       if (!body.screenshot || typeof body.screenshot !== 'string' || body.screenshot.trim().length < 30) {
         return res.status(400).json({
           success: false,
@@ -137,34 +191,34 @@ export default async function handler(req, res) {
         });
       }
 
-      const clientIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
-      const orderId = body.id || ('TXN-' + Date.now().toString().slice(-6) + Math.floor(100 + Math.random() * 900));
+      const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || '127.0.0.1';
+      const orderId = 'TXN-' + Date.now().toString().slice(-6) + Math.floor(100 + Math.random() * 900);
 
+      // Identity derived from server session (anti-spoofing)
       const newPayment = {
         id: orderId,
+        userId: session.userId,
+        clientName: session.name || body.clientName || 'Valued Client',
+        clientEmail: session.email,
+        clientPhone: body.clientPhone || '',
         amountUSD: Number(body.amountUSD) || 0,
         amountINR: Number(body.amountINR) || 0,
         currency: body.currency || 'USD',
         method: body.method || 'UPI QR Scanner',
         network: body.network || '',
-        clientName: body.clientName || 'Valued Client',
-        clientEmail: body.clientEmail || '',
-        clientPhone: body.clientPhone || '',
         service: body.service || 'Custom Engineering Scope / Milestone Retainer',
-        utr: body.utr || body.txHash || '',
+        utr: (body.utr || body.txHash || '').trim(),
         screenshot: body.screenshot || '',
-        status: body.status || 'pending', // 'pending' | 'approved' | 'rejected'
-        rejectionReason: body.rejectionReason || '',
+        status: 'pending', // Client CANNOT set status to 'approved'
+        rejectionReason: '',
         clientIp,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
 
       const { payments } = await fetchVaultPayments();
-      // Unshift new payment at top
       payments.unshift(newPayment);
 
-      // Save permanently to GitHub Vault
       await persistVaultPayments(payments, `submit payment ${orderId}`);
 
       return res.status(201).json({
@@ -177,19 +231,19 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. PATCH / PUT: Update status (Approve / Reject) or Edit details
+  // 3. PATCH / PUT: Update status (Approve / Reject) - Strictly ADMIN ONLY
   if (req.method === 'PATCH' || req.method === 'PUT') {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+
     try {
       let body = req.body;
       if (typeof body === 'string') {
         try { body = JSON.parse(body); } catch (e) {}
       }
 
-      const { id, status, reason, utr, amountUSD, amountINR } = body;
-
-      if (!id) {
-        return res.status(400).json({ error: 'Missing payment ID' });
-      }
+      const { id, status, reason, utr, amountUSD, amountINR } = body || {};
+      if (!id) return res.status(400).json({ error: 'Missing payment ID' });
 
       const { payments } = await fetchVaultPayments();
       const paymentIndex = payments.findIndex(p => p.id === id);
@@ -217,8 +271,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // 4. DELETE: Purge payment record
+  // 4. DELETE: Purge payment record - Strictly ADMIN ONLY
   if (req.method === 'DELETE') {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+
     try {
       const { id } = req.query;
       if (!id) return res.status(400).json({ error: 'Missing ID' });

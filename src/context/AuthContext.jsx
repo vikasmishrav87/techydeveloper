@@ -3,57 +3,56 @@ import { logSecurityEvent } from '../services/storageService';
 
 const AuthContext = createContext(null);
 
-const STORAGE_SESSION_KEY = 'ue_client_session';
-const STORAGE_USERS_KEY = 'ue_registered_accounts';
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load existing session on boot
+  // Clean up legacy localStorage credentials on boot
   useEffect(() => {
     try {
-      const savedSession = localStorage.getItem(STORAGE_SESSION_KEY);
-      if (savedSession) {
-        const parsed = JSON.parse(savedSession);
-        if (parsed && parsed.userId) {
-          setUser(parsed);
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to load user session:', e);
-    } finally {
-      setLoading(false);
-    }
+      localStorage.removeItem('ue_client_session');
+      localStorage.removeItem('ue_registered_accounts');
+    } catch {}
   }, []);
 
-  // Helper to get local accounts
-  const getLocalAccounts = () => {
-    try {
-      const raw = localStorage.getItem(STORAGE_USERS_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  };
+  // Fetch current session from server via HttpOnly Cookie
+  useEffect(() => {
+    let isMounted = true;
 
-  // Helper to save local accounts
-  const saveLocalAccount = (account) => {
-    try {
-      const accounts = getLocalAccounts();
-      const idx = accounts.findIndex(a => a.userId === account.userId || a.email === account.email);
-      if (idx >= 0) {
-        accounts[idx] = { ...accounts[idx], ...account };
-      } else {
-        accounts.push(account);
+    async function checkServerSession() {
+      try {
+        const resp = await fetch('/api/user-auth?action=me', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          credentials: 'include' // Attaches __Host-ue_session HttpOnly cookie
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (isMounted && data.authenticated && data.user) {
+            setUser(data.user);
+          } else if (isMounted) {
+            setUser(null);
+          }
+        } else if (isMounted) {
+          setUser(null);
+        }
+      } catch (err) {
+        console.warn('Session verification notice:', err.message);
+        if (isMounted) setUser(null);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(accounts));
-    } catch (e) {
-      console.warn('Failed to save local account:', e);
     }
-  };
 
-  // 1. REGISTER: creates account and generates unique 12-digit recovery key
+    checkServerSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // 1. REGISTER NEW ACCOUNT
   const register = async ({ userId, email, password, name, phone }) => {
     const cleanId = (userId || email || '').trim().toLowerCase();
     const cleanEmail = (email || userId || '').trim().toLowerCase();
@@ -67,56 +66,22 @@ export function AuthProvider({ children }) {
       throw new Error('Password must be at least 6 characters long.');
     }
 
-    let newUser = {
-      id: 'usr_' + Date.now(),
-      userId: cleanId,
-      email: cleanEmail,
-      name: cleanName,
-      phone: phone || '',
-      role: 'Verified Client',
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString()
-    };
-    let recoveryKey = '';
+    const resp = await fetch('/api/user-auth?action=register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ userId: cleanId, email: cleanEmail, password: cleanPassword, name: cleanName, phone })
+    });
 
-    // Call Backend Vault API
-    try {
-      const resp = await fetch('/api/user-auth?action=register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, email: cleanEmail, password: cleanPassword, name: cleanName, phone })
-      });
-      const data = await resp.json();
-      if (!resp.ok || !data.success) {
-        throw new Error(data.error || 'Registration failed.');
-      }
-      if (data.user) {
-        newUser = { ...newUser, ...data.user, token: data.token };
-      }
-      recoveryKey = data.recoveryKey || '';
-    } catch (apiErr) {
-      throw new Error(apiErr.message || 'Registration service error.');
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Registration failed.');
     }
 
-    newUser.recoveryKey = recoveryKey;
-    saveLocalAccount({ ...newUser, password: cleanPassword });
+    setUser(data.user);
+    logSecurityEvent('USER_REGISTER', `New Client Registered: ${cleanId}`, { userId: cleanId });
 
-    const safeUser = {
-      id: newUser.id,
-      userId: newUser.userId,
-      email: newUser.email,
-      name: newUser.name,
-      role: newUser.role,
-      recoveryKey: newUser.recoveryKey,
-      createdAt: newUser.createdAt,
-      lastLogin: newUser.lastLogin
-    };
-
-    localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(safeUser));
-    setUser(safeUser);
-    logSecurityEvent('USER_REGISTER', `New Client Registered: ${safeUser.userId}`, { userId: safeUser.userId });
-
-    return { user: safeUser, recoveryKey };
+    return { user: data.user, recoveryKey: data.recoveryKey };
   };
 
   // 2. LOGIN
@@ -128,45 +93,22 @@ export function AuthProvider({ children }) {
       throw new Error('User ID and Password are required.');
     }
 
-    let authenticatedUser = null;
+    const resp = await fetch('/api/user-auth?action=login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ userId: cleanId, password: cleanPassword })
+    });
 
-    // Call Backend Vault API
-    try {
-      const resp = await fetch('/api/user-auth?action=login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, password: cleanPassword })
-      });
-      const data = await resp.json();
-      if (resp.ok && data.success && data.user) {
-        authenticatedUser = data.user;
-      } else if (!resp.ok) {
-        throw new Error(data.error || 'Invalid User ID or Password.');
-      }
-    } catch (apiErr) {
-      // Fallback check local cache
-      const localAccounts = getLocalAccounts();
-      const match = localAccounts.find(a => (a.userId === cleanId || a.email === cleanId) && a.password === cleanPassword);
-      if (match) {
-        authenticatedUser = {
-          id: match.id,
-          userId: match.userId,
-          email: match.email,
-          name: match.name,
-          role: match.role || 'Verified Client',
-          recoveryKey: match.recoveryKey || '',
-          lastLogin: new Date().toISOString()
-        };
-      } else {
-        throw new Error(apiErr.message || 'Invalid credentials. Check User ID and Password.');
-      }
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Invalid User ID or Password.');
     }
 
-    localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(authenticatedUser));
-    setUser(authenticatedUser);
-    logSecurityEvent('USER_LOGIN', `Client Logged In: ${authenticatedUser.userId}`, { userId: authenticatedUser.userId });
+    setUser(data.user);
+    logSecurityEvent('USER_LOGIN', `Client Logged In: ${cleanId}`, { userId: cleanId });
 
-    return authenticatedUser;
+    return data.user;
   };
 
   // 3. VERIFY 12-DIGIT SECRET RECOVERY KEY
@@ -181,31 +123,20 @@ export function AuthProvider({ children }) {
       throw new Error('Please enter your 12-digit Secret Recovery Key.');
     }
 
-    try {
-      const resp = await fetch('/api/user-auth?action=verify-recovery-key', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, recoveryKey: cleanKey })
-      });
-      const data = await resp.json();
-      if (!resp.ok || !data.success) {
-        throw new Error(data.error || 'Secret Recovery Key verification failed.');
-      }
-      logSecurityEvent('RECOVERY_KEY_VERIFIED', `Recovery Key verified for: ${cleanId}`, { userId: cleanId });
-      return data;
-    } catch (err) {
-      // Check local accounts as fallback
-      const localAccounts = getLocalAccounts();
-      const user = localAccounts.find(u => u.userId === cleanId || u.email === cleanId);
-      if (user && user.recoveryKey) {
-        const normLocal = user.recoveryKey.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-        const normInput = cleanKey.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-        if (normLocal === normInput) {
-          return { success: true, verified: true, userId: user.userId, email: user.email };
-        }
-      }
-      throw new Error(err.message || 'Invalid Secret Recovery Key for this account. Access denied.');
+    const resp = await fetch('/api/user-auth?action=verify-recovery-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ userId: cleanId, recoveryKey: cleanKey })
+    });
+
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Secret Recovery Key verification failed.');
     }
+
+    logSecurityEvent('RECOVERY_KEY_VERIFIED', `Recovery Key verified for: ${cleanId}`, { userId: cleanId });
+    return data;
   };
 
   // 4. UPDATE PASSWORD WITH VERIFIED SECRET RECOVERY KEY
@@ -221,30 +152,20 @@ export function AuthProvider({ children }) {
       throw new Error('New password must be at least 6 characters long.');
     }
 
-    try {
-      const resp = await fetch('/api/user-auth?action=update-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: cleanId, recoveryKey: cleanKey, newPassword: cleanNewPassword })
-      });
-      const data = await resp.json();
-      if (!resp.ok || !data.success) {
-        throw new Error(data.error || 'Failed to update password.');
-      }
+    const resp = await fetch('/api/user-auth?action=update-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ userId: cleanId, recoveryKey: cleanKey, newPassword: cleanNewPassword })
+    });
 
-      // Update local storage
-      const localAccounts = getLocalAccounts();
-      const idx = localAccounts.findIndex(a => a.userId === cleanId || a.email === cleanId);
-      if (idx >= 0) {
-        localAccounts[idx].password = cleanNewPassword;
-        localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(localAccounts));
-      }
-
-      logSecurityEvent('PASSWORD_UPDATE_SUCCESS', `Password successfully updated with recovery key for: ${cleanId}`, { userId: cleanId });
-      return data;
-    } catch (err) {
-      throw new Error(err.message || 'Error updating password.');
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Failed to update password.');
     }
+
+    logSecurityEvent('PASSWORD_UPDATE_SUCCESS', `Password updated for: ${cleanId}`, { userId: cleanId });
+    return data;
   };
 
   // 5. GOOGLE OAUTH CLIENT LOGIN
@@ -260,86 +181,44 @@ export function AuthProvider({ children }) {
       authPayload = googleResponse || {};
     }
 
-    const parseJwt = (token) => {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          window.atob(base64)
-            .split('')
-            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-        );
-        return JSON.parse(jsonPayload);
-      } catch {
-        return null;
-      }
-    };
-
-    let authenticatedUser = null;
-
-    try {
-      const resp = await fetch('/api/user-auth?action=google-auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(authPayload)
-      });
-      const data = await resp.json();
-      if (resp.ok && data.success && data.user) {
-        authenticatedUser = data.user;
-      } else {
-        throw new Error(data.error || 'Google authentication failed.');
-      }
-    } catch (apiErr) {
-      // Local fallback in case network / offline: decode JWT credential
-      if (authPayload.credential) {
-        const decoded = parseJwt(authPayload.credential);
-        if (decoded && decoded.email) {
-          authenticatedUser = {
-            id: 'usr_g_' + (decoded.sub || Date.now()),
-            userId: (decoded.email.split('@')[0] || 'google_client').toLowerCase(),
-            email: decoded.email.toLowerCase(),
-            name: decoded.name || 'Google Client',
-            avatar: decoded.picture || '',
-            role: 'Verified Client',
-            authProvider: 'google',
-            createdAt: new Date().toISOString(),
-            lastLogin: new Date().toISOString()
-          };
-        } else {
-          throw apiErr;
-        }
-      } else {
-        throw apiErr;
-      }
-    }
-
-    saveLocalAccount(authenticatedUser);
-    localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(authenticatedUser));
-    setUser(authenticatedUser);
-    logSecurityEvent('GOOGLE_AUTH_SUCCESS', `Client signed in with Google: ${authenticatedUser.email}`, { 
-      userId: authenticatedUser.userId,
-      email: authenticatedUser.email
+    const resp = await fetch('/api/user-auth?action=google-auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(authPayload)
     });
 
-    return authenticatedUser;
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Google authentication failed.');
+    }
+
+    setUser(data.user);
+    logSecurityEvent('GOOGLE_AUTH_SUCCESS', `Client signed in with Google: ${data.user.email}`, { 
+      userId: data.user.userId,
+      email: data.user.email
+    });
+
+    return data.user;
   };
 
   // Backwards compatible aliases
   const requestResetCode = async (userId) => verifyRecoveryKey(userId, '');
   const resetPasswordWithCode = async (userId, code, newPassword) => updatePasswordWithRecoveryKey(userId, code, newPassword);
 
-  // Logout: Invalidate session on server and clear client storage
+  // 6. LOGOUT (Server-Side Session Revocation + Cookie Destruction)
   const logout = async () => {
     const userId = user?.userId;
     try {
-      fetch('/api/user-auth?action=logout', {
+      await fetch('/api/user-auth?action=logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
-      }).catch(() => {});
-    } catch {}
-    localStorage.removeItem(STORAGE_SESSION_KEY);
+        credentials: 'include'
+      });
+    } catch (err) {
+      console.warn('Logout notification error:', err.message);
+    }
+
     setUser(null);
     if (userId) {
       logSecurityEvent('USER_LOGOUT', `Client Logged Out: ${userId}`, { userId });

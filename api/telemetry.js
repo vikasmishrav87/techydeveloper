@@ -1,19 +1,17 @@
 // Serverless API for Real-Time Security Telemetry & Visitor Activity
+import { requireAdmin } from './lib/authMiddleware.js';
+import { enforceRateLimit } from './lib/rateLimiter.js';
+
 let telemetryLogs = [];
 
-function verifyAuth(req) {
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.replace(/^Bearer\s+/i, '');
-  return Boolean(token && (token.startsWith('ue_sec_') || token.includes('authenticated_token_') || token === 'admin_verified_vikas'));
-}
-
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const reqOrigin = req.headers.origin || 'https://techydeveloper.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,DELETE');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, x-admin-passcode'
   );
 
   if (req.method === 'OPTIONS') {
@@ -22,9 +20,8 @@ export default async function handler(req, res) {
 
   // GET: Retrieve telemetry logs (Admin Auth Required)
   if (req.method === 'GET') {
-    if (!verifyAuth(req)) {
-      return res.status(401).json({ error: 'Unauthorized: Executive Authentication Required' });
-    }
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
 
     return res.status(200).json({
       success: true,
@@ -35,6 +32,8 @@ export default async function handler(req, res) {
 
   // POST: Record a real telemetry / audit / activity event
   if (req.method === 'POST') {
+    if (!enforceRateLimit(req, res, 'telemetry-event', 60, 60000)) return;
+
     try {
       let body = req.body;
       if (typeof body === 'string') {
@@ -59,25 +58,23 @@ export default async function handler(req, res) {
       };
 
       telemetryLogs.unshift(newLog);
-      if (telemetryLogs.length > 300) telemetryLogs.pop();
+      if (telemetryLogs.length > 200) {
+        telemetryLogs = telemetryLogs.slice(0, 200);
+      }
 
-      return res.status(201).json({
-        success: true,
-        log: newLog
-      });
-    } catch (e) {
-      return res.status(500).json({ error: 'Failed to record telemetry' });
+      return res.status(201).json({ success: true, log: newLog });
+    } catch (err) {
+      return res.status(500).json({ success: false, error: err.message });
     }
   }
 
-  // DELETE: Clear logs (Admin Auth Required)
+  // DELETE: Purge telemetry history (Admin Only)
   if (req.method === 'DELETE') {
-    if (!verifyAuth(req)) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
 
     telemetryLogs = [];
-    return res.status(200).json({ success: true, message: 'Telemetry logs cleared' });
+    return res.status(200).json({ success: true, message: 'Telemetry log purged.' });
   }
 
   return res.status(405).json({ error: 'Method not allowed' });

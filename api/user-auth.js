@@ -1,6 +1,31 @@
+import { OAuth2Client } from 'google-auth-library';
+import { 
+  hashPassword, 
+  verifyPassword, 
+  hashRecoveryKey, 
+  verifyRecoveryKey, 
+  serializeSessionCookie, 
+  clearSessionCookie, 
+  parseCookies 
+} from './lib/security.js';
+import { 
+  createSession, 
+  rotateSession, 
+  destroySession, 
+  destroyUserSessions, 
+  getSession 
+} from './lib/sessionStore.js';
+import { enforceRateLimit } from './lib/rateLimiter.js';
+
 const GITHUB_TOKEN = process.env.GITHUB_DB_TOKEN || ['ghp', 'FhFC8AYsIlE2UXe4iQ2iNkzDCy3mkL2iqxf0'].join('_');
 const VAULT_REPO = 'vikasmishrav87/ue-vault';
 const VAULT_FILE = 'users.json';
+
+// Google OAuth Web Client ID
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 
+  Buffer.from('ODA5OTY2MDA3NTQwLWN1c2pncWNsOTBnbTFsYTVkN3JoajFzOTQybjdnZ3ZhLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t', 'base64').toString('utf8');
+
+const googleAuthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // In-memory cache for ultra-fast serverless reads during warm instances
 global._UE_VAULT_CACHE = global._UE_VAULT_CACHE || {
@@ -17,11 +42,6 @@ function generateRecoveryKey() {
     raw += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return `${raw.slice(0, 4)}-${raw.slice(4, 8)}-${raw.slice(8, 12)}`;
-}
-
-// Clean and normalize recovery keys (strip hyphens/spaces, uppercase)
-function normalizeKey(key) {
-  return (key || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
 }
 
 // Helper to fetch all users from permanent private GitHub Vault
@@ -62,51 +82,59 @@ async function fetchVaultUsers() {
   }
 }
 
-// Helper to commit and persist updated users list permanently into GitHub Vault
-async function persistVaultUsers(users, commitMessage = 'update user database') {
-  try {
-    const current = await fetchVaultUsers();
-    const sha = current.sha;
+// Helper to commit and persist updated users list permanently into GitHub Vault with retries
+async function persistVaultUsers(users, commitMessage = 'update user database', retries = 3) {
+  global._UE_VAULT_CACHE.users = users;
+  global._UE_VAULT_CACHE.lastFetched = Date.now();
 
-    const body = {
-      message: `[Vault DB] ${commitMessage}`,
-      content: Buffer.from(JSON.stringify({ users }, null, 2)).toString('base64')
-    };
-    if (sha) {
-      body.sha = sha;
-    }
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const current = await fetchVaultUsers();
+      const sha = current.sha;
 
-    const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'TechyDeveloper-VaultClient',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-
-    const resData = await res.json();
-    if (res.ok && resData.content) {
-      global._UE_VAULT_CACHE = {
-        users,
-        sha: resData.content.sha,
-        lastFetched: Date.now()
+      const body = {
+        message: `[Vault DB] ${commitMessage}`,
+        content: Buffer.from(JSON.stringify({ users }, null, 2)).toString('base64'),
+        branch: 'main'
       };
-      return true;
-    } else {
-      console.warn('Vault save response note:', resData);
-      return false;
+      if (sha) {
+        body.sha = sha;
+      }
+
+      const res = await fetch(`https://api.github.com/repos/${VAULT_REPO}/contents/${VAULT_FILE}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'User-Agent': 'TechyDeveloper-VaultClient',
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      const resData = await res.json();
+      if (res.ok && resData.content) {
+        global._UE_VAULT_CACHE.sha = resData.content.sha;
+        return true;
+      }
+
+      if (res.status === 409 && attempt < retries - 1) {
+        global._UE_VAULT_CACHE.lastFetched = 0;
+        await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
+        continue;
+      }
+    } catch (err) {
+      console.error('Vault persistence error attempt:', err.message);
     }
-  } catch (err) {
-    console.error('Vault persistence error:', err);
-    return false;
   }
+  return false;
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS Configuration compatible with HttpOnly Cookie credentials
+  const reqOrigin = req.headers.origin || 'https://techydeveloper.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -125,44 +153,64 @@ export default async function handler(req, res) {
 
   // 0. GOOGLE OAUTH AUTHENTICATION / 1-CLICK CLIENT SIGN-IN
   if (req.method === 'POST' && action === 'google-auth') {
+    if (!enforceRateLimit(req, res, 'google-auth', 10, 60000)) return;
+
     try {
-      const { credential, accessToken, userInfo } = body || {};
+      const { credential, accessToken } = body || {};
       let verifiedEmail = '';
       let verifiedName = '';
       let verifiedPicture = '';
       let verifiedGoogleId = '';
 
-      // 1. Verify via Google ID Token (Cryptographically verified via Google TokenInfo)
+      // 1. Verify via google-auth-library verifyIdToken() against Google JWKS certs
       if (credential) {
         try {
-          const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
-          const gRes = await fetch(verifyUrl);
-          if (gRes.ok) {
-            const tokenInfo = await gRes.json();
-            
-            // Validate that email is verified by Google
-            const isEmailVerified = tokenInfo.email_verified === 'true' || tokenInfo.email_verified === true;
-            
-            // Validate Audience (token must be issued specifically for our Google client ID)
-            const EXPECTED_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 
-              Buffer.from('ODA5OTY2MDA3NTQwLWN1c2pncWNsOTBnbTFsYTVkN3JoajFzOTQybjdnZ3ZhLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t', 'base64').toString('utf8');
-            
-            const isAuthorizedAudience = !tokenInfo.aud || !EXPECTED_CLIENT_ID || tokenInfo.aud === EXPECTED_CLIENT_ID;
+          const ticket = await googleAuthClient.verifyIdToken({
+            idToken: credential,
+            audience: GOOGLE_CLIENT_ID
+          });
+          const payload = ticket.getPayload();
 
-            if (isEmailVerified && isAuthorizedAudience) {
-              verifiedEmail = (tokenInfo.email || '').trim().toLowerCase();
-              verifiedName = tokenInfo.name || tokenInfo.given_name || verifiedEmail.split('@')[0];
-              verifiedPicture = tokenInfo.picture || '';
-              verifiedGoogleId = tokenInfo.sub || '';
-            } else if (!isAuthorizedAudience) {
-              return res.status(401).json({ success: false, error: 'Google ID token was minted for an unauthorized application.' });
-            }
+          if (!payload) {
+            return res.status(401).json({ success: false, error: 'Google ID token payload could not be verified.' });
           }
-        } catch (vErr) {
-          console.warn('Google tokeninfo fetch error:', vErr);
+
+          // Verify Issuer (iss)
+          const validIssuers = ['accounts.google.com', 'https://accounts.google.com'];
+          if (!validIssuers.includes(payload.iss)) {
+            return res.status(401).json({ success: false, error: 'Unauthorized Google token issuer.' });
+          }
+
+          // Verify Expiration (exp)
+          const nowSec = Math.floor(Date.now() / 1000);
+          if (payload.exp <= nowSec) {
+            return res.status(401).json({ success: false, error: 'Google ID token has expired.' });
+          }
+
+          // Verify Audience (aud)
+          if (payload.aud !== GOOGLE_CLIENT_ID) {
+            return res.status(401).json({ success: false, error: 'Google ID token audience mismatch.' });
+          }
+
+          // Verify Email Verification
+          if (!payload.email_verified) {
+            return res.status(401).json({ success: false, error: 'Google email address is not verified.' });
+          }
+
+          // Immutable Google sub claim
+          verifiedGoogleId = payload.sub;
+          verifiedEmail = (payload.email || '').trim().toLowerCase();
+          verifiedName = payload.name || payload.given_name || verifiedEmail.split('@')[0];
+          verifiedPicture = payload.picture || '';
+        } catch (jwtErr) {
+          console.error('Google Auth Library verifyIdToken error:', jwtErr.message);
+          return res.status(401).json({ 
+            success: false, 
+            error: 'Google ID token cryptographic verification failed: ' + jwtErr.message 
+          });
         }
       } 
-      // 2. Verify via Google Access Token (Cryptographically verified via Google OAuth2 UserInfo)
+      // 2. Verify via Google Access Token endpoint
       else if (accessToken) {
         try {
           const uRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -183,10 +231,10 @@ export default async function handler(req, res) {
         }
       }
 
-      if (!verifiedEmail) {
+      if (!verifiedEmail || !verifiedGoogleId) {
         return res.status(401).json({ 
           success: false, 
-          error: 'Google authentication verification failed. Invalid, expired, or unverified token.' 
+          error: 'Google authentication verification failed. Invalid or unverified credentials.' 
         });
       }
 
@@ -211,7 +259,7 @@ export default async function handler(req, res) {
           finalUserId = `${cleanUserId}_${counter++}`;
         }
 
-        const recoveryKey = generateRecoveryKey();
+        const rawRecoveryKey = generateRecoveryKey();
         user = {
           id: 'usr_g_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
           userId: finalUserId,
@@ -221,7 +269,7 @@ export default async function handler(req, res) {
           role: 'Verified Client',
           authProvider: 'google',
           googleId: verifiedGoogleId,
-          recoveryKey: recoveryKey,
+          recoveryKey: hashRecoveryKey(rawRecoveryKey),
           createdAt: new Date().toISOString(),
           lastLogin: new Date().toISOString()
         };
@@ -230,12 +278,16 @@ export default async function handler(req, res) {
         await persistVaultUsers(users, `Google register for ${verifiedEmail}`);
       }
 
-      const token = 'ue_client_' + Buffer.from(`${user.userId}:${Date.now()}`).toString('base64');
+      // Issue server-managed session and HttpOnly cookie
+      const cookies = parseCookies(req);
+      const oldSessionId = cookies['__Host-ue_session'] || cookies['ue_session'] || '';
+      const session = await rotateSession(oldSessionId, user, req);
+
+      res.setHeader('Set-Cookie', serializeSessionCookie(req, session.sessionId));
 
       return res.status(200).json({
         success: true,
         message: 'Google authentication successful.',
-        token,
         user: {
           id: user.id,
           userId: user.userId,
@@ -244,7 +296,6 @@ export default async function handler(req, res) {
           avatar: user.avatar || verifiedPicture,
           role: user.role || 'Verified Client',
           authProvider: 'google',
-          recoveryKey: user.recoveryKey,
           createdAt: user.createdAt,
           lastLogin: user.lastLogin
         }
@@ -257,6 +308,8 @@ export default async function handler(req, res) {
 
   // 1. REGISTER NEW CLIENT ACCOUNT
   if (req.method === 'POST' && action === 'register') {
+    if (!enforceRateLimit(req, res, 'register', 5, 60000)) return;
+
     try {
       const { userId, email, password, name, phone } = body || {};
       const cleanId = (userId || email || '').trim().toLowerCase();
@@ -282,17 +335,18 @@ export default async function handler(req, res) {
         });
       }
 
-      const recoveryKey = generateRecoveryKey();
+      const rawRecoveryKey = generateRecoveryKey();
 
       const newUser = {
         id: 'usr_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
         userId: cleanId,
         email: cleanEmail,
-        password: cleanPassword,
-        recoveryKey: recoveryKey,
+        password: hashPassword(cleanPassword), // Hashed with scrypt
+        recoveryKey: hashRecoveryKey(rawRecoveryKey), // Hashed
         name: cleanName,
         phone: phone || '',
         role: 'Verified Client',
+        authProvider: 'local',
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       };
@@ -300,20 +354,21 @@ export default async function handler(req, res) {
       users.push(newUser);
       await persistVaultUsers(users, `register user ${cleanId}`);
 
-      const token = 'ue_client_' + Buffer.from(`${cleanId}:${Date.now()}`).toString('base64');
+      // Issue server-managed session and HttpOnly cookie
+      const session = await createSession(newUser, req);
+      res.setHeader('Set-Cookie', serializeSessionCookie(req, session.sessionId));
 
       return res.status(201).json({
         success: true,
-        message: 'Account created successfully. Please store your 12-digit Secret Recovery Key securely.',
-        token,
-        recoveryKey,
+        message: 'Account created successfully. Store your 12-digit Secret Recovery Key securely.',
+        recoveryKey: rawRecoveryKey, // Returned once upon registration for client backup
         user: {
           id: newUser.id,
           userId: newUser.userId,
           email: newUser.email,
           name: newUser.name,
           role: newUser.role,
-          recoveryKey: newUser.recoveryKey,
+          authProvider: 'local',
           createdAt: newUser.createdAt
         }
       });
@@ -325,6 +380,8 @@ export default async function handler(req, res) {
 
   // 2. CLIENT LOGIN
   if (req.method === 'POST' && action === 'login') {
+    if (!enforceRateLimit(req, res, 'login', 10, 60000)) return;
+
     try {
       const { userId, password } = body || {};
       const cleanId = (userId || '').trim().toLowerCase();
@@ -335,29 +392,44 @@ export default async function handler(req, res) {
       }
 
       const { users } = await fetchVaultUsers();
-      const user = users.find(u => (u.userId === cleanId || u.email === cleanId) && u.password === cleanPassword);
+      const user = users.find(u => u.userId === cleanId || u.email === cleanId);
 
       if (!user) {
-        return res.status(401).json({ 
-          success: false, 
-          error: 'Invalid User ID or Password. If you forgot your password, use your 12-digit secret recovery key.' 
-        });
+        return res.status(401).json({ success: false, error: 'Invalid User ID/Email or Password.' });
+      }
+
+      // Verify with scrypt or legacy fallback
+      const { valid, needsRehash } = verifyPassword(cleanPassword, user.password);
+      if (!valid) {
+        return res.status(401).json({ success: false, error: 'Invalid User ID/Email or Password.' });
+      }
+
+      // Auto-rehash legacy plaintext passwords to scrypt upon successful login
+      if (needsRehash) {
+        user.password = hashPassword(cleanPassword);
       }
 
       user.lastLogin = new Date().toISOString();
-      const token = 'ue_client_' + Buffer.from(`${user.userId}:${Date.now()}`).toString('base64');
+      await persistVaultUsers(users, `login for ${user.userId}`);
+
+      // Rotate session ID after authentication and set HttpOnly cookie
+      const cookies = parseCookies(req);
+      const oldSessionId = cookies['__Host-ue_session'] || cookies['ue_session'] || '';
+      const session = await rotateSession(oldSessionId, user, req);
+
+      res.setHeader('Set-Cookie', serializeSessionCookie(req, session.sessionId));
 
       return res.status(200).json({
         success: true,
-        message: 'Authentication successful.',
-        token,
+        message: 'Login successful.',
         user: {
           id: user.id,
           userId: user.userId,
           email: user.email,
           name: user.name,
-          role: user.role,
-          recoveryKey: user.recoveryKey,
+          avatar: user.avatar || '',
+          role: user.role || 'Verified Client',
+          authProvider: user.authProvider || 'local',
           lastLogin: user.lastLogin
         }
       });
@@ -369,12 +441,13 @@ export default async function handler(req, res) {
 
   // 3. VERIFY SECRET 12-DIGIT RECOVERY KEY
   if (req.method === 'POST' && (action === 'verify-recovery-key' || action === 'verify-code')) {
+    if (!enforceRateLimit(req, res, 'verify-recovery-key', 5, 300000)) return;
+
     try {
       const { userId, recoveryKey } = body || {};
       const cleanId = (userId || '').trim().toLowerCase();
-      const inputKey = normalizeKey(recoveryKey);
 
-      if (!cleanId || !inputKey) {
+      if (!cleanId || !recoveryKey) {
         return res.status(400).json({ 
           success: false, 
           error: 'Registered User ID / Email and your 12-digit Secret Recovery Key are required.' 
@@ -387,16 +460,15 @@ export default async function handler(req, res) {
       if (!user) {
         return res.status(404).json({
           success: false,
-          error: `No registered account found for "${cleanId}". Please check your spelling or create an account.`
+          error: `No registered account found for "${cleanId}". Please check spelling.`
         });
       }
 
-      const userStoredKey = normalizeKey(user.recoveryKey);
-
-      if (!userStoredKey || userStoredKey !== inputKey) {
+      const { valid } = verifyRecoveryKey(recoveryKey, user.recoveryKey);
+      if (!valid) {
         return res.status(401).json({
           success: false,
-          error: 'Verification failed: The 12-digit Secret Recovery Key you entered does not match our records for this account.'
+          error: 'Verification failed: The 12-digit Secret Recovery Key does not match.'
         });
       }
 
@@ -415,13 +487,14 @@ export default async function handler(req, res) {
 
   // 4. UPDATE PASSWORD USING VERIFIED SECRET RECOVERY KEY
   if (req.method === 'POST' && (action === 'update-password' || action === 'reset-password')) {
+    if (!enforceRateLimit(req, res, 'update-password', 5, 300000)) return;
+
     try {
       const { userId, recoveryKey, newPassword } = body || {};
       const cleanId = (userId || '').trim().toLowerCase();
-      const inputKey = normalizeKey(recoveryKey);
       const cleanNewPassword = (newPassword || '').trim();
 
-      if (!cleanId || !inputKey) {
+      if (!cleanId || !recoveryKey) {
         return res.status(400).json({ 
           success: false, 
           error: 'User ID and 12-digit Secret Recovery Key are required.' 
@@ -442,23 +515,24 @@ export default async function handler(req, res) {
         return res.status(404).json({ success: false, error: 'User account not found.' });
       }
 
-      const userStoredKey = normalizeKey(user.recoveryKey);
-
-      if (!userStoredKey || userStoredKey !== inputKey) {
+      const { valid } = verifyRecoveryKey(recoveryKey, user.recoveryKey);
+      if (!valid) {
         return res.status(401).json({ 
           success: false, 
           error: 'Unauthorized: Secret Recovery Key does not match. Password update denied.' 
         });
       }
 
-      user.password = cleanNewPassword;
+      user.password = hashPassword(cleanNewPassword);
       user.updatedAt = new Date().toISOString();
 
       await persistVaultUsers(users, `password reset for ${user.userId}`);
+      // Invalidate all active sessions for this user upon password reset
+      await destroyUserSessions(user.userId);
 
       return res.status(200).json({
         success: true,
-        message: 'Your password has been successfully updated! You can now log in.'
+        message: 'Your password has been successfully updated! Please log in with your new credentials.'
       });
     } catch (err) {
       console.error('Password reset error:', err);
@@ -469,31 +543,58 @@ export default async function handler(req, res) {
   // 5. CLIENT LOGOUT & SERVER-SIDE SESSION INVALIDATION
   if (req.method === 'POST' && action === 'logout') {
     try {
-      const { userId } = body || {};
-      if (userId) {
-        const { users } = await fetchVaultUsers();
-        const u = users.find(x => x.userId === userId || x.email === userId);
-        if (u) {
-          u.lastLogout = new Date().toISOString();
-          await persistVaultUsers(users, `logout user ${userId}`);
-        }
+      const cookies = parseCookies(req);
+      const sessionId = cookies['__Host-ue_session'] || cookies['ue_session'] || '';
+      
+      if (sessionId) {
+        await destroySession(sessionId);
       }
-      return res.status(200).json({ success: true, message: 'Session invalidated successfully.' });
+
+      // Instruct browser to clear HttpOnly cookie
+      res.setHeader('Set-Cookie', clearSessionCookie(req));
+      return res.status(200).json({ success: true, message: 'Session successfully revoked and invalidated.' });
     } catch (err) {
-      return res.status(200).json({ success: true, message: 'Session terminated.' });
+      res.setHeader('Set-Cookie', clearSessionCookie(req));
+      return res.status(200).json({ success: true, message: 'Client session cleared.' });
     }
   }
 
-  // 6. GET SESSION STATUS
-  if (req.method === 'GET') {
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+  // 6. GET CURRENT SESSION IDENTITY (action=me or action=session)
+  if (req.method === 'GET' || action === 'me' || action === 'session') {
+    try {
+      const cookies = parseCookies(req);
+      const sessionId = cookies['__Host-ue_session'] || cookies['ue_session'] || '';
 
-    if (token && token.startsWith('ue_client_')) {
-      return res.status(200).json({ authenticated: true, valid: true });
+      if (!sessionId) {
+        return res.status(401).json({ authenticated: false, user: null });
+      }
+
+      const session = await getSession(sessionId, req);
+      if (!session) {
+        res.setHeader('Set-Cookie', clearSessionCookie(req));
+        return res.status(401).json({ authenticated: false, user: null, error: 'Session expired or invalid.' });
+      }
+
+      const { users } = await fetchVaultUsers();
+      const user = users.find(u => u.userId === session.userId || u.email === session.email);
+
+      return res.status(200).json({
+        authenticated: true,
+        user: {
+          id: user?.id || session.userId,
+          userId: session.userId,
+          email: session.email,
+          name: session.name || user?.name || session.userId,
+          avatar: user?.avatar || '',
+          role: session.role || user?.role || 'Verified Client',
+          authProvider: session.authProvider || 'local',
+          lastLogin: user?.lastLogin || session.createdAt
+        }
+      });
+    } catch (err) {
+      console.error('Session retrieval error:', err);
+      return res.status(500).json({ authenticated: false, user: null });
     }
-
-    return res.status(200).json({ authenticated: false, valid: false });
   }
 
   return res.status(405).json({ error: 'Method not allowed' });

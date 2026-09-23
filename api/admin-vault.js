@@ -1,5 +1,8 @@
 // Master Executive Vault API - TechyDeveloper
 // Complete administrative oversight & mutation control across permanent ue-vault storage
+import { requireAdmin } from './lib/authMiddleware.js';
+import { hashPassword, hashRecoveryKey } from './lib/security.js';
+import { enforceRateLimit } from './lib/rateLimiter.js';
 
 const GITHUB_TOKEN = process.env.GITHUB_DB_TOKEN || ['ghp', 'FhFC8AYsIlE2UXe4iQ2iNkzDCy3mkL2iqxf0'].join('_');
 const VAULT_REPO = 'vikasmishrav87/ue-vault';
@@ -119,23 +122,10 @@ async function putVaultFile(fileName, data, commitMessage = 'update file') {
   }
 }
 
-// Authentication validator
-function verifyAdmin(req) {
-  const passcode = req.headers['x-admin-passcode'] || req.query.passcode || '';
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.replace(/^Bearer\\s+/i, '');
-
-  const validPasscodes = ['vikasmusickeytosuccess', 'unfilteredtrader9372'];
-  
-  if (validPasscodes.includes(passcode.trim())) return true;
-  if (token && (token.startsWith('ue_sec_') || token.includes('authenticated_token_') || token.includes('vikas'))) return true;
-
-  return false;
-}
-
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const reqOrigin = req.headers.origin || 'https://techydeveloper.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', reqOrigin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -146,13 +136,12 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // Security Check: strictly require executive authentication
-  if (!verifyAdmin(req)) {
-    return res.status(401).json({
-      success: false,
-      error: 'Executive authorization required. Provide valid x-admin-passcode header.'
-    });
-  }
+  // Rate Limiting
+  if (!enforceRateLimit(req, res, 'admin-vault', 30, 60000)) return;
+
+  // Strict RBAC & Admin Verification
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
 
   let body = req.body;
   if (typeof body === 'string') {
@@ -226,8 +215,8 @@ export default async function handler(req, res) {
       const newUser = {
         userId,
         email: cleanEmail,
-        password: password.trim(),
-        recoveryKey: cleanKey,
+        password: hashPassword(password.trim()),
+        recoveryKey: hashRecoveryKey(cleanKey),
         fullName: (fullName || 'Valued Client').trim(),
         company: (company || 'Independent').trim(),
         role: role || 'client',
@@ -260,8 +249,8 @@ export default async function handler(req, res) {
 
       const target = users[userIndex];
       if (email !== undefined) target.email = email.trim().toLowerCase();
-      if (password !== undefined && password.trim().length > 0) target.password = password.trim();
-      if (recoveryKey !== undefined) target.recoveryKey = formatKey(recoveryKey);
+      if (password !== undefined && password.trim().length > 0) target.password = hashPassword(password.trim());
+      if (recoveryKey !== undefined) target.recoveryKey = hashRecoveryKey(recoveryKey);
       if (fullName !== undefined) target.fullName = fullName.trim();
       if (company !== undefined) target.company = company.trim();
       if (role !== undefined) target.role = role;
